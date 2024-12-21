@@ -3,11 +3,16 @@
 #include <cstdint>
 #include <optional>
 #include <functional>
+#include <vector>
+#include <map>
 
 #include "src/Targets/RiscV/RiscV.hpp"
+#include "src/Targets/TargetPeripheralDescriptor.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
 
 #include "WchRiscVTargetConfig.hpp"
 #include "TargetDescriptionFile.hpp"
+#include "GpioPadDescriptor.hpp"
 
 namespace Targets::RiscV::Wch
 {
@@ -42,6 +47,9 @@ namespace Targets::RiscV::Wch
         ) override;
 
         TargetMemoryAddress getProgramCounter() override;
+
+        TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) override;
+        void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) override;
 
         std::string passthroughCommandHelpText() override;
         std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
@@ -84,6 +92,13 @@ namespace Targets::RiscV::Wch
         const TargetBitFieldDescriptor& flashStatusBootLockFieldDescriptor;
         const TargetBitFieldDescriptor& flashStatusBootModeFieldDescriptor;
 
+        const TargetPeripheralDescriptor rccPeripheralDescriptor;
+        const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor;
+
+        std::vector<TargetPadDescriptor> padDescriptors;
+        std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors;
+        std::map<TargetPadId, GpioPadDescriptor> gpioPadDescriptorsByPadId;
+
         const TargetMemorySegmentDescriptor& resolveAliasedMemorySegment();
         TargetMemoryAddress transformMappedAddress(
             TargetMemoryAddress address,
@@ -94,5 +109,11 @@ namespace Targets::RiscV::Wch
         void unlockBootModeBitField();
         void enableBootMode();
         void enableUserMode();
+
+        static std::map<TargetPadId, GpioPadDescriptor> generateGpioPadDescriptorMapping(
+            const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor,
+            const std::vector<TargetPeripheralDescriptor>& portPeripheralDescriptors,
+            const std::vector<TargetPadDescriptor>& padDescriptors
+        );
     };
 }

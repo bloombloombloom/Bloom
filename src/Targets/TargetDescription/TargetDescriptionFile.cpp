@@ -325,11 +325,11 @@ namespace Targets::TargetDescription
     std::map<std::string, TargetPadDescriptor> TargetDescriptionFile::targetPadDescriptorsByKey() const {
         auto output = std::map<std::string, TargetPadDescriptor>{};
 
-        const auto gpioPadKeys = this->getGpioPadKeys();
+        const auto gpioPeripheralSignalPadKeys = this->getGpioPeripheralSignalPadKeys();
         for (const auto& [key, pad] : this->padsByKey) {
             output.emplace(
                 key,
-                TargetDescriptionFile::targetPadDescriptorFromPad(pad, gpioPadKeys)
+                TargetDescriptionFile::targetPadDescriptorFromPad(pad, gpioPeripheralSignalPadKeys)
             );
         }
 
@@ -357,6 +357,17 @@ namespace Targets::TargetDescription
                 key,
                 TargetDescriptionFile::targetVariantDescriptorFromVariant(variant)
             );
+        }
+
+        return output;
+    }
+
+    std::vector<TargetPadDescriptor> TargetDescriptionFile::targetPadDescriptors() const {
+        auto output = std::vector<TargetPadDescriptor>{};
+
+        const auto gpioPeripheralSignalPadKeys = this->getGpioPeripheralSignalPadKeys();
+        for (const auto& [key, pad] : this->padsByKey) {
+            output.emplace_back(TargetDescriptionFile::targetPadDescriptorFromPad(pad, gpioPeripheralSignalPadKeys));
         }
 
         return output;
@@ -505,7 +516,7 @@ namespace Targets::TargetDescription
         return attribute->get();
     }
 
-    std::set<std::string> TargetDescriptionFile::getGpioPadKeys() const {
+    std::set<std::string> TargetDescriptionFile::getGpioPeripheralSignalPadKeys() const {
         auto output = std::set<std::string>{};
         for (const auto* peripheral : this->getGpioPeripherals()) {
             for (const auto& signal : peripheral->sigs) {
@@ -984,6 +995,7 @@ namespace Targets::TargetDescription
             memorySegment.executable,
             memorySegment.access,
             memorySegment.access,
+            false,
             memorySegment.pageSize
         };
     }
@@ -1153,10 +1165,10 @@ namespace Targets::TargetDescription
 
     TargetPadDescriptor TargetDescriptionFile::targetPadDescriptorFromPad(
         const Pad& pad,
-        const std::set<std::string>& gpioPadKeys
+        const std::set<std::string>& gpioPeripheralSignalPadKeys
     ) {
-        static const auto resolvePadType = [&gpioPadKeys] (const Pad& pad) -> TargetPadType {
-            if (gpioPadKeys.contains(pad.key)) {
+        const auto resolvePadType = [&gpioPeripheralSignalPadKeys] (const Pad& pad) -> TargetPadType {
+            if (gpioPeripheralSignalPadKeys.contains(pad.key)) {
                 return TargetPadType::GPIO;
             }
 

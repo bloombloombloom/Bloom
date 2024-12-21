@@ -38,6 +38,19 @@ namespace Targets::RiscV::Wch
         , flashStatusRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "statr"))
         , flashStatusBootLockFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"))
         , flashStatusBootModeFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"))
+        , rccPeripheralDescriptor(this->targetDescriptionFile.getTargetPeripheralDescriptor("rcc"))
+        , portPeripheralClockEnableRegisterDescriptor(
+            this->rccPeripheralDescriptor.getRegisterDescriptor("rcc", "apb2pcenr")
+        )
+        , padDescriptors(this->targetDescriptionFile.targetPadDescriptors())
+        , gpioPortPeripheralDescriptors(this->targetDescriptionFile.gpioPortPeripheralDescriptors())
+        , gpioPadDescriptorsByPadId(
+            WchRiscV::generateGpioPadDescriptorMapping(
+                this->portPeripheralClockEnableRegisterDescriptor,
+                this->gpioPortPeripheralDescriptors,
+                this->padDescriptors
+            )
+        )
     {
         if (
             this->targetConfig.programSegmentKey.has_value()
@@ -363,6 +376,112 @@ namespace Targets::RiscV::Wch
         return programCounter;
     }
 
+    TargetGpioPadDescriptorAndStatePairs WchRiscV::getGpioPadStates(const TargetPadDescriptors& padDescriptors) {
+        auto cachedRegsById = std::unordered_map<TargetRegisterId, DynamicRegisterValue>{};
+        const auto readGpioReg = [this, &cachedRegsById] (const TargetRegisterDescriptor& descriptor)
+            -> DynamicRegisterValue& {
+            auto cachedRegIt = cachedRegsById.find(descriptor.id);
+            if (cachedRegIt == cachedRegsById.end()) {
+                cachedRegIt = cachedRegsById.emplace(
+                    descriptor.id,
+                    this->readRegisterDynamicValue(descriptor)
+                ).first;
+            }
+
+            return cachedRegIt->second;
+        };
+
+        auto output = TargetGpioPadDescriptorAndStatePairs{};
+
+        for (const auto* padDescriptor : padDescriptors) {
+            const auto gpioPadDescriptorIt = this->gpioPadDescriptorsByPadId.find(padDescriptor->id);
+            if (gpioPadDescriptorIt == this->gpioPadDescriptorsByPadId.end()) {
+                continue;
+            }
+
+            const auto& gpioPadDescriptor = gpioPadDescriptorIt->second;
+
+            const auto& portClockEnableRegisterValue = readGpioReg(this->portPeripheralClockEnableRegisterDescriptor);
+            if (!portClockEnableRegisterValue.bitFieldAs<bool>(gpioPadDescriptor.peripheralClockEnableBitFieldDescriptor)) {
+                // The port peripheral is currently disabled. We cannot obtain any meaningful state for this pad
+                continue;
+            }
+
+            const auto& configRegisterValue = readGpioReg(gpioPadDescriptor.configRegisterDescriptor);
+            const auto padMode = configRegisterValue.bitField(gpioPadDescriptor.modeBitFieldDescriptor);
+
+            if (padMode == static_cast<std::uint8_t>(GpioPadDirection::INPUT)) {
+                output.emplace_back(
+                    TargetGpioPadDescriptorAndStatePair{
+                        *padDescriptor,
+                        TargetGpioPadState{
+                            readGpioReg(gpioPadDescriptor.inputDataRegisterDescriptor).bitFieldAs<bool>(
+                                gpioPadDescriptor.inputDataBitFieldDescriptor
+                            ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
+                            TargetGpioPadState::DataDirection::INPUT
+                        }
+                    }
+                );
+
+                continue;
+            }
+
+            output.emplace_back(
+                TargetGpioPadDescriptorAndStatePair{
+                    *padDescriptor,
+                    TargetGpioPadState{
+                        readGpioReg(gpioPadDescriptor.outputDataRegisterDescriptor).bitFieldAs<bool>(
+                            gpioPadDescriptor.outputDataBitFieldDescriptor
+                        ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
+                        TargetGpioPadState::DataDirection::OUTPUT
+                    }
+                }
+            );
+        }
+
+        return output;
+    }
+
+    void WchRiscV::setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) {
+        const auto gpioPadDescriptorIt = this->gpioPadDescriptorsByPadId.find(padDescriptor.id);
+        if (gpioPadDescriptorIt == this->gpioPadDescriptorsByPadId.end()) {
+            throw Exceptions::Exception{"Unknown pad"};
+        }
+
+        const auto& gpioPadDescriptor = gpioPadDescriptorIt->second;
+
+        auto configRegisterValue = this->readRegisterDynamicValue(gpioPadDescriptor.configRegisterDescriptor);
+        const auto currentDir = configRegisterValue.bitField(
+            gpioPadDescriptor.modeBitFieldDescriptor
+        ) == static_cast<std::uint8_t>(GpioPadDirection::INPUT)
+            ? TargetGpioPadState::DataDirection::INPUT
+            : TargetGpioPadState::DataDirection::OUTPUT;
+
+        if (currentDir != state.direction) {
+            configRegisterValue.setBitField(
+                gpioPadDescriptor.modeBitFieldDescriptor,
+                static_cast<std::uint8_t>(
+                    state.direction == TargetGpioPadState::DataDirection::INPUT
+                        ? GpioPadDirection::INPUT
+                        : GpioPadDirection::OUTPUT
+                )
+            );
+
+            this->writeRegister(gpioPadDescriptor.configRegisterDescriptor, configRegisterValue.data());
+        }
+
+        if (state.direction == TargetGpioPadState::DataDirection::OUTPUT) {
+            auto outDataRegisterValue = this->readRegisterDynamicValue(gpioPadDescriptor.outputDataRegisterDescriptor);
+            outDataRegisterValue.setBitField(
+                gpioPadDescriptor.outputDataBitFieldDescriptor,
+                state.value == TargetGpioPadState::State::HIGH
+                    ? 0x01
+                    : 0x00
+            );
+            this->writeRegister(gpioPadDescriptor.outputDataRegisterDescriptor, outDataRegisterValue.data());
+        }
+    }
+
     std::string WchRiscV::passthroughCommandHelpText() {
         using Services::StringService;
 
@@ -573,5 +692,171 @@ namespace Targets::RiscV::Wch
         this->writeRegister(this->flashStatusRegisterDescriptor, statusRegister.data());
 
         this->reset();
+    }
+
+    std::map<TargetPadId, GpioPadDescriptor> WchRiscV::generateGpioPadDescriptorMapping(
+        const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor,
+        const std::vector<TargetPeripheralDescriptor>& portPeripheralDescriptors,
+        const std::vector<TargetPadDescriptor>& padDescriptors
+    ) {
+        static const auto findConfigBitField = [] (
+            const TargetPadDescriptor& padDescriptor,
+            const TargetRegisterDescriptor& configRegisterDescriptor
+        ) -> std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>> {
+            return padDescriptor.key.size() >= 3
+                ? configRegisterDescriptor.tryGetBitFieldDescriptor("cnf" + padDescriptor.key.substr(2))
+                : std::nullopt;
+        };
+
+        static const auto findModeBitField = [] (
+            const TargetPadDescriptor& padDescriptor,
+            const TargetRegisterDescriptor& configRegisterDescriptor
+        ) -> std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>> {
+            return padDescriptor.key.size() >= 3
+                ? configRegisterDescriptor.tryGetBitFieldDescriptor("mode" + padDescriptor.key.substr(2))
+                : std::nullopt;
+        };
+
+        static const auto findInputDataBitField = [] (
+            const TargetPadDescriptor& padDescriptor,
+            const TargetRegisterDescriptor& inputDataRegisterDescriptor
+        ) -> std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>> {
+            return padDescriptor.key.size() >= 3
+               ? inputDataRegisterDescriptor.tryGetBitFieldDescriptor("indr" + padDescriptor.key.substr(2))
+               : std::nullopt;
+        };
+
+        static const auto findOutputDataBitField = [] (
+            const TargetPadDescriptor& padDescriptor,
+            const TargetRegisterDescriptor& outputDataRegisterDescriptor
+        ) -> std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>> {
+            return padDescriptor.key.size() >= 3
+               ? outputDataRegisterDescriptor.tryGetBitFieldDescriptor("odr" + padDescriptor.key.substr(2))
+               : std::nullopt;
+        };
+
+        auto output = std::map<TargetPadId, GpioPadDescriptor>{};
+
+        for (const auto& padDesc : padDescriptors) {
+            if (padDesc.type != TargetPadType::GPIO) {
+                continue;
+            }
+
+            for (const auto& peripheralDesc : portPeripheralDescriptors) {
+                if (
+                    !peripheralDesc.tryGetFirstSignalDescriptor(padDesc.key).has_value()
+                    || peripheralDesc.key.size() < 5
+                    || peripheralDesc.key.find("port") != 0
+                ) {
+                    continue;
+                }
+
+                const auto portLetter = peripheralDesc.key.substr(4, 1);
+                const auto peripheralClockEnableBitFieldDescOpt = portPeripheralClockEnableRegisterDescriptor.tryGetBitFieldDescriptor(
+                    "iop" + portLetter + "en"
+                );
+
+                if (!peripheralClockEnableBitFieldDescOpt.has_value()) {
+                    continue;
+                }
+
+                auto configRegisterDescOpt = std::optional<std::reference_wrapper<const TargetRegisterDescriptor>>{};
+                auto configBitFieldDescOpt = std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>>{};
+                auto modeBitFieldDescOpt = std::optional<std::reference_wrapper<const TargetBitFieldDescriptor>>{};
+
+                const auto portGroupDescOpt = peripheralDesc.tryGetRegisterGroupDescriptor("port");
+                if (!portGroupDescOpt.has_value()) {
+                    continue;
+                }
+
+                const auto& portGroupDescriptor = portGroupDescOpt->get();
+
+                const auto configLowRegisterDescOpt = portGroupDescriptor.tryGetRegisterDescriptor("cfglr");
+                const auto configHighRegisterDescOpt = portGroupDescriptor.tryGetRegisterDescriptor("cfghr");
+                const auto configExtendedRegisterDescOpt = portGroupDescriptor.tryGetRegisterDescriptor("cfgxr");
+
+                if (configLowRegisterDescOpt.has_value()) {
+                    const auto& configLowRegisterDescriptor = configLowRegisterDescOpt->get();
+
+                    configBitFieldDescOpt = findConfigBitField(padDesc, configLowRegisterDescriptor);
+                    modeBitFieldDescOpt = findModeBitField(padDesc, configLowRegisterDescriptor);
+
+                    if (configBitFieldDescOpt.has_value()) {
+                        configRegisterDescOpt = configLowRegisterDescOpt;
+                    }
+                }
+
+                if (
+                    (!configBitFieldDescOpt.has_value() || !modeBitFieldDescOpt.has_value())
+                    && configHighRegisterDescOpt.has_value()
+                ) {
+                    const auto& configHighRegisterDescriptor = configHighRegisterDescOpt->get();
+
+                    configBitFieldDescOpt = findConfigBitField(padDesc, configHighRegisterDescriptor);
+                    modeBitFieldDescOpt = findModeBitField(padDesc, configHighRegisterDescriptor);
+
+                    if (configBitFieldDescOpt.has_value()) {
+                        configRegisterDescOpt = configHighRegisterDescOpt;
+                    }
+                }
+
+                if (
+                    (!configBitFieldDescOpt.has_value() || !modeBitFieldDescOpt.has_value())
+                    && configExtendedRegisterDescOpt.has_value()
+                ) {
+                    const auto& configExtendedRegisterDescriptor = configExtendedRegisterDescOpt->get();
+
+                    configBitFieldDescOpt = findConfigBitField(padDesc, configExtendedRegisterDescriptor);
+                    modeBitFieldDescOpt = findModeBitField(padDesc, configExtendedRegisterDescriptor);
+
+                    if (configBitFieldDescOpt.has_value()) {
+                        configRegisterDescOpt = configExtendedRegisterDescOpt;
+                    }
+                }
+
+                if (
+                    !configRegisterDescOpt.has_value()
+                    || !configBitFieldDescOpt.has_value()
+                    || !modeBitFieldDescOpt.has_value()
+                ) {
+                    continue;
+                }
+
+                const auto inputDataRegisterDescOpt = portGroupDescriptor.tryGetRegisterDescriptor("indr");
+                const auto outputDataRegisterDescOpt = portGroupDescriptor.tryGetRegisterDescriptor("outdr");
+
+                if (!inputDataRegisterDescOpt.has_value() || !outputDataRegisterDescOpt.has_value()) {
+                    continue;
+                }
+
+                const auto& inputDataRegisterDescriptor = inputDataRegisterDescOpt->get();
+                const auto& outputDataRegisterDescriptor = outputDataRegisterDescOpt->get();
+
+                const auto inputBitFieldDescOpt = findInputDataBitField(padDesc, inputDataRegisterDescriptor);
+                const auto outputBitFieldDescOpt = findOutputDataBitField(padDesc, outputDataRegisterDescriptor);
+
+                if (!inputBitFieldDescOpt.has_value() || !outputBitFieldDescOpt.has_value()) {
+                    continue;
+                }
+
+                output.emplace(
+                    padDesc.id,
+                    GpioPadDescriptor{
+                        .peripheralClockEnableBitFieldDescriptor = peripheralClockEnableBitFieldDescOpt->get(),
+                        .configRegisterDescriptor = configRegisterDescOpt->get(),
+                        .configBitFieldDescriptor = configBitFieldDescOpt->get(),
+                        .modeBitFieldDescriptor = modeBitFieldDescOpt->get(),
+                        .inputDataRegisterDescriptor = inputDataRegisterDescriptor,
+                        .inputDataBitFieldDescriptor = inputBitFieldDescOpt->get(),
+                        .outputDataRegisterDescriptor = outputDataRegisterDescriptor,
+                        .outputDataBitFieldDescriptor = outputBitFieldDescOpt->get(),
+                    }
+                );
+
+                break;
+            }
+        }
+
+        return output;
     }
 }

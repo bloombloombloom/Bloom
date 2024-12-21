@@ -53,6 +53,10 @@ namespace Targets
             const std::string& registerKey
         ) const;
 
+        [[nodiscard]] std::optional<
+            std::reference_wrapper<const TargetPeripheralSignalDescriptor>
+        > tryGetFirstSignalDescriptor(std::string_view padKey) const;
+
         [[nodiscard]] TargetPeripheralDescriptor clone() const;
     };
 }

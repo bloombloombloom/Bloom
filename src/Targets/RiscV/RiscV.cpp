@@ -287,14 +287,6 @@ namespace Targets::RiscV
         });
     }
 
-    TargetGpioPadDescriptorAndStatePairs RiscV::getGpioPadStates(const TargetPadDescriptors& padDescriptors) {
-        return {};
-    }
-
-    void RiscV::setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) {
-
-    }
-
     void RiscV::enableProgrammingMode() {
         this->riscVDebugInterface->enableProgrammingMode();
         this->programmingMode = true;

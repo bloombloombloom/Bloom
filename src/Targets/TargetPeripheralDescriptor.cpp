@@ -66,6 +66,18 @@ namespace Targets
         return this->getRegisterGroupDescriptor(groupKey).getRegisterDescriptor(registerKey);
     }
 
+    std::optional<
+        std::reference_wrapper<const TargetPeripheralSignalDescriptor>
+    > TargetPeripheralDescriptor::tryGetFirstSignalDescriptor(std::string_view padKey) const {
+        for (const auto& signalDescriptor : this->signalDescriptors) {
+            if (signalDescriptor.padKey == padKey) {
+                return std::cref(signalDescriptor);
+            }
+        }
+
+        return std::nullopt;
+    }
+
     TargetPeripheralDescriptor TargetPeripheralDescriptor::clone() const {
         auto output = TargetPeripheralDescriptor{
             this->key,

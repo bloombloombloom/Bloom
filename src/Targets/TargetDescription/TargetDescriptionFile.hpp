@@ -130,7 +130,6 @@ namespace Targets::TargetDescription
         [[nodiscard]] std::set<const Peripheral*> getModulePeripherals(const std::string& moduleKey) const;
         [[nodiscard]] std::set<const Peripheral*> getGpioPeripherals() const;
 
-
         [[nodiscard]] std::optional<TargetMemorySegmentDescriptor> tryGetTargetMemorySegmentDescriptor(
             std::string_view addressSpaceKey,
             std::string_view segmentKey
@@ -150,6 +149,7 @@ namespace Targets::TargetDescription
         [[nodiscard]] std::map<std::string, TargetPadDescriptor> targetPadDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetPinoutDescriptor> targetPinoutDescriptorsByKey() const;
         [[nodiscard]] std::map<std::string, TargetVariantDescriptor> targetVariantDescriptorsByKey() const;
+        [[nodiscard]] std::vector<TargetPadDescriptor> targetPadDescriptors() const;
         [[nodiscard]] std::vector<TargetPeripheralDescriptor> gpioPortPeripheralDescriptors() const;
 
     protected:
@@ -180,7 +180,7 @@ namespace Targets::TargetDescription
         ) const;
         [[nodiscard]] const std::string& getDeviceAttribute(const std::string& attributeName) const;
 
-        [[nodiscard]] std::set<std::string> getGpioPadKeys() const;
+        [[nodiscard]] std::set<std::string> getGpioPeripheralSignalPadKeys() const;
 
         static std::optional<std::string> tryGetAttribute(const QDomElement& element, const QString& attributeName);
         static std::string getAttribute(const QDomElement& element, const QString& attributeName);
@@ -244,7 +244,7 @@ namespace Targets::TargetDescription
 
         static TargetPadDescriptor targetPadDescriptorFromPad(
             const Pad& pad,
-            const std::set<std::string>& gpioPadKeys
+            const std::set<std::string>& gpioPeripheralSignalPadKeys
         );
 
         static TargetPinoutDescriptor targetPinoutDescriptorFromPinout(const Pinout& pinout);
