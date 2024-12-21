@@ -77,6 +77,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         , config(config)
         , targetDescriptionFile(targetDescriptionFile)
         , targetConfig(targetConfig)
+        , sysAddressSpaceDescriptor(targetDescriptionFile.getSystemAddressSpaceDescriptor())
     {}
 
     void DebugTranslator::activate() {
@@ -437,6 +438,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
+        if (addressSpaceDescriptor != this->sysAddressSpaceDescriptor) {
+            throw Exceptions::TargetOperationFailure{"Unsupported address space"};
+        }
+
         // TODO: excluded addresses
 
         constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
@@ -474,6 +479,10 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemoryAddress startAddress,
         TargetMemoryBufferSpan buffer
     ) {
+        if (addressSpaceDescriptor != this->sysAddressSpaceDescriptor) {
+            throw Exceptions::TargetOperationFailure{"Unsupported address space"};
+        }
+
         constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
         if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {

@@ -115,6 +115,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         const ::Targets::RiscV::TargetDescriptionFile& targetDescriptionFile;
         const ::Targets::RiscV::RiscVTargetConfig& targetConfig;
 
+        const ::Targets::TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
+
         DebugModuleDescriptor debugModuleDescriptor = {};
 
         DebugModule::HartIndex selectedHartIndex = 0;
