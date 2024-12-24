@@ -21,8 +21,6 @@ namespace DebugServer
 {
     /**
      * The DebugServer exposes the connected target to third-party debugging software such as IDEs.
-     *
-     * See documentation in src/DebugServer/README.md for more.
      */
     class DebugServerComponent: public Thread
     {
@@ -58,8 +56,7 @@ namespace DebugServer
 
         /**
          * This EventFdNotifier is injected into this->eventListener. It can be used by server implementations to
-         * interrupt blocking I/O calls upon an event being triggered. For more, see the "Servicing events" section in
-         * the DebugServer documentation (src/DebugServer/README.md).
+         * interrupt blocking I/O calls upon an event being triggered.
          */
         EventFdNotifier interruptEventNotifier = EventFdNotifier();
 

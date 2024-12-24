@@ -6,8 +6,6 @@ namespace DebugServer
 {
     /**
      * Every debug server must implement this interface.
-     *
-     * See documentation in src/DebugServer/README.md for more.
      */
     class ServerInterface
     {
@@ -32,7 +30,7 @@ namespace DebugServer
          *
          * For servicing DebugServer events, the implementation should either service them here or return from here
          * upon an event being triggered. Returning from this function will allow DebugServerComponent::run() to
-         * process any pending events. See the DebugServer documentation in src/DebugServer/README.md for more.
+         * process any pending events.
          */
         virtual void run() = 0;
 

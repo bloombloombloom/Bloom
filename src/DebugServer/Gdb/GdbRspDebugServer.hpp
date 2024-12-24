@@ -305,8 +305,6 @@ namespace DebugServer::Gdb
          * EventFdNotifier object for interrupting blocking I/O operations.
          *
          * Extracted from this->eventListener.
-         *
-         * See documentation in src/DebugServer/README.md for more.
          */
         EventFdNotifier& interruptEventNotifier;
 
