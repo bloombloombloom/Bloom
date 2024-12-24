@@ -128,6 +128,12 @@ namespace Targets
         return descriptor->get();
     }
 
+    TargetPeripheralDescriptor& TargetDescriptor::getPeripheralDescriptor(const std::string& key) {
+        return const_cast<TargetPeripheralDescriptor&>(
+            const_cast<const TargetDescriptor*>(this)->getPeripheralDescriptor(key)
+        );
+    }
+
     std::optional<
         std::reference_wrapper<const TargetPadDescriptor>
     > TargetDescriptor::tryGetPadDescriptor(const std::string& key) const {

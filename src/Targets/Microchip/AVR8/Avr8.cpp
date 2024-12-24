@@ -280,24 +280,15 @@ namespace Targets::Microchip::Avr8
         const auto& registerFileAddressSpace = this->targetDescriptionFile.getRegisterFileAddressSpace();
         const auto& registerFileMemorySegment = registerFileAddressSpace.getMemorySegment("gp_registers");
 
-        auto& gpPeripheral = descriptor.peripheralDescriptorsByKey.emplace(
-            "cpu_gpr",
-            TargetPeripheralDescriptor{
-                "cpu_gpr",
-                "GPRs",
-                "CPU General Purpose Registers",
-                {},
-                {}
-            }
-        ).first->second;
+        auto& cpuPeripheral = descriptor.getPeripheralDescriptor("cpu");
 
-        auto& gpRegisterGroup = gpPeripheral.registerGroupDescriptorsByKey.emplace(
+        auto& gpRegisterGroup = cpuPeripheral.registerGroupDescriptorsByKey.emplace(
             "gpr",
             TargetRegisterGroupDescriptor{
                 "gpr",
                 "gpr",
-                "CPU General Purpose",
-                gpPeripheral.key,
+                "GPR",
+                cpuPeripheral.key,
                 registerFileAddressSpace.key,
                 std::nullopt,
                 {},
@@ -313,7 +304,7 @@ namespace Targets::Microchip::Avr8
                     key,
                     "R" + std::to_string(i),
                     gpRegisterGroup.absoluteKey,
-                    gpPeripheral.key,
+                    cpuPeripheral.key,
                     registerFileAddressSpace.key,
                     registerFileMemorySegment.startAddress + i,
                     1,

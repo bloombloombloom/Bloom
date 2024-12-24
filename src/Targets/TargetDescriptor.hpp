@@ -87,6 +87,7 @@ namespace Targets
         ) const;
 
         const TargetPeripheralDescriptor& getPeripheralDescriptor(const std::string& key) const;
+        TargetPeripheralDescriptor& getPeripheralDescriptor(const std::string& key);
 
         std::optional<std::reference_wrapper<const TargetPadDescriptor>> tryGetPadDescriptor(
                 const std::string& key

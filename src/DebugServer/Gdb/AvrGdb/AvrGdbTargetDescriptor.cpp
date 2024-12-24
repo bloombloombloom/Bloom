@@ -18,7 +18,7 @@ namespace DebugServer::Gdb::AvrGdb
         , eepromMemorySegmentDescriptor(this->eepromAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_eeprom"))
         , sramMemorySegmentDescriptor(this->sramAddressSpaceDescriptor.getMemorySegmentDescriptor("internal_ram"))
         , gpRegistersMemorySegmentDescriptor(this->gpRegistersAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
-        , cpuGpPeripheralDescriptor(targetDescriptor.getPeripheralDescriptor("cpu_gpr"))
+        , cpuGpPeripheralDescriptor(targetDescriptor.getPeripheralDescriptor("cpu"))
         , cpuGpRegisterGroupDescriptor(this->cpuGpPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))
     {
         /*
