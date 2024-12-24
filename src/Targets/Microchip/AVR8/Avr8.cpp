@@ -335,6 +335,14 @@ namespace Targets::Microchip::Avr8
             }
         }
 
+        for (auto& [addressSpaceKey, addressSpaceDescriptor] : descriptor.addressSpaceDescriptorsByKey) {
+            for (auto& [segmentKey, segmentDescriptor] : addressSpaceDescriptor.segmentDescriptorsByKey) {
+                if (segmentDescriptor.type == TargetMemorySegmentType::FLASH) {
+                    segmentDescriptor.debugModeAccess.writeable = false;
+                }
+            }
+        }
+
         // Make RAM, FLASH and EEPROM available for inspection the Insight GUI.
         descriptor.getMemorySegmentDescriptor("data", "internal_ram").inspectionEnabled = true;
         descriptor.getMemorySegmentDescriptor("prog", "internal_program_memory").inspectionEnabled = true;
