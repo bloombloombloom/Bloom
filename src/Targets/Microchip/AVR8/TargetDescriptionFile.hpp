@@ -14,11 +14,6 @@
 
 namespace Targets::Microchip::Avr8
 {
-    /**
-     * AVR8 TDF
-     *
-     * For more information of TDFs, see src/Targets/TargetDescription/README.md
-     */
     class TargetDescriptionFile: public TargetDescription::TargetDescriptionFile
     {
     public:

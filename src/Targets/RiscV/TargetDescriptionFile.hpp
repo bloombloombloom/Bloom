@@ -6,11 +6,6 @@
 
 namespace Targets::RiscV
 {
-    /**
-     * Represents an RISC-V TDF.
-     *
-     * For more information of TDFs, see src/Targets/TargetDescription/README.md
-     */
     class TargetDescriptionFile: public Targets::TargetDescription::TargetDescriptionFile
     {
     public:
