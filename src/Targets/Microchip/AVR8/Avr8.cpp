@@ -109,10 +109,7 @@ namespace Targets::Microchip::Avr8
     }
 
     bool Avr8::supportsDebugTool(DebugTool* debugTool) {
-        return debugTool->getAvr8DebugInterface(
-            this->targetDescriptionFile,
-            this->targetConfig
-        ) != nullptr;
+        return debugTool->getAvr8DebugInterface(this->targetDescriptionFile, this->targetConfig) != nullptr;
     }
 
     void Avr8::setDebugTool(DebugTool* debugTool) {
@@ -309,7 +306,7 @@ namespace Targets::Microchip::Avr8
                     registerFileMemorySegment.startAddress + i,
                     1,
                     TargetRegisterType::GENERAL_PURPOSE_REGISTER,
-                    TargetRegisterAccess(true, true),
+                    TargetRegisterAccess{true, true},
                     std::nullopt,
                     {}
                 }

@@ -17,10 +17,7 @@
 
 namespace Targets::RiscV
 {
-    RiscV::RiscV(
-        const TargetConfig& targetConfig,
-        const TargetDescriptionFile& targetDescriptionFile
-    )
+    RiscV::RiscV(const TargetConfig& targetConfig, const TargetDescriptionFile& targetDescriptionFile)
         : targetConfig(RiscVTargetConfig{targetConfig})
         , targetDescriptionFile(targetDescriptionFile)
         , isaDescriptor(this->targetDescriptionFile.getIsaDescriptor())
@@ -98,7 +95,7 @@ namespace Targets::RiscV
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
                 ) {
                     throw Exceptions::Exception{
-                        "Cannot access CPU register \"" + descriptor->key + "\" - unknown memory segment"
+                        "Cannot access CPU register `" + descriptor->key + "` - unknown memory segment"
                     };
                 }
 
@@ -108,7 +105,7 @@ namespace Targets::RiscV
 
             if (descriptor->addressSpaceId != this->sysAddressSpaceDescriptor.id) {
                 throw Exceptions::Exception{
-                    "Cannot access register \"" + descriptor->key + "\" - unknown address space"
+                    "Cannot access register `" + descriptor->key + "` - unknown address space"
                 };
             }
 
@@ -152,9 +149,7 @@ namespace Targets::RiscV
             }
 
             if (descriptor.addressSpaceId != this->sysAddressSpaceDescriptor.id) {
-                throw Exceptions::Exception{
-                    "Cannot access register \"" + descriptor.key + "\" - unknown address space"
-                };
+                throw Exceptions::Exception{"Cannot access register `" + descriptor.key + "` - unknown address space"};
             }
 
             auto value = pair.second;
@@ -366,14 +361,13 @@ namespace Targets::RiscV
 
         if (segmentDescriptors.empty()) {
             throw Exceptions::Exception{
-                "Cannot access system register \"" + regDescriptor.key + "\" - unknown memory segment"
+                "Cannot access system register `" + regDescriptor.key + "` - unknown memory segment"
             };
         }
 
         if (segmentDescriptors.size() != 1) {
             throw Exceptions::Exception{
-                "Cannot access system register \"" + regDescriptor.key
-                    + "\" - register spans multiple memory segments"
+                "Cannot access system register `" + regDescriptor.key + "` - register spans multiple memory segments"
             };
         }
 
@@ -445,7 +439,7 @@ namespace Targets::RiscV
             TargetRegisterGroupDescriptor{
                 "gpr",
                 "gpr",
-                "General Purpose Registers",
+                "GPR",
                 cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 std::nullopt,
@@ -467,7 +461,7 @@ namespace Targets::RiscV
                     gprMemorySegmentDescriptor.addressRange.startAddress + i,
                     4,
                     TargetRegisterType::GENERAL_PURPOSE_REGISTER,
-                    TargetRegisterAccess(true, true),
+                    TargetRegisterAccess{true, true},
                     std::nullopt,
                     {}
                 }
@@ -479,7 +473,7 @@ namespace Targets::RiscV
             TargetRegisterGroupDescriptor{
                 "csr",
                 "csr",
-                "Control Status Registers",
+                "CSR",
                 cpuPeripheralDescriptor.key,
                 addressSpaceDescriptor.key,
                 std::nullopt,
@@ -499,7 +493,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0xF12,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, false),
+                TargetRegisterAccess{true, false},
                 "Architecture ID",
                 {}
             }
@@ -516,7 +510,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0xF13,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, false),
+                TargetRegisterAccess{true, false},
                 "Implementation ID",
                 {}
             }
@@ -533,7 +527,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x300,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine status",
                 {}
             }
@@ -550,7 +544,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x301,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "ISA and extensions",
                 {}
             }
@@ -567,7 +561,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x305,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine trap-handler base address",
                 {}
             }
@@ -584,7 +578,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x306,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine counter enable",
                 {}
             }
@@ -601,7 +595,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x340,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Scratch register for machine trap handlers",
                 {}
             }
@@ -618,7 +612,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x341,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine exception program counter",
                 {}
             }
@@ -635,7 +629,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x342,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine trap cause",
                 {}
             }
@@ -652,7 +646,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x343,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine bad address or instruction",
                 {}
             }
@@ -669,7 +663,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x344,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Machine interrupt pending",
                 {}
             }
@@ -686,7 +680,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B0,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Debug control and status",
                 {}
             }
@@ -703,7 +697,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B1,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Debug program counter",
                 {}
             }
@@ -720,7 +714,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B2,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Debug scratch 0",
                 {}
             }
@@ -737,7 +731,7 @@ namespace Targets::RiscV
                 csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B3,
                 4,
                 TargetRegisterType::OTHER,
-                TargetRegisterAccess(true, true),
+                TargetRegisterAccess{true, true},
                 "Debug scratch 1",
                 {}
             }
