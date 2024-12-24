@@ -12,24 +12,24 @@ namespace Widgets
 
     FocusedRegionItem::FocusedRegionItem(
         const FocusedMemoryRegion& region,
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         QWidget* parent
     )
-        : RegionItem(region, memoryDescriptor, parent)
+        : RegionItem(region, memorySegmentDescriptor, parent)
         , memoryRegion(region)
     {
-        auto formUiFile = QFile(
+        auto formUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
-                    + "/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui"
+                + "/MemoryRegionManager/UiFiles/FocusedMemoryRegionForm.ui"
             )
-        );
+        };
 
         if (!formUiFile.open(QFile::ReadOnly)) {
-            throw Exceptions::Exception("Failed to open focused region item form UI file");
+            throw Exceptions::Exception{"Failed to open focused region item form UI file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->formWidget = uiLoader.load(&formUiFile, this);
 
         this->initFormInputs();
@@ -38,10 +38,10 @@ namespace Widgets
     void FocusedRegionItem::applyChanges() {
         this->memoryRegion.name = this->nameInput->text();
 
-        const auto inputAddressRange = TargetMemoryAddressRange(
+        const auto inputAddressRange = Targets::TargetMemoryAddressRange{
             this->startAddressInput->text().toUInt(nullptr, 16),
             this->endAddressInput->text().toUInt(nullptr, 16)
-        );
+        };
         this->memoryRegion.addressRangeInputType = this->getSelectedAddressInputType();
         this->memoryRegion.addressRange = this->memoryRegion.addressRangeInputType == AddressType::RELATIVE
             ? this->convertRelativeToAbsoluteAddressRange(inputAddressRange)

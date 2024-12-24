@@ -6,7 +6,6 @@
 #include <map>
 #include <utility>
 #include <QThread>
-#include <QTimer>
 
 #include "src/Helpers/Thread.hpp"
 #include "src/Services/PathService.hpp"
@@ -75,25 +74,20 @@ private:
 
     InsightProjectSettings& insightProjectSettings;
 
-    Services::TargetControllerService targetControllerService = Services::TargetControllerService();
+    Services::TargetControllerService targetControllerService = {};
 
-    Targets::TargetDescriptor targetDescriptor = this->targetControllerService.getTargetDescriptor();
+    const Targets::TargetDescriptor& targetDescriptor;
+    const Targets::TargetState& targetState;
 
     QString globalStylesheet;
 
     std::map<decltype(InsightWorker::id), std::pair<InsightWorker*, QThread*>> insightWorkersById;
     InsightWindow* mainWindow = nullptr;
 
-    Targets::TargetState lastTargetState = Targets::TargetState::UNKNOWN;
-    bool targetStepping = false;
-    QTimer* targetResumeTimer = nullptr;
-
     InsightSignals* insightSignals = InsightSignals::instance();
 
-    void refreshTargetState();
     void onInsightWindowDestroyed();
-    void onTargetStoppedEvent(const Events::TargetExecutionStopped& event);
-    void onTargetResumedEvent(const Events::TargetExecutionResumed& event);
+    void onTargetStateChangedEvent(const Events::TargetStateChanged& event);
     void onTargetResetEvent(const Events::TargetReset& event);
     void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
     void onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& event);

@@ -3,8 +3,14 @@
 #include <QWidget>
 #include <utility>
 #include <optional>
+#include <functional>
 
 #include "src/Targets/TargetPinDescriptor.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
+#include "src/Targets/TargetGpioPadState.hpp"
+
+#include "src/Services/StringService.hpp"
 
 namespace Widgets::InsightTargetWidgets
 {
@@ -13,39 +19,37 @@ namespace Widgets::InsightTargetWidgets
         Q_OBJECT
 
     public:
+        const Targets::TargetPinDescriptor& pinDescriptor;
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor;
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor;
+        std::optional<Targets::TargetGpioPadState> padState;
+        bool padStateChanged = false;
+
         TargetPinWidget(
-            Targets::TargetPinDescriptor pinDescriptor,
-            Targets::TargetVariant targetVariant,
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
             QWidget* parent
         );
 
         int getPinNumber() const {
-            return this->pinDescriptor.number;
+            return Services::StringService::toUint8(this->pinDescriptor.position, 10);
         }
 
-        const std::optional<Targets::TargetPinState>& getPinState() const {
-            return this->pinState;
+        const std::optional<Targets::TargetGpioPadState>& getPadState() const {
+            return this->padState;
         }
 
-        virtual void updatePinState(const Targets::TargetPinState& pinState) {
-            this->pinStateChanged = !this->pinState.has_value()
-                || this->pinState->ioState != pinState.ioState
-                || this->pinState->ioDirection != pinState.ioDirection;
-
-            this->pinState = pinState;
+        virtual void updatePadState(const Targets::TargetGpioPadState& padState) {
+            this->padStateChanged = !this->padState.has_value() || this->padState != padState;
+            this->padState = padState;
         }
 
-        bool hasPinStateChanged() const {
-            return this->pinStateChanged;
+        bool hasPadStateChanged() const {
+            return this->padStateChanged;
         }
 
     public slots:
         virtual void onWidgetBodyClicked();
-
-    protected:
-        Targets::TargetVariant targetVariant;
-        Targets::TargetPinDescriptor pinDescriptor;
-        std::optional<Targets::TargetPinState> pinState;
-        bool pinStateChanged = false;
     };
 }

@@ -16,6 +16,9 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
@@ -32,8 +35,9 @@ namespace Widgets
         SnapshotDiff(
             MemorySnapshot& snapshotA,
             MemorySnapshot& snapshotB,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
-            Targets::TargetState currentTargetState,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             QWidget* parent = nullptr
         );
 
@@ -43,8 +47,9 @@ namespace Widgets
             std::vector<FocusedMemoryRegion> focusedRegionsB,
             std::vector<ExcludedMemoryRegion> excludedRegionsB,
             Targets::TargetStackPointer stackPointerB,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
-            Targets::TargetState currentTargetState,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             QWidget* parent = nullptr
         );
 
@@ -63,8 +68,9 @@ namespace Widgets
     private:
         SnapshotDiffSettings settings;
 
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetState& targetState;
 
         QWidget* container = nullptr;
 
@@ -76,7 +82,7 @@ namespace Widgets
         QToolButton* viewChangeListButton = nullptr;
 
         PanelWidget* leftPanel = nullptr;
-        PanelState leftPanelState = PanelState(300, true);
+        PanelState leftPanelState = {300, true};
 
         PaneState changeListPaneState = PaneState(true, true, std::nullopt);
         ChangeListPane* changeListPane = nullptr;
@@ -113,7 +119,7 @@ namespace Widgets
         QWidget* bottomBar = nullptr;
         QHBoxLayout* bottomBarLayout = nullptr;
         Label* memoryCapacityLabel = nullptr;
-        Label* memoryTypeLabel = nullptr;
+        Label* memorySegmentNameLabel = nullptr;
         Label* diffCountLabel = nullptr;
 
         TaskProgressIndicator* taskProgressIndicator = nullptr;
@@ -137,6 +143,6 @@ namespace Widgets
             bool confirmationPromptEnabled
         );
 
-        void onTargetStateChanged(Targets::TargetState newState);
+        void onTargetStateChanged();
     };
 }

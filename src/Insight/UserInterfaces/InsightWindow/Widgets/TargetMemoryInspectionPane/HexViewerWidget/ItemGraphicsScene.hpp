@@ -18,6 +18,8 @@
 #include <QTimer>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
@@ -45,7 +47,9 @@ namespace Widgets
 
     public:
         ItemGraphicsScene(
-            const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -76,6 +80,7 @@ namespace Widgets
         bool enabled = true;
 
         HexViewerSharedState state;
+        const Targets::TargetState& targetState;
 
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
@@ -84,8 +89,6 @@ namespace Widgets
         std::unique_ptr<HexViewerItemIndex> itemIndex = nullptr;
 
         HexViewerItemRenderer* renderer = nullptr;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QGraphicsView* parent = nullptr;
 
@@ -143,7 +146,6 @@ namespace Widgets
         void keyPressEvent(QKeyEvent* keyEvent) override;
         void contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
         int getScrollbarValue();
-        void onTargetStateChanged(Targets::TargetState newState);
         void onByteItemEnter(ByteItem& byteItem);
         void onByteItemLeave();
         void clearSelectionRectItem();

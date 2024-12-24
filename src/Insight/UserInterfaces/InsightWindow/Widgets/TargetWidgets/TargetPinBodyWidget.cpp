@@ -6,40 +6,57 @@ namespace Widgets::InsightTargetWidgets
 {
     using namespace Targets;
 
-    TargetPinBodyWidget::TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
-    : QWidget(parent), pinDescriptor(std::move(pinDescriptor)) {
+    TargetPinBodyWidget::TargetPinBodyWidget(
+        const Targets::TargetPinDescriptor& pinDescriptor,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        QWidget* parent
+    )
+        : QWidget(parent)
+        , pinDescriptor(pinDescriptor)
+        , padDescriptor(padDescriptor)
+    {
         this->setObjectName("target-pin-body");
-        this->setToolTip(QString::fromStdString(this->pinDescriptor.name).toUpper());
+        this->setToolTip(
+            this->padDescriptor.has_value()
+                ? QString::fromStdString(this->padDescriptor->get().name).toUpper()
+                : "Not connected"
+        );
     }
 
     QColor TargetPinBodyWidget::getBodyColor() {
+        using Targets::TargetGpioPadState;
+
         auto pinColor = this->defaultBodyColor;
 
-        if (this->pinDescriptor.type == TargetPinType::VCC) {
-            pinColor = this->vccBodyColor;
+        if (this->padDescriptor.has_value()) {
+            const auto& padDescriptor = this->padDescriptor->get();
 
-        } else if (this->pinDescriptor.type == TargetPinType::GND) {
-            pinColor = this->gndBodyColor;
+            if (padDescriptor.type == TargetPadType::VCC) {
+                pinColor = this->vccBodyColor;
 
-        } else if (this->pinDescriptor.type == TargetPinType::GPIO) {
-            if (this->pinState.has_value()
-                && this->pinState->ioState.has_value()
-                && this->pinState->ioDirection.has_value()
-            ) {
-                const auto ioDirection = this->pinState->ioDirection.value();
-                const auto ioState = this->pinState->ioState.value();
+            } else if (padDescriptor.type == TargetPadType::GND) {
+                pinColor = this->gndBodyColor;
 
-                if (this->pinState->ioState.value() == TargetPinState::IoState::HIGH) {
-                    pinColor = ioDirection == TargetPinState::IoDirection::OUTPUT ?
-                        this->outputHighBodyColor : this->inputHighBodyColor;
-                }
+            } else if (padDescriptor.type == TargetPadType::GPIO) {
+                if (this->padState.has_value()) {
+                    if (this->padState->value == TargetGpioPadState::State::HIGH) {
+                        pinColor = this->padState->direction == TargetGpioPadState::DataDirection::OUTPUT
+                            ? this->outputHighBodyColor
+                            : this->inputHighBodyColor;
+                    }
 
-                if ((
-                        ioDirection == TargetPinState::IoDirection::OUTPUT
-                        || (ioDirection == TargetPinState::IoDirection::INPUT && ioState == TargetPinState::IoState::LOW)
-                    ) && !this->hoverActive
-                ) {
-                    pinColor.setAlpha(220);
+                    if (
+                        (
+                            this->padState->direction == TargetGpioPadState::DataDirection::OUTPUT
+                            || (
+                                this->padState->direction == TargetGpioPadState::DataDirection::INPUT
+                                && this->padState->value == TargetGpioPadState::State::LOW
+                            )
+                        )
+                        && !this->hoverActive
+                    ) {
+                        pinColor.setAlpha(220);
+                    }
                 }
             }
         }
@@ -52,7 +69,7 @@ namespace Widgets::InsightTargetWidgets
     }
 
     bool TargetPinBodyWidget::event(QEvent* event) {
-        if (this->pinState.has_value() && this->pinState->ioDirection == TargetPinState::IoDirection::OUTPUT) {
+        if (this->padState.has_value() && this->padState->direction == TargetGpioPadState::DataDirection::OUTPUT) {
             switch (event->type()) {
                 case QEvent::Enter: {
                     this->hoverActive = true;

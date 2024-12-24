@@ -2,12 +2,16 @@
 
 #include <QWidget>
 #include <utility>
-#include <vector>
-#include <map>
+#include <unordered_map>
 #include <optional>
 
-#include "TargetPinWidget.hpp"
+#include "src/Targets/TargetVariantDescriptor.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
+#include "src/Targets/TargetGpioPadState.hpp"
 #include "src/Targets/TargetState.hpp"
+
+#include "TargetPinWidget.hpp"
 
 namespace Widgets::InsightTargetWidgets
 {
@@ -19,12 +23,13 @@ namespace Widgets::InsightTargetWidgets
         Q_OBJECT
 
     public:
-        TargetPackageWidget(Targets::TargetVariant targetVariant, QWidget* parent);
-        virtual void refreshPinStates(std::optional<std::function<void(void)>> callback = std::nullopt);
-
-        virtual void setTargetState(Targets::TargetState targetState) {
-            this->targetState = targetState;
-        }
+        TargetPackageWidget(
+            const Targets::TargetVariantDescriptor& variantDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
+            const Targets::TargetState& targetState,
+            QWidget* parent
+        );
+        virtual void refreshPadStates(std::optional<std::function<void(void)>> callback = std::nullopt);
 
         QSize sizeHint() const override {
             return this->minimumSize();
@@ -35,13 +40,15 @@ namespace Widgets::InsightTargetWidgets
         }
 
     protected:
-        Targets::TargetVariant targetVariant;
-        std::vector<TargetPinWidget*> pinWidgets;
+        const Targets::TargetVariantDescriptor& variantDescriptor;
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor;
+        const Targets::TargetState& targetState;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        std::unordered_map<std::uint16_t, TargetPinWidget*> pinWidgetsByPosition;
+        std::unordered_map<Targets::TargetPadId, TargetPinWidget*> pinWidgetsByPadId;
+        Targets::TargetPadDescriptors padDescriptors;
 
-        virtual void updatePinStates(const Targets::TargetPinStateMapping& pinStatesByNumber);
-        void onTargetStateChanged(Targets::TargetState newState);
+        virtual void updatePadStates(const Targets::TargetGpioPadDescriptorAndStatePairs& padStatePairs);
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
     };

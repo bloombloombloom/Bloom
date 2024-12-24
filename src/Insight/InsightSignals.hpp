@@ -5,8 +5,11 @@
 #include <QSharedPointer>
 
 #include "src/Targets/TargetState.hpp"
-#include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
+
+#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 #include "InsightWorker/Tasks/InsightWorkerTask.hpp"
 
@@ -20,7 +23,7 @@ class InsightSignals: public QObject
 
 public:
     static InsightSignals* instance() {
-        static auto instance = InsightSignals();
+        static auto instance = InsightSignals{};
         return &instance;
     }
 
@@ -31,10 +34,14 @@ signals:
     void taskQueued(QSharedPointer<InsightWorkerTask> task);
     void taskProcessed(QSharedPointer<InsightWorkerTask> task);
 
-    void targetStateUpdated(Targets::TargetState newState);
+    void targetStateUpdated(Targets::TargetState newState, Targets::TargetState previousState);
     void targetReset();
-    void targetRegistersWritten(const Targets::TargetRegisters& targetRegisters, const QDateTime& timestamp);
-    void targetMemoryWritten(Targets::TargetMemoryType memoryType, Targets::TargetMemoryAddressRange addressRange);
+    void targetRegistersWritten(const Targets::TargetRegisterDescriptorAndValuePairs& targetRegisters, const QDateTime& timestamp);
+    void targetMemoryWritten(
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        Targets::TargetMemoryAddressRange addressRange
+    );
     void programmingModeEnabled();
     void programmingModeDisabled();
 

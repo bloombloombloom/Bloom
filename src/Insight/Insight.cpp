@@ -5,17 +5,14 @@
 #include <QJsonDocument>
 
 #include "src/Services/PathService.hpp"
-#include "src/Logger/Logger.hpp"
 #include "src/EventManager/EventManager.hpp"
 #include "UserInterfaces/InsightWindow/BloomProxyStyle.hpp"
+#include "src/Logger/Logger.hpp"
 
 #include "src/Application.hpp"
 
-#include "InsightWorker/Tasks/GetTargetState.hpp"
-#include "InsightWorker/Tasks/GetTargetDescriptor.hpp"
-
 using namespace Exceptions;
-using Targets::TargetState;
+using Targets::TargetExecutionState;
 
 Insight::Insight(
     EventListener& eventListener,
@@ -31,15 +28,13 @@ Insight::Insight(
     , environmentConfig(environmentConfig)
     , insightConfig(insightConfig)
     , insightProjectSettings(insightProjectSettings)
+    , targetDescriptor(this->targetControllerService.getTargetDescriptor())
+    , targetState(this->targetControllerService.getTargetState())
 {
     Logger::info("Starting Insight");
 
-    this->eventListener.registerCallbackForEventType<Events::TargetExecutionStopped>(
-        std::bind(&Insight::onTargetStoppedEvent, this, std::placeholders::_1)
-    );
-
-    this->eventListener.registerCallbackForEventType<Events::TargetExecutionResumed>(
-        std::bind(&Insight::onTargetResumedEvent, this, std::placeholders::_1)
+    this->eventListener.registerCallbackForEventType<Events::TargetStateChanged>(
+        std::bind(&Insight::onTargetStateChangedEvent, this, std::placeholders::_1)
     );
 
     this->eventListener.registerCallbackForEventType<Events::TargetReset>(
@@ -63,13 +58,11 @@ Insight::Insight(
     );
 
     QApplication::setQuitOnLastWindowClosed(false);
-    QApplication::setStyle(new BloomProxyStyle());
+    QApplication::setStyle(new BloomProxyStyle{});
 
     qRegisterMetaType<Targets::TargetDescriptor>();
     qRegisterMetaType<Targets::TargetPinDescriptor>();
-    qRegisterMetaType<Targets::TargetPinState>();
     qRegisterMetaType<Targets::TargetState>();
-    qRegisterMetaType<std::map<int, Targets::TargetPinState>>();
 
     // Load Ubuntu fonts
     QFontDatabase::addApplicationFont(
@@ -115,22 +108,23 @@ Insight::Insight(
         QString::fromStdString(Services::PathService::resourcesDirPath() + "/fonts/Ubuntu/Ubuntu-Th.ttf")
     );
 
-    auto globalStylesheet = QFile(
+    auto globalStylesheet = QFile{
         QString::fromStdString(
-            Services::PathService::compiledResourcesPath() + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss"
+            Services::PathService::compiledResourcesPath()
+                + "/src/Insight/UserInterfaces/InsightWindow/Stylesheets/Global.qss"
         )
-    );
+    };
 
     if (!globalStylesheet.open(QFile::ReadOnly)) {
-        throw Exception("Failed to open global stylesheet file");
+        throw Exception{"Failed to open global stylesheet file"};
     }
 
     this->globalStylesheet = globalStylesheet.readAll();
 
     // Construct and start worker threads
-    for (std::uint8_t i = 0; i < Insight::INSIGHT_WORKER_COUNT; ++i) {
-        auto* insightWorker = new InsightWorker();
-        auto* workerThread = new QThread();
+    for (auto i = std::uint8_t{0}; i < Insight::INSIGHT_WORKER_COUNT; ++i) {
+        auto* insightWorker = new InsightWorker{};
+        auto* workerThread = new QThread{};
 
         workerThread->setObjectName("IW" + QString::number(insightWorker->id));
         insightWorker->moveToThread(workerThread);
@@ -138,7 +132,7 @@ Insight::Insight(
         QObject::connect(workerThread, &QThread::finished, insightWorker, &QObject::deleteLater);
         QObject::connect(workerThread, &QThread::finished, workerThread, &QThread::deleteLater);
 
-        this->insightWorkersById[insightWorker->id] = std::pair(insightWorker, workerThread);
+        this->insightWorkersById[insightWorker->id] = std::pair{insightWorker, workerThread};
 
         Logger::debug("Starting InsightWorker" + std::to_string(insightWorker->id));
         workerThread->start();
@@ -149,18 +143,16 @@ Insight::Insight(
 
 void Insight::activateMainWindow() {
     if (this->mainWindow == nullptr) {
-        this->mainWindow = new InsightWindow(
+        this->mainWindow = new InsightWindow{
             this->insightProjectSettings,
             this->insightConfig,
             this->environmentConfig,
-            this->targetDescriptor
-        );
+            this->targetDescriptor,
+            this->targetState
+        };
 
         this->mainWindow->setStyleSheet(this->globalStylesheet);
-
         QObject::connect(this->mainWindow, &QObject::destroyed, this, &Insight::onInsightWindowDestroyed);
-
-        this->refreshTargetState();
     }
 
     this->mainWindow->show();
@@ -186,77 +178,39 @@ void Insight::shutdown() {
     }
 }
 
-void Insight::refreshTargetState() {
-    const auto getTargetStateTask = QSharedPointer<GetTargetState>(new GetTargetState(), &QObject::deleteLater);
-    QObject::connect(
-        getTargetStateTask.get(),
-        &GetTargetState::targetState,
-        this,
-        [this] (Targets::TargetState targetState) {
-            this->lastTargetState = targetState;
-            emit this->insightSignals->targetStateUpdated(this->lastTargetState);
-        }
-    );
-
-    InsightWorker::queueTask(getTargetStateTask);
-}
-
 void Insight::onInsightWindowDestroyed() {
     this->mainWindow = nullptr;
     EventManager::triggerEvent(std::make_shared<Events::InsightMainWindowClosed>());
 }
 
-void Insight::onTargetStoppedEvent(const Events::TargetExecutionStopped& event) {
-    if (this->lastTargetState == TargetState::STOPPED) {
-        return;
-    }
-
-    this->lastTargetState = TargetState::STOPPED;
-
-    if (this->targetStepping) {
-        if (this->targetResumeTimer == nullptr) {
-            this->targetResumeTimer = new QTimer(this);
-            this->targetResumeTimer->setSingleShot(true);
-
-            this->targetResumeTimer->callOnTimeout(this, [this] {
-                if (this->lastTargetState != TargetState::STOPPED) {
-                    return;
-                }
-
-                emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
-            });
+void Insight::onTargetStateChangedEvent(const Events::TargetStateChanged& event) {
+    if (event.previousState.mode != event.newState.mode) {
+        if (event.newState.mode == Targets::TargetMode::PROGRAMMING) {
+            emit this->insightSignals->programmingModeEnabled();
         }
 
-        this->targetResumeTimer->start(1500);
+        if (event.newState.mode == Targets::TargetMode::DEBUGGING) {
+            emit this->insightSignals->programmingModeDisabled();
+        }
+    }
+
+    if (event.previousState.executionState == event.newState.executionState) {
         return;
     }
 
-    if (this->targetResumeTimer != nullptr && this->targetResumeTimer->isActive()) {
-        this->targetResumeTimer->stop();
-    }
-
-    emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
-}
-
-void Insight::onTargetResumedEvent(const Events::TargetExecutionResumed& event) {
-    this->targetStepping = event.stepping;
-
-    if (this->lastTargetState != TargetState::RUNNING) {
-        this->lastTargetState = TargetState::RUNNING;
-        emit this->insightSignals->targetStateUpdated(TargetState::RUNNING);
-    }
+    emit this->insightSignals->targetStateUpdated(event.newState, event.previousState);
 }
 
 void Insight::onTargetResetEvent(const Events::TargetReset& event) {
     try {
-        if (this->lastTargetState != TargetState::STOPPED) {
-            this->lastTargetState = TargetState::STOPPED;
-            emit this->insightSignals->targetStateUpdated(TargetState::STOPPED);
+        if (this->targetState.executionState != TargetExecutionState::STOPPED) {
+            // Reset event came in too late, target has already resumed execution. Ignore
+            return;
         }
 
         emit this->insightSignals->targetReset();
 
-    } catch (const Exceptions::Exception& exception) {
+    } catch (const Exception& exception) {
         Logger::debug("Error handling TargetReset event - " + exception.getMessage());
     }
 }
@@ -267,8 +221,9 @@ void Insight::onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarg
 
 void Insight::onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& event) {
     emit this->insightSignals->targetMemoryWritten(
-        event.memoryType,
-        Targets::TargetMemoryAddressRange(event.startAddress, event.startAddress + (event.size - 1))
+        event.addressSpaceDescriptor,
+        event.memorySegmentDescriptor,
+        Targets::TargetMemoryAddressRange{event.startAddress, event.startAddress + (event.size - 1)}
     );
 }
 

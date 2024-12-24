@@ -41,5 +41,5 @@ namespace Targets
         static TargetPadId generateId(const std::string& padKey);
     };
 
-    using TargetPadDescriptors = std::vector<TargetPadDescriptor*>;
+    using TargetPadDescriptors = std::vector<const TargetPadDescriptor*>;
 }

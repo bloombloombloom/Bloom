@@ -8,16 +8,16 @@ namespace Widgets
         }
     }
 
-    void GroupItem::adjustItemPositions(const int maximumWidth, const HexViewerSharedState* hexViewerState) {
+    void GroupItem::adjustItemPositions(int maximumWidth, const HexViewerSharedState* hexViewerState) {
         const auto margins = this->groupMargins(hexViewerState, maximumWidth);
 
         int width = margins.left();
         int height = margins.top();
 
         this->multiLine = false;
-        auto position = QPoint(margins.left(), margins.top());
+        auto position = QPoint{margins.left(), margins.top()};
 
-        auto currentLineItems = std::vector<HexViewerItem*>();
+        auto currentLineItems = std::vector<HexViewerItem*>{};
         const ByteItem* lastByteItem = nullptr;
 
         for (const auto& item : this->items) {
@@ -69,11 +69,11 @@ namespace Widgets
             lastByteItem = byteItem;
         }
 
-        this->groupSize = QSize(width + margins.right(), height + margins.bottom());
+        this->groupSize = QSize{width + margins.right(), height + margins.bottom()};
     }
 
     std::vector<HexViewerItem*> GroupItem::flattenedItems() const {
-        auto flattenedItems = std::vector<HexViewerItem*>();
+        auto flattenedItems = std::vector<HexViewerItem*>{};
 
         for (const auto& item : this->items) {
             flattenedItems.push_back(item);
@@ -88,10 +88,7 @@ namespace Widgets
         return flattenedItems;
     }
 
-    GroupItem::GroupItem(
-        Targets::TargetMemoryAddress startAddress,
-        HexViewerItem* parent
-    )
+    GroupItem::GroupItem(Targets::TargetMemoryAddress startAddress, HexViewerItem* parent)
         : HexViewerItem(startAddress, parent)
     {}
 

@@ -16,48 +16,50 @@ namespace Widgets
     using Exceptions::Exception;
 
     MemoryRegionManagerWindow::MemoryRegionManagerWindow(
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         QWidget* parent
     )
         : QWidget(parent)
-        , memoryDescriptor(memoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
     {
         this->setWindowFlag(Qt::Window);
         this->setObjectName("memory-region-manager-window");
         this->setWindowTitle(
-            "Memory Regions - " + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
+            "Memory Regions - " + QString::fromStdString(this->memorySegmentDescriptor.name)
         );
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/MemoryRegionManager/UiFiles/MemoryRegionManagerWindow.ui"
             )
-        );
+        };
 
-        auto windowStylesheet = QFile(
+        auto windowStylesheet = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/MemoryRegionManager/Stylesheets/MemoryRegionManagerWindow.qss"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open MemoryRegionManagerWindow UI file");
+            throw Exception{"Failed to open MemoryRegionManagerWindow UI file"};
         }
 
         if (!windowStylesheet.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open MemoryRegionManagerWindow stylesheet file");
+            throw Exception{"Failed to open MemoryRegionManagerWindow stylesheet file"};
         }
 
         this->setStyleSheet(windowStylesheet.readAll());
-        this->setFixedSize(QSize(970, 540));
+        this->setFixedSize(QSize{970, 540});
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&windowUiFile, this);
 
         this->container->setFixedSize(this->size());
@@ -210,11 +212,11 @@ namespace Widgets
     }
 
     FocusedRegionItem* MemoryRegionManagerWindow::addFocusedRegion(const FocusedMemoryRegion& region) {
-        auto* focusedRegionItem = new FocusedRegionItem(
+        auto* focusedRegionItem = new FocusedRegionItem{
             region,
-            this->memoryDescriptor,
+            this->memorySegmentDescriptor,
             this->regionItemScrollAreaViewport
-        );
+        };
         this->focusedRegionItems.insert(focusedRegionItem);
 
         this->regionItemScrollAreaViewportLayout->addWidget(focusedRegionItem);
@@ -231,11 +233,11 @@ namespace Widgets
     }
 
     ExcludedRegionItem* MemoryRegionManagerWindow::addExcludedRegion(const ExcludedMemoryRegion& region) {
-        auto* excludedRegionItem = new ExcludedRegionItem(
+        auto* excludedRegionItem = new ExcludedRegionItem{
             region,
-            this->memoryDescriptor,
+            this->memorySegmentDescriptor,
             this->regionItemScrollAreaViewport
-        );
+        };
         this->excludedRegionItems.insert(excludedRegionItem);
 
         this->regionItemScrollAreaViewportLayout->addWidget(excludedRegionItem);
@@ -263,14 +265,15 @@ namespace Widgets
     void MemoryRegionManagerWindow::onNewFocusedRegionTrigger() {
         using Targets::TargetMemoryAddressRange;
 
-        auto* region = this->addFocusedRegion(FocusedMemoryRegion(
-            "Untitled Region",
-            this->memoryDescriptor.type,
-            TargetMemoryAddressRange(
-                this->memoryDescriptor.addressRange.startAddress,
-                this->memoryDescriptor.addressRange.startAddress + 10
-            )
-        ));
+        auto* region = this->addFocusedRegion(
+            FocusedMemoryRegion{
+                "Untitled Region",
+                TargetMemoryAddressRange{
+                    this->memorySegmentDescriptor.addressRange.startAddress,
+                    this->memorySegmentDescriptor.addressRange.startAddress + 10
+                }
+            }
+        );
 
         region->setSelected(true);
     }
@@ -278,14 +281,15 @@ namespace Widgets
     void MemoryRegionManagerWindow::onNewExcludedRegionTrigger() {
         using Targets::TargetMemoryAddressRange;
 
-        auto* region = this->addExcludedRegion(ExcludedMemoryRegion(
-            "Untitled Region",
-            this->memoryDescriptor.type,
-            TargetMemoryAddressRange(
-                this->memoryDescriptor.addressRange.startAddress,
-                this->memoryDescriptor.addressRange.startAddress + 10
-            )
-        ));
+        auto* region = this->addExcludedRegion(
+            ExcludedMemoryRegion{
+                "Untitled Region",
+                TargetMemoryAddressRange{
+                    this->memorySegmentDescriptor.addressRange.startAddress,
+                    this->memorySegmentDescriptor.addressRange.startAddress + 10
+                }
+            }
+        );
 
         region->setSelected(true);
     }
@@ -331,19 +335,19 @@ namespace Widgets
     }
 
     void MemoryRegionManagerWindow::applyChanges() {
-        auto processedFocusedMemoryRegions = std::vector<FocusedMemoryRegion>();
-        auto processedExcludedMemoryRegions = std::vector<ExcludedMemoryRegion>();
+        auto processedFocusedMemoryRegions = std::vector<FocusedMemoryRegion>{};
+        auto processedExcludedMemoryRegions = std::vector<ExcludedMemoryRegion>{};
 
         for (auto* focusedRegionItem : this->focusedRegionItems) {
             const auto validationFailures = focusedRegionItem->getValidationFailures();
 
             if (!validationFailures.empty()) {
-                auto* errorDialogue = new ErrorDialogue(
+                auto* errorDialogue = new ErrorDialogue{
                     "Invalid Memory Region",
                     "Invalid memory region \"" + focusedRegionItem->getRegionNameInputValue() + "\""
                         + "\n\n- " + validationFailures.join("\n- "),
                     this
-                );
+                };
                 errorDialogue->show();
                 return;
             }
@@ -352,13 +356,13 @@ namespace Widgets
             const auto& focusedRegion = focusedRegionItem->getMemoryRegion();
             for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
                 if (processedFocusedRegion.intersectsWith(focusedRegion)) {
-                    auto* errorDialogue = new ErrorDialogue(
+                    auto* errorDialogue = new ErrorDialogue{
                         "Intersecting Region Found",
                         "Region \"" + focusedRegionItem->getRegionNameInputValue()
                             + "\" intersects with region \"" + processedFocusedRegion.name + "\". "
                             + "Regions cannot intersect. Please review the relevant address ranges.",
                         this
-                    );
+                    };
                     errorDialogue->show();
                     return;
                 }
@@ -371,12 +375,12 @@ namespace Widgets
             const auto validationFailures = excludedRegionItem->getValidationFailures();
 
             if (!validationFailures.empty()) {
-                auto* errorDialogue = new ErrorDialogue(
+                auto* errorDialogue = new ErrorDialogue{
                     "Invalid Memory Region",
                     "Invalid memory region \"" + excludedRegionItem->getRegionNameInputValue() + "\""
                         + "<br/><br/>- " + validationFailures.join("<br/>- "),
                     this
-                );
+                };
                 errorDialogue->show();
                 return;
             }
@@ -385,13 +389,13 @@ namespace Widgets
             auto excludedRegion = excludedRegionItem->getMemoryRegion();
             for (const auto& processedFocusedRegion : processedFocusedMemoryRegions) {
                 if (processedFocusedRegion.intersectsWith(excludedRegion)) {
-                    auto* errorDialogue = new ErrorDialogue(
+                    auto* errorDialogue = new ErrorDialogue{
                         "Intersecting Region Found",
                         "Region \"" + excludedRegionItem->getRegionNameInputValue()
                             + "\" intersects with region \"" + processedFocusedRegion.name + "\". "
                             + "Regions cannot intersect. Please review the relevant address ranges.",
                         this
-                    );
+                    };
                     errorDialogue->show();
                     return;
                 }
@@ -399,13 +403,13 @@ namespace Widgets
 
             for (const auto& processedExcludedRegion : processedExcludedMemoryRegions) {
                 if (processedExcludedRegion.intersectsWith(excludedRegion)) {
-                    auto* errorDialogue = new ErrorDialogue(
+                    auto* errorDialogue = new ErrorDialogue{
                         "Intersecting Region Found",
                         "Region \"" + excludedRegionItem->getRegionNameInputValue()
                             + "\" intersects with region \"" + processedExcludedRegion.name + "\". "
                             + "Regions cannot intersect. Please review the relevant address ranges.",
                         this
-                    );
+                    };
                     errorDialogue->show();
                     return;
                 }
@@ -422,7 +426,7 @@ namespace Widgets
 
     void MemoryRegionManagerWindow::openHelpPage() {
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/docs/manage-memory-regions"))
+            QUrl{QString::fromStdString(Services::PathService::homeDomainName() + "/docs/manage-memory-regions")}
         );
     }
 }

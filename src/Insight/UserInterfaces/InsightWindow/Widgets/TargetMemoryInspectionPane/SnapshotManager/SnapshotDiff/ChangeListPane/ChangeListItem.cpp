@@ -8,26 +8,26 @@ namespace Widgets
     ChangeListItem::ChangeListItem(const Targets::TargetMemoryAddressRange& addressRange)
         : addressRange(addressRange)
     {
-        this->size = QSize(0, ChangeListItem::HEIGHT);
+        this->size = QSize{0, ChangeListItem::HEIGHT};
     }
 
     void ChangeListItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        static constexpr auto margins = QMargins(7, 5, 7, 0);
+        static constexpr auto margins = QMargins{7, 5, 7, 0};
 
-        static auto font = QFont("'Ubuntu', sans-serif");
+        static auto font = QFont{"'Ubuntu', sans-serif"};
         font.setPixelSize(14);
-        static auto secondaryFont = QFont("'Ubuntu', sans-serif");
+        static auto secondaryFont = QFont{"'Ubuntu', sans-serif"};
         secondaryFont.setPixelSize(13);
 
-        static constexpr auto fontColor = QColor(0xAF, 0xB1, 0xB3);
-        static constexpr auto secondaryFontColor = QColor(0x8A, 0x8A, 0x8D);
+        static constexpr auto fontColor = QColor{0xAF, 0xB1, 0xB3};
+        static constexpr auto secondaryFontColor = QColor{0x8A, 0x8A, 0x8D};
 
         if (this->selected) {
-            static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C);
+            static constexpr auto selectedBackgroundColor = QColor{0x3C, 0x59, 0x5C};
 
             painter->setBrush(selectedBackgroundColor);
             painter->setPen(Qt::PenStyle::NoPen);
-            painter->drawRect(QRect(QPoint(0, 0), this->size));
+            painter->drawRect(QRect{QPoint{0, 0}, this->size});
         }
 
         painter->setFont(font);
@@ -36,16 +36,16 @@ namespace Widgets
         auto fontMetrics = painter->fontMetrics();
 
         const auto byteCount = this->addressRange.endAddress - this->addressRange.startAddress + 1;
-        const auto byteCountText = QLocale(QLocale::English).toString(byteCount)
+        const auto byteCountText = QLocale{QLocale::English}.toString(byteCount)
             + (byteCount == 1 ? " byte" : " bytes");
         const auto byteCountTextSize = fontMetrics.size(Qt::TextSingleLine, byteCountText);
 
-        const auto byteCountTextRect = QRect(
+        const auto byteCountTextRect = QRect{
             margins.left(),
             margins.top(),
             byteCountTextSize.width(),
             byteCountTextSize.height()
-        );
+        };
 
         painter->drawText(byteCountTextRect, Qt::AlignLeft, byteCountText);
 
@@ -77,16 +77,16 @@ namespace Widgets
         );
 
         const auto addressRangeTextSize = fontMetrics.size(Qt::TextSingleLine, addressRangeText);
-        const auto addressRangeTextRect = QRect(
+        const auto addressRangeTextRect = QRect{
             margins.left(),
             byteCountTextRect.bottom() + 5,
             addressRangeTextSize.width(),
             addressRangeTextSize.height()
-        );
+        };
 
         painter->drawText(addressRangeTextRect, Qt::AlignLeft, addressRangeText);
 
-        static constexpr auto borderColor = QColor(0x41, 0x42, 0x3F);
+        static constexpr auto borderColor = QColor{0x41, 0x42, 0x3F};
 
         painter->setPen(borderColor);
         painter->drawLine(0, this->size.height() - 1, this->size.width(), this->size.height() - 1);

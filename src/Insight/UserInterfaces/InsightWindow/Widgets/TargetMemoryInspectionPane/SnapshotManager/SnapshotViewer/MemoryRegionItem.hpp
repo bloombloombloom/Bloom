@@ -17,8 +17,7 @@ namespace Widgets
         MemoryRegionItem(const MemoryRegion& memoryRegion);
 
         bool operator < (const ListItem& rhs) const override {
-            const auto& rhsRegionItem = dynamic_cast<const MemoryRegionItem&>(rhs);
-            return this->memoryRegion.createdDate < rhsRegionItem.memoryRegion.createdDate;
+            return this->memoryRegion.createdDate < dynamic_cast<const MemoryRegionItem&>(rhs).memoryRegion.createdDate;
         }
 
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

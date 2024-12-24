@@ -16,30 +16,40 @@ namespace Widgets::InsightTargetWidgets::Qfp
     using namespace Targets;
 
     QuadFlatPackageWidget::QuadFlatPackageWidget(
-        const TargetVariant& targetVariant,
+        const Targets::TargetVariantDescriptor& variantDescriptor,
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         QWidget* parent
-    ): TargetPackageWidget(targetVariant, parent) {
-        assert((targetVariant.pinDescriptorsByNumber.size() % 4) == 0);
+    )
+        : TargetPackageWidget(
+            variantDescriptor,
+            pinoutDescriptor,
+            targetState,
+            parent
+        )
+    {
+        assert((this->pinoutDescriptor.pinDescriptors.size() % 4) == 0);
 
-        auto stylesheetFile = QFile(QString::fromStdString(
+        auto stylesheetFile = QFile{QString::fromStdString(
                 Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
             )
-        );
+        };
         stylesheetFile.open(QFile::ReadOnly);
         this->setStyleSheet(stylesheetFile.readAll());
 
-        this->pinWidgets.reserve(targetVariant.pinDescriptorsByNumber.size());
-        this->layout = new QVBoxLayout();
+        this->pinWidgets.reserve(this->pinoutDescriptor.pinDescriptors.size());
+        this->layout = new QVBoxLayout{};
         this->layout->setSpacing(0);
         this->layout->setContentsMargins(0, 0, 0, 0);
 
-        this->horizontalLayout = new QHBoxLayout();
+        this->horizontalLayout = new QHBoxLayout{};
         this->horizontalLayout->setSpacing(0);
         this->horizontalLayout->setDirection(QBoxLayout::Direction::LeftToRight);
         this->horizontalLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
-        this->topPinLayout = new QHBoxLayout();
+        this->topPinLayout = new QHBoxLayout{};
         this->topPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
         this->topPinLayout->setDirection(QBoxLayout::Direction::RightToLeft);
         this->topPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
@@ -49,21 +59,34 @@ namespace Widgets::InsightTargetWidgets::Qfp
         this->rightPinLayout->setDirection(QBoxLayout::Direction::BottomToTop);
         this->rightPinLayout->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
-        this->bottomPinLayout = new QHBoxLayout();
+        this->bottomPinLayout = new QHBoxLayout{};
         this->bottomPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
         this->bottomPinLayout->setDirection(QBoxLayout::Direction::LeftToRight);
         this->bottomPinLayout->setAlignment(Qt::AlignmentFlag::AlignHCenter);
 
-        this->leftPinLayout = new QVBoxLayout();
+        this->leftPinLayout = new QVBoxLayout{};
         this->leftPinLayout->setSpacing(PinWidget::WIDTH_SPACING);
         this->leftPinLayout->setDirection(QBoxLayout::Direction::TopToBottom);
         this->leftPinLayout->setAlignment(Qt::AlignmentFlag::AlignVCenter);
 
-        const auto pinCountPerLayout = static_cast<int>(targetVariant.pinDescriptorsByNumber.size() / 4);
-        for (const auto& [targetPinNumber, targetPinDescriptor]: targetVariant.pinDescriptorsByNumber) {
-            auto* pinWidget = new PinWidget(targetPinDescriptor, targetVariant, this);
+        const auto pinCountPerLayout = static_cast<int>(this->pinoutDescriptor.pinDescriptors.size() / 4);
+        for (const auto& pinDescriptor: this->pinoutDescriptor.pinDescriptors) {
+            auto* pinWidget = new PinWidget{
+                pinDescriptor,
+                pinDescriptor.padKey.has_value()
+                    ? targetDescriptor.tryGetPadDescriptor(*(pinDescriptor.padKey))
+                    : std::nullopt,
+                this->pinoutDescriptor,
+                this
+            };
             this->pinWidgets.push_back(pinWidget);
-            TargetPackageWidget::pinWidgets.push_back(pinWidget);
+            TargetPackageWidget::pinWidgetsByPosition.emplace(pinDescriptor.numericPosition, pinWidget);
+
+            if (pinWidget->padDescriptor.has_value()) {
+                const auto& padDescriptor = pinWidget->padDescriptor->get();
+                TargetPackageWidget::pinWidgetsByPadId.emplace(padDescriptor.id, pinWidget);
+                TargetPackageWidget::padDescriptors.push_back(&padDescriptor);
+            }
 
             if (pinWidget->position == Position::LEFT) {
                 this->leftPinLayout->addWidget(pinWidget, 0, Qt::AlignmentFlag::AlignRight);
@@ -79,7 +102,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
             }
         }
 
-        this->bodyWidget = new BodyWidget(this);
+        this->bodyWidget = new BodyWidget{this};
         this->layout->addLayout(this->topPinLayout);
         this->horizontalLayout->addLayout(this->leftPinLayout);
         this->horizontalLayout->addWidget(this->bodyWidget);
@@ -185,41 +208,41 @@ namespace Widgets::InsightTargetWidgets::Qfp
     }
 
     void QuadFlatPackageWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 
     void QuadFlatPackageWidget::drawWidget(QPainter& painter) {
-        static auto pinNameFont = QFont("'Ubuntu', sans-serif");
+        static auto pinNameFont = QFont{"'Ubuntu', sans-serif"};
         static auto pinDirectionFont = pinNameFont;
         pinNameFont.setPixelSize(11);
         pinDirectionFont.setPixelSize(10);
 
-        static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
-        static const auto pinNameFontColor = QColor(0xA6, 0xA7, 0xAA);
-        static const auto pinDirectionFontColor = QColor(0x8A, 0x8A, 0x8D);
-        static const auto pinChangedFontColor = QColor(0x4D, 0x7B, 0xBA);
+        static const auto lineColor = QColor{0x4F, 0x4F, 0x4F};
+        static const auto pinNameFontColor = QColor{0xA6, 0xA7, 0xAA};
+        static const auto pinDirectionFontColor = QColor{0x8A, 0x8A, 0x8D};
+        static const auto pinChangedFontColor = QColor{0x4D, 0x7B, 0xBA};
 
-        static const auto inDirectionText = QString("IN");
-        static const auto outDirectionText = QString("OUT");
+        static const auto inDirectionText = QString{"IN"};
+        static const auto outDirectionText = QString{"OUT"};
 
         for (const auto* pinWidget : this->pinWidgets) {
             const auto pinGeoPosition = pinWidget->pos();
-            const auto& pinState = pinWidget->getPinState();
-            const auto pinStateChanged = pinWidget->hasPinStateChanged();
+            const auto& padState = pinWidget->getPadState();
+            const auto padStateChanged = pinWidget->hasPadStateChanged();
 
             painter.setFont(pinNameFont);
 
             if (pinWidget->position == Position::LEFT) {
                 painter.setPen(lineColor);
-                painter.drawLine(QLine(
+                painter.drawLine(QLine{
                     pinGeoPosition.x() - PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2),
                     pinGeoPosition.x(),
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_HORIZONTAL_HEIGHT / 2)
-                ));
+                });
 
-                painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+                painter.setPen(padStateChanged ? pinChangedFontColor : pinNameFontColor);
                 painter.drawText(
                     QRect(
                         pinGeoPosition.x() - PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH
@@ -233,7 +256,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     pinWidget->pinNameLabelText
                 );
 
-                if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                if (padState.has_value()) {
                     painter.setFont(pinDirectionFont);
 
                     painter.setPen(pinDirectionFontColor);
@@ -248,21 +271,23 @@ namespace Widgets::InsightTargetWidgets::Qfp
                             PinWidget::MAXIMUM_LABEL_HEIGHT
                         ),
                         Qt::AlignCenter,
-                        pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                        padState->direction == TargetGpioPadState::DataDirection::INPUT
+                            ? inDirectionText
+                            : outDirectionText
                     );
                 }
 
             } else if (pinWidget->position == Position::RIGHT) {
                 painter.setPen(lineColor);
-                painter.drawLine(QLine(
+                painter.drawLine(QLine{
                     pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
                         + PinWidget::PIN_NAME_LABEL_LONG_LINE_LENGTH,
                     pinGeoPosition.y() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
-                ));
+                });
 
-                painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+                painter.setPen(padStateChanged ? pinChangedFontColor : pinNameFontColor);
                 painter.drawText(
                     QRect(
                         pinGeoPosition.x() + PinWidget::MAXIMUM_HORIZONTAL_WIDTH
@@ -276,7 +301,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     pinWidget->pinNameLabelText
                 );
 
-                if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                if (padState.has_value()) {
                     painter.setFont(pinDirectionFont);
 
                     painter.setPen(pinDirectionFontColor);
@@ -291,7 +316,9 @@ namespace Widgets::InsightTargetWidgets::Qfp
                             PinWidget::MAXIMUM_LABEL_HEIGHT
                         ),
                         Qt::AlignCenter,
-                        pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                        padState->direction == TargetGpioPadState::DataDirection::INPUT
+                            ? inDirectionText
+                            : outDirectionText
                     );
                 }
 
@@ -306,14 +333,14 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
-                painter.drawLine(QLine(
+                painter.drawLine(QLine{
                     pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.y() - pinNameLabelLineLength,
                     pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.y()
-                ));
+                });
 
-                painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+                painter.setPen(padStateChanged ? pinChangedFontColor : pinNameFontColor);
                 painter.drawText(
                     QRect(
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
@@ -326,17 +353,17 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     pinWidget->pinNameLabelText
                 );
 
-                if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                if (padState.has_value()) {
                     painter.setFont(pinDirectionFont);
 
                     painter.setPen(lineColor);
-                    painter.drawLine(QLine(
+                    painter.drawLine(QLine{
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                         pinGeoPosition.y() - pinNameLabelLineLength - PinWidget::MAXIMUM_LABEL_HEIGHT
                             - pinDirectionLabelLineLength,
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                         pinGeoPosition.y() - pinNameLabelLineLength - PinWidget::MAXIMUM_LABEL_HEIGHT
-                    ));
+                    });
 
                     painter.setPen(pinDirectionFontColor);
                     painter.drawText(
@@ -349,7 +376,9 @@ namespace Widgets::InsightTargetWidgets::Qfp
                             PinWidget::MAXIMUM_LABEL_HEIGHT
                         ),
                         Qt::AlignCenter,
-                        pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                        padState->direction == TargetGpioPadState::DataDirection::INPUT
+                            ? inDirectionText
+                            : outDirectionText
                     );
                 }
 
@@ -364,14 +393,14 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     : PinWidget::PIN_DIRECTION_LABEL_LONG_LINE_LENGTH
                 );
 
-                painter.drawLine(QLine(
+                painter.drawLine(QLine{
                     pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT,
                     pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                     pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
-                ));
+                });
 
-                painter.setPen(pinStateChanged ? pinChangedFontColor : pinNameFontColor);
+                painter.setPen(padStateChanged ? pinChangedFontColor : pinNameFontColor);
                 painter.drawText(
                     QRect(
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2)
@@ -384,18 +413,18 @@ namespace Widgets::InsightTargetWidgets::Qfp
                     pinWidget->pinNameLabelText
                 );
 
-                if (pinState.has_value() && pinState->ioDirection.has_value()) {
+                if (padState.has_value()) {
                     painter.setFont(pinDirectionFont);
 
                     painter.setPen(lineColor);
-                    painter.drawLine(QLine(
+                    painter.drawLine(QLine{
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                         pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
                             + PinWidget::MAXIMUM_LABEL_HEIGHT,
                         pinGeoPosition.x() + (PinWidget::MAXIMUM_VERTICAL_WIDTH / 2),
                         pinGeoPosition.y() + PinWidget::MAXIMUM_VERTICAL_HEIGHT + pinNameLabelLineLength
                             + PinWidget::MAXIMUM_LABEL_HEIGHT + pinDirectionLabelLineLength
-                    ));
+                    });
 
                     painter.setPen(pinDirectionFontColor);
                     painter.drawText(
@@ -408,7 +437,9 @@ namespace Widgets::InsightTargetWidgets::Qfp
                             PinWidget::MAXIMUM_LABEL_HEIGHT
                         ),
                         Qt::AlignCenter,
-                        pinState->ioDirection == TargetPinState::IoDirection::INPUT ? inDirectionText : outDirectionText
+                        padState->direction == TargetGpioPadState::DataDirection::INPUT
+                            ? inDirectionText
+                            : outDirectionText
                     );
                 }
             }

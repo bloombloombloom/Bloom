@@ -9,11 +9,11 @@ namespace Widgets
 
     RegionItem::RegionItem(
         const MemoryRegion& region,
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         QWidget* parent
     )
         : ClickableWidget(parent)
-        , memoryDescriptor(memoryDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
     {
         this->setObjectName("region-item");
         this->setFixedHeight(50);
@@ -36,14 +36,14 @@ namespace Widgets
         );
         this->addressRangeLabel->setObjectName("address-label");
 
-        auto* topLabelLayout = new QHBoxLayout();
+        auto* topLabelLayout = new QHBoxLayout{};
         topLabelLayout->setSpacing(0);
         topLabelLayout->setContentsMargins(0, 0, 0, 0);
         topLabelLayout->addWidget(this->nameLabel, 0, Qt::AlignmentFlag::AlignLeft);
         topLabelLayout->addStretch(1);
         topLabelLayout->addWidget(this->typeLabel, 0, Qt::AlignmentFlag::AlignRight);
 
-        auto* bottomLabelLayout = new QHBoxLayout();
+        auto* bottomLabelLayout = new QHBoxLayout{};
         bottomLabelLayout->setSpacing(0);
         bottomLabelLayout->setContentsMargins(0, 0, 0, 0);
         bottomLabelLayout->addWidget(this->addressRangeLabel, 0, Qt::AlignmentFlag::AlignLeft);
@@ -77,7 +77,7 @@ namespace Widgets
     }
 
     QStringList RegionItem::getValidationFailures() const {
-        auto validationFailures = QStringList();
+        auto validationFailures = QStringList{};
 
         if (this->nameInput->text().isEmpty()) {
             validationFailures.emplace_back("Missing region name.");
@@ -85,12 +85,12 @@ namespace Widgets
 
         bool conversionOk = false;
 
-        std::uint32_t startAddress = this->startAddressInput->text().toUInt(&conversionOk, 16);
+        const auto startAddress = this->startAddressInput->text().toUInt(&conversionOk, 16);
         if (!conversionOk) {
             validationFailures.emplace_back("Invalid start address.");
         }
 
-        std::uint32_t endAddress = this->endAddressInput->text().toUInt(&conversionOk, 16);
+        const auto endAddress = this->endAddressInput->text().toUInt(&conversionOk, 16);
         if (!conversionOk) {
             validationFailures.emplace_back("Invalid end address.");
         }
@@ -100,16 +100,16 @@ namespace Widgets
         }
 
         auto addressType = this->getSelectedAddressInputType();
-        const auto memoryAddressRange = this->memoryDescriptor.addressRange;
+        const auto memoryAddressRange = this->memorySegmentDescriptor.addressRange;
 
-        const auto memoryAddressRangeStr = QString(
+        const auto memoryAddressRangeStr = QString{
             "0x" + QString::number(memoryAddressRange.startAddress, 16).toUpper() + QString(" -> ")
                 + "0x" + QString::number(memoryAddressRange.endAddress, 16).toUpper()
-        );
+        };
 
         const auto absoluteAddressRange = addressType == AddressType::RELATIVE
-            ? this->convertRelativeToAbsoluteAddressRange(TargetMemoryAddressRange(startAddress, endAddress))
-            : TargetMemoryAddressRange(startAddress, endAddress);
+            ? this->convertRelativeToAbsoluteAddressRange(TargetMemoryAddressRange{startAddress, endAddress})
+            : TargetMemoryAddressRange{startAddress, endAddress};
 
         if (absoluteAddressRange.startAddress < memoryAddressRange.startAddress
             || absoluteAddressRange.startAddress > memoryAddressRange.endAddress
@@ -191,26 +191,26 @@ namespace Widgets
     TargetMemoryAddressRange RegionItem::convertAbsoluteToRelativeAddressRange(
         const TargetMemoryAddressRange& absoluteAddressRange
     ) const {
-        return TargetMemoryAddressRange(
-            absoluteAddressRange.startAddress - this->memoryDescriptor.addressRange.startAddress,
-            absoluteAddressRange.endAddress - this->memoryDescriptor.addressRange.startAddress
-        );
+        return TargetMemoryAddressRange{
+            absoluteAddressRange.startAddress - this->memorySegmentDescriptor.addressRange.startAddress,
+            absoluteAddressRange.endAddress - this->memorySegmentDescriptor.addressRange.startAddress
+        };
     }
 
     TargetMemoryAddressRange RegionItem::convertRelativeToAbsoluteAddressRange(
         const TargetMemoryAddressRange& relativeAddressRange
     ) const {
-        return TargetMemoryAddressRange(
-            relativeAddressRange.startAddress + this->memoryDescriptor.addressRange.startAddress,
-            relativeAddressRange.endAddress + this->memoryDescriptor.addressRange.startAddress
-        );
+        return TargetMemoryAddressRange{
+            relativeAddressRange.startAddress + this->memorySegmentDescriptor.addressRange.startAddress,
+            relativeAddressRange.endAddress + this->memorySegmentDescriptor.addressRange.startAddress
+        };
     }
 
     void RegionItem::onAddressRangeInputChange() {
-        bool startAddressConversionOk = false;
-        bool endAddressConversionOk = false;
-        std::uint32_t startAddress = this->startAddressInput->text().toUInt(&startAddressConversionOk, 16);
-        std::uint32_t endAddress = this->endAddressInput->text().toUInt(&endAddressConversionOk, 16);
+        auto startAddressConversionOk = false;
+        auto endAddressConversionOk = false;
+        const auto startAddress = this->startAddressInput->text().toUInt(&startAddressConversionOk, 16);
+        const auto endAddress = this->endAddressInput->text().toUInt(&endAddressConversionOk, 16);
 
         if (startAddressConversionOk && endAddressConversionOk && startAddress <= endAddress) {
             this->sizeInput->setText(QString::number((endAddress - startAddress) + 1));
@@ -218,10 +218,10 @@ namespace Widgets
     }
 
     void RegionItem::onSizeInputChange() {
-        bool startAddressConversionOk = false;
-        bool sizeConversionOk = false;
-        std::uint32_t startAddress = this->startAddressInput->text().toUInt(&startAddressConversionOk, 16);
-        std::uint32_t size = this->sizeInput->text().toUInt(&sizeConversionOk, 10);
+        auto startAddressConversionOk = false;
+        auto sizeConversionOk = false;
+        const auto startAddress = this->startAddressInput->text().toUInt(&startAddressConversionOk, 16);
+        const auto size = this->sizeInput->text().toUInt(&sizeConversionOk, 10);
 
         if (startAddressConversionOk && sizeConversionOk && size > 0) {
             this->endAddressInput->setText("0x" + QString::number((startAddress + size) - 1, 16).toUpper());

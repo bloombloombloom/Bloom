@@ -15,7 +15,7 @@ namespace Widgets
 
             // Remove default icons
             for (auto& action : menu->actions()) {
-                action->setIcon(QIcon());
+                action->setIcon(QIcon{});
             }
 
             menu->popup(event->globalPos());

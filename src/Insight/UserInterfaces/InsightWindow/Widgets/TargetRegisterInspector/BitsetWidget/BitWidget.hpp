@@ -27,7 +27,7 @@ namespace Widgets
         static constexpr int WIDTH = BitBodyWidget::WIDTH;
         static constexpr int HEIGHT = BitBodyWidget::HEIGHT + BitWidget::LABEL_HEIGHT
             + BitWidget::VERTICAL_SPACING;
-        static constexpr int SPACING = 5;
+        static constexpr int SPACING = 3;
 
         BitWidget(
             int bitIndex,

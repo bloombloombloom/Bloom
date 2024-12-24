@@ -10,16 +10,8 @@ class ReadStackPointer: public InsightWorkerTask
 
 public:
     ReadStackPointer() = default;
-
-    QString brief() const override {
-        return "Reading stack pointer";
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups({
-            TaskGroup::USES_TARGET_CONTROLLER,
-        });
-    };
+    [[nodiscard]] QString brief() const override;
+    [[nodiscard]] TaskGroups taskGroups() const override;
 
 signals:
     void stackPointerRead(Targets::TargetStackPointer stackPointer);

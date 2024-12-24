@@ -29,8 +29,8 @@ namespace Widgets
 
         explicit ByteItem(Targets::TargetMemoryAddress address);
 
-        QSize size() const override {
-            return QSize(ByteItem::WIDTH, ByteItem::HEIGHT);
+        [[nodiscard]] QSize size() const override {
+            return {ByteItem::WIDTH, ByteItem::HEIGHT};
         }
     };
 #pragma pack(pop)

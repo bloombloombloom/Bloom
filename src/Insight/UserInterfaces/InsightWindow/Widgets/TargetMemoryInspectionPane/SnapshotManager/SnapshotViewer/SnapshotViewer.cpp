@@ -29,38 +29,41 @@ namespace Widgets
 
     SnapshotViewer::SnapshotViewer(
         MemorySnapshot& snapshot,
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         QWidget* parent
     )
         : QWidget(parent)
         , snapshot(snapshot)
-        , memoryDescriptor(memoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
         , hexViewerData(snapshot.data)
     {
         this->setWindowFlag(Qt::Window);
         this->setObjectName("snapshot-viewer");
         this->setWindowTitle(this->snapshot.name + " (" + this->snapshot.id + ")");
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/SnapshotViewer/UiFiles/SnapshotViewer.ui"
             )
-        );
+        };
 
-        auto stylesheetFile = QFile(
+        auto stylesheetFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/SnapshotViewer/Stylesheets/SnapshotViewer.qss"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open SnapshotViewer UI file");
+            throw Exception{"Failed to open SnapshotViewer UI file"};
         }
 
         if (!stylesheetFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open SnapshotViewer stylesheet file");
+            throw Exception{"Failed to open SnapshotViewer stylesheet file"};
         }
 
         // Set ideal window size
@@ -68,7 +71,7 @@ namespace Widgets
         this->setMinimumSize(700, 600);
         this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->setStyleSheet(stylesheetFile.readAll());
         this->container = uiLoader.load(&windowUiFile, this);
 
@@ -97,7 +100,7 @@ namespace Widgets
                 this->snapshot.focusedRegions.end(),
                 std::back_inserter(this->memoryRegionItems),
                 [] (const MemoryRegion& focusedRegion) {
-                    return new MemoryRegionItem(focusedRegion);
+                    return new MemoryRegionItem{focusedRegion};
                 }
             );
 
@@ -106,40 +109,42 @@ namespace Widgets
                 this->snapshot.excludedRegions.end(),
                 std::back_inserter(this->memoryRegionItems),
                 [] (const MemoryRegion& excludedRegion) {
-                    return new MemoryRegionItem(excludedRegion);
+                    return new MemoryRegionItem{excludedRegion};
                 }
             );
 
-            this->memoryRegionListView = new ListView(
-                ListScene::ListItemSetType(this->memoryRegionItems.begin(), this->memoryRegionItems.end()),
+            this->memoryRegionListView = new ListView{
+                ListItem::ListItemSetType{this->memoryRegionItems.begin(), this->memoryRegionItems.end()},
                 this
-            );
+            };
             this->memoryRegionListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
             this->memoryRegionListScene = this->memoryRegionListView->listScene();
-            this->memoryRegionListScene->margins = QMargins(0, 5, 0, 5);
+            this->memoryRegionListScene->margins = QMargins{0, 5, 0, 5};
             this->memoryRegionListScene->setSelectionLimit(2);
 
             noMemoryRegionsLabel->hide();
             memoryRegionsLayout->insertWidget(0, this->memoryRegionListView);
         }
 
-        this->restoreBytesAction = new ContextMenuAction(
+        this->restoreBytesAction = new ContextMenuAction{
             "Restore Selection",
             [this] (const std::set<Targets::TargetMemoryAddress>&) {
-                return this->memoryDescriptor.access.writeableDuringDebugSession;
+                return this->memorySegmentDescriptor.debugModeAccess.writeable;
             },
             this
-        );
+        };
 
-        this->hexViewerWidget = new HexViewerWidget(
-            this->memoryDescriptor,
+        this->hexViewerWidget = new HexViewerWidget{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            targetState,
             this->hexViewerData,
             this->hexViewerWidgetSettings,
             this->snapshot.focusedRegions,
             this->snapshot.excludedRegions,
             this
-        );
+        };
 
         containerLayout->insertWidget(1, this->hexViewerWidget);
 
@@ -151,7 +156,9 @@ namespace Widgets
         auto* programCounterLabel = this->bottomBar->findChild<Label*>("program-counter-label");
         auto* dateLabel = this->bottomBar->findChild<Label*>("date-label");
 
-        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->memoryDescriptor.size()) + " bytes");
+        memoryCapacityLabel->setText(
+            QLocale{QLocale::English}.toString(this->memorySegmentDescriptor.size()) + " bytes"
+        );
         snapshotIdLabel->setText(this->snapshot.id);
         programCounterLabel->setText(
             "0x" + QString::number(this->snapshot.programCounter, 16).rightJustified(8, '0').toUpper()
@@ -161,10 +168,8 @@ namespace Widgets
         this->nameInput->setText(this->snapshot.name);
         this->descriptionInput->setPlainText(this->snapshot.description);
 
-        this->taskProgressIndicator = new TaskProgressIndicator(this);
+        this->taskProgressIndicator = new TaskProgressIndicator{this};
         this->bottomBarLayout->insertWidget(2, this->taskProgressIndicator);
-
-        auto* insightSignals = InsightSignals::instance();
 
         QObject::connect(
             this->restoreBytesAction,
@@ -187,7 +192,6 @@ namespace Widgets
 
     void SnapshotViewer::resizeEvent(QResizeEvent* event) {
         this->container->setFixedSize(this->size());
-
         QWidget::resizeEvent(event);
     }
 
@@ -211,15 +215,15 @@ namespace Widgets
         }
 
         if (confirmationPromptEnabled) {
-            auto* confirmationDialog = new ConfirmationDialog(
+            auto* confirmationDialog = new ConfirmationDialog{
                 "Restore selected bytes",
-                "This operation will write " + QString::number(addresses.size()) + " byte(s) to the target's "
-                    + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
-                    + ".<br/><br/>Are you sure you want to proceed?",
+                "This operation will write " + QString::number(addresses.size()) + " byte(s) to the target's \""
+                    + QString::fromStdString(this->memorySegmentDescriptor.name)
+                    + "\" segment.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this
-            );
+            };
 
             QObject::connect(
                 confirmationDialog,
@@ -234,23 +238,23 @@ namespace Widgets
             return;
         }
 
-        auto writeBlocks = std::vector<WriteTargetMemory::Block>();
+        auto writeBlocks = std::vector<WriteTargetMemory::Block>{};
 
-        Targets::TargetMemoryAddress blockStartAddress = *(addresses.begin());
-        Targets::TargetMemoryAddress blockEndAddress = blockStartAddress;
+        auto blockStartAddress = *(addresses.begin());
+        auto blockEndAddress = blockStartAddress;
 
         for (const auto& address : addresses) {
             if (address > (blockEndAddress + 1)) {
                 // Commit the block
-                const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
-                const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+                const auto dataBeginOffset = blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+                const auto dataEndOffset = blockEndAddress - this->memorySegmentDescriptor.addressRange.startAddress + 1;
 
                 writeBlocks.emplace_back(
                     blockStartAddress,
-                    Targets::TargetMemoryBuffer(
+                    Targets::TargetMemoryBuffer{
                         this->snapshot.data.begin() + dataBeginOffset,
                         this->snapshot.data.begin() + dataEndOffset
-                    )
+                    }
                 );
 
                 blockStartAddress = address;
@@ -262,22 +266,22 @@ namespace Widgets
         }
 
         {
-            const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
-            const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+            const auto dataBeginOffset = blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+            const auto dataEndOffset = blockEndAddress - this->memorySegmentDescriptor.addressRange.startAddress + 1;
 
             writeBlocks.emplace_back(
                 blockStartAddress,
-                Targets::TargetMemoryBuffer(
+                Targets::TargetMemoryBuffer{
                     this->snapshot.data.begin() + dataBeginOffset,
                     this->snapshot.data.begin() + dataEndOffset
-                )
+                }
             );
         }
 
-        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>(
-            new WriteTargetMemory(this->memoryDescriptor, std::move(writeBlocks)),
+        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>{
+            new WriteTargetMemory{this->addressSpaceDescriptor, this->memorySegmentDescriptor, std::move(writeBlocks)},
             &QObject::deleteLater
-        );
+        };
 
         this->taskProgressIndicator->addTask(writeMemoryTask);
         InsightWorker::queueTask(writeMemoryTask);

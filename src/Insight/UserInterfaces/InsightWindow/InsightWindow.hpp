@@ -12,6 +12,8 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetVariantDescriptor.hpp"
+#include "src/Targets/TargetPinoutDescriptor.hpp"
 
 #include "Widgets/Label.hpp"
 #include "Widgets/SvgToolButton.hpp"
@@ -20,6 +22,7 @@
 #include "Widgets/PanelWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.hpp"
+#include "Widgets/TargetMemoryInspectionPane/ToolButton.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPaneSettings.hpp"
 #include "Widgets/TaskIndicator/TaskIndicator.hpp"
 #include "AboutWindow.hpp"
@@ -33,7 +36,8 @@ public:
         InsightProjectSettings& insightProjectSettings,
         const InsightConfig& insightConfig,
         const EnvironmentConfig& environmentConfig,
-        const Targets::TargetDescriptor& targetDescriptor
+        const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState
     );
 
 protected:
@@ -49,7 +53,7 @@ private:
     TargetConfig targetConfig;
 
     const Targets::TargetDescriptor& targetDescriptor;
-    Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+    const Targets::TargetState& targetState;
 
     QWidget* windowContainer = nullptr;
     QMenuBar* mainMenuBar = nullptr;
@@ -68,60 +72,46 @@ private:
     Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
     QToolButton* targetRegistersButton = nullptr;
 
-    Widgets::Label* ioUnavailableWidget = nullptr;
     Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
     Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
 
     QWidget* bottomMenuBar = nullptr;
+    QHBoxLayout* bottomMenuBarLayout = nullptr;
     Widgets::PanelWidget* bottomPanel = nullptr;
-    Widgets::TargetMemoryInspectionPane* ramInspectionPane = nullptr;
-    Widgets::TargetMemoryInspectionPane* eepromInspectionPane = nullptr;
-    Widgets::TargetMemoryInspectionPane* flashInspectionPane = nullptr;
-    std::map<
-        Targets::TargetMemoryType,
-        Widgets::TargetMemoryInspectionPaneSettings
-    > memoryInspectionPaneSettingsByMemoryType;
-    QToolButton* ramInspectionButton = nullptr;
-    QToolButton* eepromInspectionButton = nullptr;
-    QToolButton* flashInspectionButton = nullptr;
+    std::vector<Widgets::TargetMemoryInspectionPane*> memoryInspectionPaneWidgets = {};
 
     QWidget* footer = nullptr;
     Widgets::Label* targetStatusLabel = nullptr;
     Widgets::Label* programCounterValueLabel = nullptr;
     Widgets::TaskIndicator* taskIndicator = nullptr;
 
-    std::map<QString, Targets::TargetVariant> supportedVariantsByName;
-    const Targets::TargetVariant* selectedVariant = nullptr;
-    std::optional<Targets::TargetVariant> previouslySelectedVariant;
+    const Targets::TargetVariantDescriptor* selectedVariantDescriptor = nullptr;
     bool uiDisabled = false;
 
-    static bool isVariantSupported(const Targets::TargetVariant& variant);
+    static bool isPinoutSupported(const Targets::TargetPinoutDescriptor& pinoutDescriptor);
 
     void setUiDisabled(bool disable);
 
     void populateVariantMenu();
     void selectDefaultVariant();
-    void selectVariant(const Targets::TargetVariant* variant);
+    void selectVariant(const Targets::TargetVariantDescriptor* variantDescriptor);
     void createPanes();
 
     void adjustPanels();
     void adjustMinimumSize();
 
-    void onTargetStateUpdate(Targets::TargetState newState);
+    void onTargetStateUpdate(Targets::TargetState newState, Targets::TargetState previousState);
     void refresh();
-    void refreshPinStates();
-    void refreshProgramCounter(std::optional<std::function<void(void)>> callback = std::nullopt);
+    void refreshPadStates();
     void openReportIssuesUrl();
     void openGettingStartedUrl();
     void openAboutWindow();
     void toggleTargetRegistersPane();
-    void toggleRamInspectionPane();
+    void toggleMemoryInspectionPane(Widgets::TargetMemoryInspectionPane* pane);
     void toggleEepromInspectionPane();
     void toggleFlashInspectionPane();
     void onRegistersPaneStateChanged();
-    void onRamInspectionPaneStateChanged();
-    void onEepromInspectionPaneStateChanged();
-    void onFlashInspectionPaneStateChanged();
+    void onMemoryInspectionPaneStateChanged(Widgets::TargetMemoryInspectionPane* pane, Widgets::ToolButton* toolBtn);
     void onProgrammingModeEnabled();
     void onProgrammingModeDisabled();
 };

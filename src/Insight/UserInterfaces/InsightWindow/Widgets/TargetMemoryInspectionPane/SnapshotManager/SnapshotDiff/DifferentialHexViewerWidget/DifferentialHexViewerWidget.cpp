@@ -9,7 +9,9 @@ namespace Widgets
         DifferentialHexViewerWidgetType type,
         DifferentialHexViewerSharedState& state,
         const SnapshotDiffSettings& snapshotDiffSettings,
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         HexViewerWidgetSettings& settings,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -17,7 +19,9 @@ namespace Widgets
         QWidget* parent
     )
         : HexViewerWidget(
-            targetMemoryDescriptor,
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            targetState,
             data,
             settings,
             focusedMemoryRegions,
@@ -30,17 +34,19 @@ namespace Widgets
     {}
 
     void DifferentialHexViewerWidget::init() {
-        this->differentialView = new DifferentialItemGraphicsView(
+        this->differentialView = new DifferentialItemGraphicsView{
             this->type,
             this->state,
             this->snapshotDiffSettings,
-            this->targetMemoryDescriptor,
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
             this->container
-        );
+        };
 
         if (this->type == DifferentialHexViewerWidgetType::PRIMARY) {
             this->differentialView->setLayoutDirection(Qt::LayoutDirection::RightToLeft);

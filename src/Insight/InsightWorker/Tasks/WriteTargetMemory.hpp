@@ -5,7 +5,8 @@
 #include "InsightWorkerTask.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Helpers/EnumToStringMappings.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 class WriteTargetMemory: public InsightWorkerTask
 {
@@ -30,33 +31,18 @@ public:
     };
 
     WriteTargetMemory(
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         std::vector<Block>&& blocks
-    )
-        : memoryDescriptor(memoryDescriptor)
-        , blocks(std::move(blocks))
-    {}
-
+    );
     WriteTargetMemory(
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         Targets::TargetMemoryAddress startAddress,
         const Targets::TargetMemoryBuffer& data
-    )
-        : WriteTargetMemory(memoryDescriptor, std::vector<Block>({{startAddress, data}}))
-    {}
-
-    QString brief() const override {
-        return
-            "Writing to target " + EnumToStringMappings::targetMemoryTypes.at(
-                this->memoryDescriptor.type
-            ).toUpper();
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups({
-            TaskGroup::USES_TARGET_CONTROLLER,
-        });
-    }
+    );
+    [[nodiscard]] QString brief() const override;
+    [[nodiscard]] TaskGroups taskGroups() const override;
 
 signals:
     void targetMemoryWritten(Targets::TargetMemorySize bytesWritten);
@@ -65,6 +51,9 @@ protected:
     void run(Services::TargetControllerService& targetControllerService) override;
 
 private:
-    Targets::TargetMemoryDescriptor memoryDescriptor;
+    const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+    const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
     std::vector<Block> blocks;
+
+    [[nodiscard]] Targets::TargetMemorySize totalSize() const;
 };

@@ -16,12 +16,14 @@
 
 using namespace Widgets;
 
-UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
+UiLoader::UiLoader(QObject* parent)
+    : QUiLoader(parent)
+{
     this->customWidgetConstructorsByWidgetName = {
         {
             "Label",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new Label(parent);
+                auto* widget = new Label{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -30,7 +32,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "RotatableLabel",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new RotatableLabel("", parent);
+                auto* widget = new RotatableLabel{"", parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -39,7 +41,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "LabeledSeparator",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new LabeledSeparator(parent);
+                auto* widget = new LabeledSeparator{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -48,7 +50,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "TextInput",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new TextInput(parent);
+                auto* widget = new TextInput{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -57,7 +59,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "PlainTextEdit",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new PlainTextEdit(parent);
+                auto* widget = new PlainTextEdit{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -66,7 +68,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "PushButton",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new PushButton(parent);
+                auto* widget = new PushButton{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -75,7 +77,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "ExpandingHeightScrollAreaWidget",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new ExpandingHeightScrollAreaWidget(parent);
+                auto* widget = new ExpandingHeightScrollAreaWidget{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -84,7 +86,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "SvgWidget",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new SvgWidget(parent);
+                auto* widget = new SvgWidget{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -93,7 +95,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "SvgToolButton",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new SvgToolButton(parent);
+                auto* widget = new SvgToolButton{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
@@ -102,7 +104,7 @@ UiLoader::UiLoader(QObject* parent): QUiLoader(parent) {
         {
             "TargetPackageWidgetContainer",
             [this] (QWidget* parent, const QString& name) {
-                auto* widget = new InsightTargetWidgets::TargetPackageWidgetContainer(parent);
+                auto* widget = new InsightTargetWidgets::TargetPackageWidgetContainer{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;

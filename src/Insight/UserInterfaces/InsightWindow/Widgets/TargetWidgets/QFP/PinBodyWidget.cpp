@@ -7,8 +7,19 @@ namespace Widgets::InsightTargetWidgets::Qfp
 {
     using namespace Targets;
 
-    PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical)
-    : TargetPinBodyWidget(parent, std::move(pinDescriptor)), isVertical(isVertical) {
+    PinBodyWidget::PinBodyWidget(
+        const Targets::TargetPinDescriptor& pinDescriptor,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        bool isVertical,
+        QWidget* parent
+    )
+        : TargetPinBodyWidget(
+            pinDescriptor,
+            padDescriptor,
+            parent
+        )
+        , isVertical(isVertical)
+    {
         if (isVertical) {
             this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
 
@@ -18,7 +29,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
     }
 
     void PinBodyWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 

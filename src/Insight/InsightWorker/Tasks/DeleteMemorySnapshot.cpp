@@ -3,30 +3,25 @@
 #include <QFile>
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/EnumToStringMappings.hpp"
 #include "src/Logger/Logger.hpp"
 
 using Services::TargetControllerService;
 
-DeleteMemorySnapshot::DeleteMemorySnapshot(
-    const QString& snapshotId,
-    Targets::TargetMemoryType memoryType
-)
+DeleteMemorySnapshot::DeleteMemorySnapshot(const QString& snapshotId)
     : snapshotId(snapshotId)
-    , memoryType(memoryType)
 {}
 
-void DeleteMemorySnapshot::run(TargetControllerService&) {
-    using Targets::TargetMemorySize;
+QString DeleteMemorySnapshot::brief() const {
+    return "Deleting memory snapshot " + this->snapshotId;
+}
 
+void DeleteMemorySnapshot::run(TargetControllerService&) {
     Logger::info("Deleting snapshot " + this->snapshotId.toStdString());
 
-    const auto snapshotFilePath = QString::fromStdString(Services::PathService::projectSettingsDirPath())
-        + "/memory_snapshots/" + EnumToStringMappings::targetMemoryTypes.at(this->memoryType) + "/"
-            + this->snapshotId + ".json";
+    const auto snapshotFilePath = QString::fromStdString(Services::PathService::memorySnapshotsPath())
+        + this->snapshotId + ".json";
 
-    auto snapshotFile = QFile(snapshotFilePath);
-
+    auto snapshotFile = QFile{snapshotFilePath};
     if (!snapshotFile.exists()) {
         Logger::warning(
             "Could not find snapshot file for " + this->snapshotId.toStdString() + " - expected path: "

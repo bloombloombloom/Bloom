@@ -69,6 +69,10 @@ namespace Services
             return PathService::projectSettingsDirPath() + "/settings.json";
         }
 
+        static std::string memorySnapshotsPath() {
+            return PathService::projectSettingsDirPath() + "/memory_snapshots/";
+        }
+
         /**
          * Returns the path to Bloom's compiled resources.
          *

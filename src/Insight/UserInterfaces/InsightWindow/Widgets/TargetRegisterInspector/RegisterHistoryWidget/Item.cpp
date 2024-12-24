@@ -5,7 +5,9 @@
 namespace Widgets
 {
     Item::Item(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent)
-    : ClickableWidget(parent), registerValue(registerValue) {
+        : ClickableWidget(parent)
+        , registerValue(registerValue)
+    {
         auto onClick = [this] {
             this->setSelected(true);
         };

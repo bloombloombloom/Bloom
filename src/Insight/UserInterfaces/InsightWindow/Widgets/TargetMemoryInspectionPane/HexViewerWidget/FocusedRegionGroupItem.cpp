@@ -56,11 +56,11 @@ namespace Widgets
 
         const auto regionStartAddress = this->focusedMemoryRegion.addressRange.startAddress;
         const auto regionEndAddress = this->focusedMemoryRegion.addressRange.endAddress;
-        const auto startIndex = regionStartAddress - hexViewerState.memoryDescriptor.addressRange.startAddress;
-        auto value = Targets::TargetMemoryBuffer(
+        const auto startIndex = regionStartAddress - hexViewerState.memorySegmentDescriptor.addressRange.startAddress;
+        auto value = Targets::TargetMemoryBuffer{
             hexViewerState.data->begin() + startIndex,
             hexViewerState.data->begin() + startIndex + (regionEndAddress - regionStartAddress + 1)
-        );
+        };
 
         if (this->focusedMemoryRegion.endianness == Targets::TargetMemoryEndianness::LITTLE) {
             std::reverse(value.begin(), value.end());
@@ -90,7 +90,7 @@ namespace Widgets
                 }
 
                 if (valueSize <= 4) {
-                    std::int32_t integerValue = 0;
+                    auto integerValue = std::int32_t{0};
                     for (const auto& byte : value) {
                         integerValue = (integerValue << 8) | byte;
                     }
@@ -99,7 +99,7 @@ namespace Widgets
                     break;
                 }
 
-                std::int64_t integerValue = 0;
+                auto integerValue = std::int64_t{0};
                 for (const auto& byte : value) {
                     integerValue = (integerValue << 8) | byte;
                 }
@@ -138,40 +138,40 @@ namespace Widgets
 
     QMargins FocusedRegionGroupItem::groupMargins(
         const HexViewerSharedState* hexViewerState,
-        const int maximumWidth
+        int maximumWidth
     ) const {
-        if (hexViewerState->settings.displayAnnotations) {
-            constexpr auto averageSymbolWidth = 8;
-            const auto nameLabelWidth = static_cast<int>(this->focusedMemoryRegion.name.size() * averageSymbolWidth);
-            const auto valueLabelWidth = static_cast<int>(
-                this->valueLabel.has_value() ? this->valueLabel->size() * averageSymbolWidth : 0
-            );
-
-            const auto minimumWidth = std::min(std::max(nameLabelWidth, valueLabelWidth), maximumWidth);
-
-            const auto byteItemSize = (this->focusedMemoryRegion.addressRange.endAddress
-                - this->focusedMemoryRegion.addressRange.startAddress + 1);
-            const auto estimatedWidth = static_cast<int>(
-                byteItemSize * (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) - ByteItem::RIGHT_MARGIN
-            );
-
-            const auto annotationMargin = std::min(
-                static_cast<int>(
-                    estimatedWidth < minimumWidth ? minimumWidth - estimatedWidth : 0
-                ),
-                std::max(maximumWidth - estimatedWidth, 0)
-            );
-
-            return QMargins(
-                annotationMargin / 2,
-                this->focusedMemoryRegion.dataType != MemoryRegionDataType::UNKNOWN
-                    ? FocusedRegionGroupItem::ANNOTATION_HEIGHT
-                    : 0,
-                annotationMargin / 2,
-                FocusedRegionGroupItem::ANNOTATION_HEIGHT
-            );
+        if (!hexViewerState->settings.displayAnnotations) {
+            return QMargins{0, 0, 0, 0};
         }
 
-        return QMargins(0, 0, 0, 0);
+        constexpr auto averageSymbolWidth = 8;
+        const auto nameLabelWidth = static_cast<int>(this->focusedMemoryRegion.name.size() * averageSymbolWidth);
+        const auto valueLabelWidth = static_cast<int>(
+            this->valueLabel.has_value() ? this->valueLabel->size() * averageSymbolWidth : 0
+        );
+
+        const auto minimumWidth = std::min(std::max(nameLabelWidth, valueLabelWidth), maximumWidth);
+
+        const auto byteItemSize = (this->focusedMemoryRegion.addressRange.endAddress
+            - this->focusedMemoryRegion.addressRange.startAddress + 1);
+        const auto estimatedWidth = static_cast<int>(
+            byteItemSize * (ByteItem::WIDTH + ByteItem::RIGHT_MARGIN) - ByteItem::RIGHT_MARGIN
+        );
+
+        const auto annotationMargin = std::min(
+            static_cast<int>(
+                estimatedWidth < minimumWidth ? minimumWidth - estimatedWidth : 0
+            ),
+            std::max(maximumWidth - estimatedWidth, 0)
+        );
+
+        return QMargins{
+            annotationMargin / 2,
+            this->focusedMemoryRegion.dataType != MemoryRegionDataType::UNKNOWN
+                ? FocusedRegionGroupItem::ANNOTATION_HEIGHT
+                : 0,
+            annotationMargin / 2,
+            FocusedRegionGroupItem::ANNOTATION_HEIGHT
+        };
     }
 }

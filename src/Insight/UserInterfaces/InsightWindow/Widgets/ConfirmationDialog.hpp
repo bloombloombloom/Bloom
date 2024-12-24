@@ -26,7 +26,7 @@ namespace Widgets
         void aborted();
 
     protected:
-        PushButton* confirmButton = new PushButton(this);
-        PushButton* cancelButton = new PushButton(this);
+        PushButton* confirmButton = new PushButton{this};
+        PushButton* cancelButton = new PushButton{this};
     };
 }

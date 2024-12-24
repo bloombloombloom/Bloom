@@ -11,7 +11,7 @@ namespace Widgets
         Q_OBJECT
     public:
         Targets::TargetMemoryBuffer registerValue;
-        Item(const Targets::TargetMemoryBuffer& registerValue, QWidget *parent);
+        Item(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent);
 
     public slots:
         void setSelected(bool selected);

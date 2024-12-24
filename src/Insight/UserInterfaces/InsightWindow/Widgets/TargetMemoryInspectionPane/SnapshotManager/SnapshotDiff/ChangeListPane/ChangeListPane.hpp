@@ -50,8 +50,8 @@ namespace Widgets
 
         const ChangeListItem* selectedChangeListItem = nullptr;
 
-        QAction* selectBytesAction = new QAction("Select", this);
-        QAction* restoreBytesAction = new QAction("Restore", this);
+        QAction* selectBytesAction = new QAction{"Select", this};
+        QAction* restoreBytesAction = new QAction{"Restore", this};
 
         bool restoreEnabled = false;
 

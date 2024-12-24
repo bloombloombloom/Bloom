@@ -9,6 +9,8 @@
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
+#include "src/Targets/TargetDescriptor.hpp"
+
 namespace Widgets::InsightTargetWidgets::Qfp
 {
     /**
@@ -20,7 +22,10 @@ namespace Widgets::InsightTargetWidgets::Qfp
 
     public:
         QuadFlatPackageWidget(
-            const Targets::TargetVariant& targetVariant,
+            const Targets::TargetVariantDescriptor& variantDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             QWidget* parent
         );
 

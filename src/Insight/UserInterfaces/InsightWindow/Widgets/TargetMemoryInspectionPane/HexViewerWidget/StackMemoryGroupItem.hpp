@@ -26,12 +26,12 @@ namespace Widgets
 
         ~StackMemoryGroupItem();
 
-        void adjustItemPositions(const int maximumWidth, const HexViewerSharedState* hexViewerState) override;
+        void adjustItemPositions(int maximumWidth, const HexViewerSharedState* hexViewerState) override;
 
         void refreshValues();
 
     protected:
-        QMargins groupMargins(const HexViewerSharedState* hexViewerState, const int maximumWidth) const override;
+        QMargins groupMargins(const HexViewerSharedState* hexViewerState, int maximumWidth) const override;
 
         bool positionOnNewLine(const int maximumWidth) override {
             return true;

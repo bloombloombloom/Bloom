@@ -20,7 +20,7 @@ namespace Widgets
             this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
             this->setMaximumResize(this->window()->height() - 100);
 
-            auto* layout = new QHBoxLayout(this);
+            auto* layout = new QHBoxLayout{this};
             layout->setSpacing(0);
             layout->setContentsMargins(0, 0, 0, 0);
             this->setLayout(layout);
@@ -30,7 +30,7 @@ namespace Widgets
             this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
             this->setMaximumResize(this->window()->width() - 100);
 
-            auto* layout = new QVBoxLayout(this);
+            auto* layout = new QVBoxLayout{this};
             layout->setSpacing(0);
             layout->setContentsMargins(0, 0, 0, 0);
             this->setLayout(layout);
@@ -83,8 +83,6 @@ namespace Widgets
     }
 
     bool PanelWidget::eventFilter(QObject* object, QEvent* event) {
-        const auto eventType = event->type();
-
         if (event->isSinglePointEvent()) {
             auto* pointerEvent = dynamic_cast<QSinglePointEvent*>(event);
 
@@ -168,23 +166,23 @@ namespace Widgets
 
         switch (this->panelType) {
             case PanelWidgetType::LEFT: {
-                return std::pair(
-                    QPoint(currentSize.width() - this->handleSize, 0),
-                    QPoint(currentSize.width(), currentSize.height())
-                );
+                return std::pair{
+                    QPoint{currentSize.width() - this->handleSize, 0},
+                    QPoint{currentSize.width(), currentSize.height()}
+                };
             }
             case PanelWidgetType::RIGHT: {
-                return std::pair(
-                    QPoint(0, 0),
-                    QPoint(this->handleSize, currentSize.height())
-                );
+                return std::pair{
+                    QPoint{0, 0},
+                    QPoint{this->handleSize, currentSize.height()}
+                };
             }
             case PanelWidgetType::BOTTOM:
             default: {
-                return std::pair(
-                    QPoint(0, 0),
-                    QPoint(currentSize.width(), this->handleSize)
-                );
+                return std::pair{
+                    QPoint{0, 0},
+                    QPoint{currentSize.width(), this->handleSize}
+                };
             }
         }
     }
@@ -192,9 +190,8 @@ namespace Widgets
     bool PanelWidget::isPositionWithinHandleArea(const QPoint& position) const {
         const auto handleArea = this->getHandleArea();
 
-        return (
+        return
             position.x() >= handleArea.first.x() && position.x() <= handleArea.second.x()
-            && position.y() >= handleArea.first.y() && position.y() <= handleArea.second.y()
-        );
+            && position.y() >= handleArea.first.y() && position.y() <= handleArea.second.y();
     }
 }

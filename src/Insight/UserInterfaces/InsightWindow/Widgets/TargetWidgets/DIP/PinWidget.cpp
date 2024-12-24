@@ -6,19 +6,25 @@ namespace Widgets::InsightTargetWidgets::Dip
 
     PinWidget::PinWidget(
         const TargetPinDescriptor& pinDescriptor,
-        const TargetVariant& targetVariant,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor,
         QWidget* parent
     )
-        : TargetPinWidget(pinDescriptor, targetVariant, parent)
+        : TargetPinWidget(
+            pinDescriptor,
+            padDescriptor,
+            pinoutDescriptor,
+            parent
+        )
     {
         this->setFixedSize(PinWidget::MINIMUM_WIDTH, PinWidget::MAXIMUM_HEIGHT);
 
-        this->layout = new QVBoxLayout();
+        this->layout = new QVBoxLayout{};
         this->layout->setContentsMargins(0, 0, 0, 0);
         this->layout->setSpacing(0);
 
-        this->bodyWidget = new PinBodyWidget(this, this->pinDescriptor);
-        this->position = (pinDescriptor.number > (targetVariant.pinDescriptorsByNumber.size() / 2))
+        this->bodyWidget = new PinBodyWidget{this->pinDescriptor, padDescriptor, this};
+        this->position = (pinDescriptor.numericPosition > (pinoutDescriptor.pinDescriptors.size() / 2))
             ? Position::TOP : Position::BOTTOM;
 
         const bool isTopWidget = this->position == Position::TOP;
@@ -26,12 +32,14 @@ namespace Widgets::InsightTargetWidgets::Dip
         this->layout->setAlignment(isTopWidget ? (Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignBottom)
            : (Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignTop));
 
-        this->pinNameLabelText = QString::fromStdString(pinDescriptor.name).toUpper();
+        this->pinNameLabelText = QString::fromStdString(
+            this->padDescriptor.has_value() ? padDescriptor->get().name : "NC"
+        );
         this->pinNameLabelText.truncate(5);
 
-        this->pinNumberLabel = new Label(this);
+        this->pinNumberLabel = new Label{this};
         this->pinNumberLabel->setObjectName("target-pin-number");
-        this->pinNumberLabel->setText(QString::number(pinDescriptor.number));
+        this->pinNumberLabel->setText(QString::number(pinDescriptor.numericPosition));
         this->pinNumberLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         if (isTopWidget) {

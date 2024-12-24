@@ -2,33 +2,22 @@
 
 #include "InsightWorkerTask.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
 
 class ReadTargetRegisters: public InsightWorkerTask
 {
     Q_OBJECT
 
 public:
-    explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptorIds& descriptorIds)
-        : descriptorIds(descriptorIds)
-    {}
-
-    QString brief() const override {
-        return "Reading " + QString::number(this->descriptorIds.size()) + " target register(s)";
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups({
-            TaskGroup::USES_TARGET_CONTROLLER,
-        });
-    };
+    explicit ReadTargetRegisters(const Targets::TargetRegisterDescriptors& descriptors);
+    [[nodiscard]] QString brief() const override;
+    [[nodiscard]] TaskGroups taskGroups() const override;
 
 signals:
-    void targetRegistersRead(Targets::TargetRegisters registers);
+    void targetRegistersRead(Targets::TargetRegisterDescriptorAndValuePairs registers);
 
 protected:
     void run(Services::TargetControllerService& targetControllerService) override;
 
 private:
-    Targets::TargetRegisterDescriptorIds descriptorIds;
+    Targets::TargetRegisterDescriptors descriptors;
 };

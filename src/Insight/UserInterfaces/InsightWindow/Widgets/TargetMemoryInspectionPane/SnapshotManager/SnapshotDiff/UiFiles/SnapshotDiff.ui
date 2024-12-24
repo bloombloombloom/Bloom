@@ -454,7 +454,7 @@
                             <widget class="QFrame" name="separator"/>
                         </item>
                         <item>
-                            <widget class="Label" name="memory-type-label">
+                            <widget class="Label" name="memory-segment-name-label">
                                 <property name="sizePolicy">
                                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed"/>
                                 </property>

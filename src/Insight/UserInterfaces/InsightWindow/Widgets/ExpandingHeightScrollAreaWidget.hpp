@@ -11,7 +11,9 @@ namespace Widgets
         Q_OBJECT
 
     public:
-        explicit ExpandingHeightScrollAreaWidget(QWidget* parent): QScrollArea(parent) {};
+        explicit ExpandingHeightScrollAreaWidget(QWidget* parent)
+            : QScrollArea(parent)
+        {};
 
     protected:
         [[nodiscard]] QSize scrollAreaSize() const {

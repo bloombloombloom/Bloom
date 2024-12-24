@@ -8,6 +8,10 @@
 #include "ItemGraphicsScene.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
+
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 
 namespace Widgets
@@ -18,7 +22,9 @@ namespace Widgets
 
     public:
         ItemGraphicsView(
-            const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -38,7 +44,10 @@ namespace Widgets
         void sceneReady();
 
     protected:
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetState& targetState;
+
         const std::optional<Targets::TargetMemoryBuffer>& data;
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;

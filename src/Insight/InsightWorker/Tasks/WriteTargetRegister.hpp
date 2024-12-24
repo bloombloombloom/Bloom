@@ -1,30 +1,20 @@
 #pragma once
 
 #include "InsightWorkerTask.hpp"
-#include "src/Targets/TargetRegister.hpp"
+#include "src/Targets/TargetRegisterDescriptor.hpp"
 
 class WriteTargetRegister: public InsightWorkerTask
 {
     Q_OBJECT
 
 public:
-    explicit WriteTargetRegister(const Targets::TargetRegister& targetRegister)
-        : targetRegister(targetRegister)
-    {}
-
-    QString brief() const override {
-        return "Writing target register";
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups({
-            TaskGroup::USES_TARGET_CONTROLLER,
-        });
-    };
+    explicit WriteTargetRegister(const Targets::TargetRegisterDescriptorAndValuePair& registerPair);
+    [[nodiscard]] QString brief() const override;
+    [[nodiscard]] TaskGroups taskGroups() const override;
 
 protected:
     void run(Services::TargetControllerService& targetControllerService) override;
 
 private:
-    Targets::TargetRegister targetRegister;
+    Targets::TargetRegisterDescriptorAndValuePair registerPair;
 };

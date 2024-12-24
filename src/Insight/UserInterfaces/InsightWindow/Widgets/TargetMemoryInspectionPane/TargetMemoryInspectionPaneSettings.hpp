@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <vector>
 
 #include "FocusedMemoryRegion.hpp"
@@ -14,6 +15,8 @@ namespace Widgets
 {
     struct TargetMemoryInspectionPaneSettings
     {
+        QString addressSpaceKey;
+        QString memorySegmentKey;
         bool refreshOnTargetStop = false;
         bool refreshOnActivation = false;
 
@@ -22,7 +25,12 @@ namespace Widgets
         std::vector<FocusedMemoryRegion> focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion> excludedMemoryRegions;
 
-        PanelState rightPanelState = PanelState(300, true);
-        PaneState snapshotManagerState = PaneState(true, true, std::nullopt);
+        PanelState rightPanelState = {300, true};
+        PaneState snapshotManagerState = {true, true, std::nullopt};
+
+        TargetMemoryInspectionPaneSettings(const QString& addressSpaceKey, const QString& memorySegmentKey)
+            : addressSpaceKey(addressSpaceKey)
+            , memorySegmentKey(memorySegmentKey)
+        {}
     };
 }

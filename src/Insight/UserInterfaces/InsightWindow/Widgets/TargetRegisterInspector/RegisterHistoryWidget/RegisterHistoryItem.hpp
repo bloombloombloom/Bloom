@@ -20,9 +20,9 @@ namespace Widgets
         );
 
     private:
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        Label* dateLabel = new Label(this);
-        Label* valueLabel = new Label(this);
-        Label* descriptionLabel = new Label(this);
+        QVBoxLayout* layout = new QVBoxLayout{this};
+        Label* dateLabel = new Label{this};
+        Label* valueLabel = new Label{this};
+        Label* descriptionLabel = new Label{this};
     };
 }

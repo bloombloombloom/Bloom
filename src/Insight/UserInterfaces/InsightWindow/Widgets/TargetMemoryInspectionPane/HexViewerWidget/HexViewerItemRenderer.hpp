@@ -37,7 +37,7 @@ namespace Widgets
         );
 
         [[nodiscard]] QRectF boundingRect() const override {
-            return QRectF(0, 0, this->size.width(), this->size.height());
+            return QRectF{0, 0, static_cast<qreal>(this->size.width()), static_cast<qreal>(this->size.height())};
         }
 
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

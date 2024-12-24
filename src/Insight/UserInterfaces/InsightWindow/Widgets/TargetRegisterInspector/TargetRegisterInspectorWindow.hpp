@@ -27,7 +27,7 @@ namespace Widgets
     public:
         TargetRegisterInspectorWindow(
             const Targets::TargetRegisterDescriptor& registerDescriptor,
-            Targets::TargetState currentTargetState,
+            const Targets::TargetState& targetState,
             QWidget* parent = nullptr
         );
 
@@ -40,7 +40,9 @@ namespace Widgets
         void keyPressEvent(QKeyEvent* event) override;
 
     private:
-        Targets::TargetRegisterDescriptor registerDescriptor;
+        const Targets::TargetRegisterDescriptor& registerDescriptor;
+        const Targets::TargetState& targetState;
+
         Targets::TargetMemoryBuffer registerValue;
 
         QWidget* container = nullptr;
@@ -60,11 +62,9 @@ namespace Widgets
         PushButton* helpButton = nullptr;
         PushButton* closeButton = nullptr;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
-
     private slots:
         void onValueTextInputChanged(QString text);
-        void onTargetStateChanged(Targets::TargetState newState);
+        void onTargetStateChanged(Targets::TargetState newState, Targets::TargetState previousState);
         void onHistoryItemSelected(const Targets::TargetMemoryBuffer& selectedRegisterValue);
         void updateRegisterValueInputField();
         void updateRegisterValueBitsetWidgets();

@@ -10,6 +10,10 @@ ConstructHexViewerTopLevelGroupItem::ConstructHexViewerTopLevelGroupItem(
     , hexViewerState(hexViewerState)
 {}
 
+QString ConstructHexViewerTopLevelGroupItem::brief() const {
+    return "Preparing hex viewer";
+}
+
 void ConstructHexViewerTopLevelGroupItem::run(Services::TargetControllerService&) {
     auto* item = new Widgets::TopLevelGroupItem(
         this->focusedMemoryRegions,

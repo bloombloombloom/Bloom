@@ -53,13 +53,6 @@ struct TargetConfig
     Targets::TargetPhysicalInterface physicalInterface;
 
     /**
-     * The name of the selected target variant.
-     *
-     * Insight uses this to determine which variant to select on start up.
-     */
-    std::optional<std::string> variantName;
-
-    /**
      * Determines whether Bloom will make use of the target's hardware breakpoint resources (if available).
      */
     bool hardwareBreakpoints = true;
@@ -156,6 +149,11 @@ struct InsightConfig
      * If true, Bloom will shutdown when the user closes the Insight GUI.
      */
     bool shutdownOnClose = false;
+
+    /**
+     * The key of the variant to select by default, in the Insight GUi.
+     */
+    std::optional<std::string> defaultVariantKey;
 
     InsightConfig() = default;
 

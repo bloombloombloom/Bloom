@@ -11,6 +11,8 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PushButton.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"
 
 namespace Widgets
@@ -21,7 +23,9 @@ namespace Widgets
 
     public:
         explicit CreateSnapshotWindow(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             const bool& staleData,
             QWidget* parent = nullptr
@@ -42,6 +46,10 @@ namespace Widgets
         void keyPressEvent(QKeyEvent* event) override;
 
     private:
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetState& targetState;
+
         QWidget* container = nullptr;
         TextInput* nameInput = nullptr;
         QPlainTextEdit* descriptionInput = nullptr;
@@ -56,7 +64,6 @@ namespace Widgets
 
         const std::optional<Targets::TargetMemoryBuffer>& data;
         const bool& staleData;
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         bool captureEnabled();
         void resetForm();

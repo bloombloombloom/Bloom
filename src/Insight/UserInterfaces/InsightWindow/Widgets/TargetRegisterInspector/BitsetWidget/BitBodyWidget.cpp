@@ -11,7 +11,12 @@ namespace Widgets
         std::bitset<std::numeric_limits<unsigned char>::digits>::reference bit,
         bool readOnly,
         QWidget* parent
-    ): ClickableWidget(parent), bitIndex(bitIndex), bit(bit), readOnly(readOnly) {
+    )
+        : ClickableWidget(parent)
+        , bitIndex(bitIndex)
+        , bit(bit)
+        , readOnly(readOnly)
+    {
         this->setFixedSize(BitBodyWidget::WIDTH, BitBodyWidget::HEIGHT);
         this->setContentsMargins(0, 0, 0, 0);
     }
@@ -50,7 +55,7 @@ namespace Widgets
     }
 
     void BitBodyWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 
@@ -60,7 +65,7 @@ namespace Widgets
             true
         );
 
-        auto bodyColor = QColor(this->bit == true ? "#7B5E38" : "#908D85");
+        auto bodyColor = QColor{this->bit ? "#7B5E38" : "#908D85"};
 
         if (!this->isEnabled()) {
             bodyColor.setAlpha(100);

@@ -46,11 +46,12 @@ namespace Widgets::InsightTargetWidgets::Qfp
 
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetVariant& targetVariant,
+            std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
             QWidget* parent
         );
 
-        void updatePinState(const Targets::TargetPinState& pinState) override;
+        void updatePadState(const Targets::TargetGpioPadState& padState) override;
 
     private:
         QBoxLayout* layout = nullptr;

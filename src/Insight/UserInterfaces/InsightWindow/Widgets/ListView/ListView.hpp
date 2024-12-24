@@ -15,7 +15,7 @@ namespace Widgets
 
     public:
         ListView(
-            ListScene::ListItemSetType&& items,
+            ListItem::ListItemSetType&& items,
             QWidget* parent
         );
 

@@ -4,27 +4,25 @@
 
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-#include "src/Insight/InsightWorker/Tasks/RefreshTargetPinStates.hpp"
+#include "src/Insight/InsightWorker/Tasks/ReadTargetGpioPadStates.hpp"
 
 namespace Widgets::InsightTargetWidgets
 {
     using Targets::TargetState;
+    using Targets::TargetExecutionState;
 
     TargetPackageWidget::TargetPackageWidget(
-        Targets::TargetVariant targetVariant,
+        const Targets::TargetVariantDescriptor& variantDescriptor,
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor,
+        const Targets::TargetState& targetState,
         QWidget* parent
     )
         : QWidget(parent)
-        , targetVariant(std::move(targetVariant))
+        , variantDescriptor(variantDescriptor)
+        , pinoutDescriptor(pinoutDescriptor)
+        , targetState(targetState)
     {
         auto* insightSignals = InsightSignals::instance();
-
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::targetStateUpdated,
-            this,
-            &TargetPackageWidget::onTargetStateChanged
-        );
 
         QObject::connect(
             insightSignals,
@@ -43,17 +41,17 @@ namespace Widgets::InsightTargetWidgets
         this->setDisabled(true);
     }
 
-    void TargetPackageWidget::refreshPinStates(std::optional<std::function<void(void)>> callback) {
-        const auto refreshTask = QSharedPointer<RefreshTargetPinStates>(
-            new RefreshTargetPinStates(this->targetVariant.id),
+    void TargetPackageWidget::refreshPadStates(std::optional<std::function<void(void)>> callback) {
+        const auto refreshTask = QSharedPointer<ReadTargetGpioPadStates>{
+            new ReadTargetGpioPadStates{this->padDescriptors},
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             refreshTask.get(),
-            &RefreshTargetPinStates::targetPinStatesRetrieved,
+            &ReadTargetGpioPadStates::targetGpioPadStatesRead,
             this,
-            &TargetPackageWidget::updatePinStates
+            &TargetPackageWidget::updatePadStates
         );
 
         if (callback.has_value()) {
@@ -68,34 +66,27 @@ namespace Widgets::InsightTargetWidgets
         InsightWorker::queueTask(refreshTask);
     }
 
-    void TargetPackageWidget::updatePinStates(const Targets::TargetPinStateMapping& pinStatesByNumber) {
-        for (auto& pinWidget : this->pinWidgets) {
-            const auto pinStateIt = pinStatesByNumber.find(pinWidget->getPinNumber());
-
-            if (pinStateIt != pinStatesByNumber.end()) {
-                pinWidget->updatePinState(pinStateIt->second);
+    void TargetPackageWidget::updatePadStates(const Targets::TargetGpioPadDescriptorAndStatePairs& padStatePairs) {
+        for (const auto& [padDescriptor, padState] : padStatePairs) {
+            const auto widgetIt = this->pinWidgetsByPadId.find(padDescriptor.id);
+            if (widgetIt == this->pinWidgetsByPadId.end()) {
+                continue;
             }
+
+            widgetIt->second->updatePadState(padState);
         }
 
         this->update();
     }
 
-    void TargetPackageWidget::onTargetStateChanged(TargetState newState) {
-        if (this->targetState == newState) {
-            return;
-        }
-
-        this->targetState = newState;
-    }
-
     void TargetPackageWidget::onProgrammingModeEnabled() {
-        if (this->targetState == TargetState::STOPPED) {
+        if (this->targetState.executionState == TargetExecutionState::STOPPED) {
             this->setDisabled(true);
         }
     }
 
     void TargetPackageWidget::onProgrammingModeDisabled() {
-        if (this->targetState == TargetState::STOPPED) {
+        if (this->targetState.executionState == TargetExecutionState::STOPPED) {
             this->setDisabled(false);
         }
     }

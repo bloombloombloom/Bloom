@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
@@ -29,7 +31,9 @@ namespace Widgets
 
     public:
         HexViewerWidget(
-            const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             HexViewerWidgetSettings& settings,
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -52,7 +56,9 @@ namespace Widgets
         void settingsChanged(const HexViewerWidgetSettings& settings);
 
     protected:
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetState& targetState;
         const std::optional<Targets::TargetMemoryBuffer>& data;
 
         HexViewerWidgetSettings& settings;
@@ -77,8 +83,6 @@ namespace Widgets
         SvgToolButton* displayAsciiButton = nullptr;
 
         TextInput* goToAddressInput = nullptr;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         void resizeEvent(QResizeEvent* event) override;
         void showEvent(QShowEvent* event) override;

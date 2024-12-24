@@ -30,7 +30,6 @@ class MemoryRegion
 public:
     QString name;
     QDateTime createdDate = Services::DateTimeService::currentDateTime();
-    Targets::TargetMemoryType memoryType;
     MemoryRegionType type;
 
     /**
@@ -54,12 +53,11 @@ public:
 
     MemoryRegion(
         const QString& name,
-        Targets::TargetMemoryType memoryType,
         MemoryRegionType type,
         const Targets::TargetMemoryAddressRange& addressRange
     );
 
-    MemoryRegion(const QJsonObject& jsonObject);
+    explicit MemoryRegion(const QJsonObject& jsonObject);
 
     virtual QJsonObject toJson() const;
 

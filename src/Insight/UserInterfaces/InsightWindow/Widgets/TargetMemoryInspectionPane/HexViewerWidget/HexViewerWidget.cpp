@@ -14,10 +14,14 @@ namespace Widgets
 {
     using namespace Exceptions;
 
-    using Targets::TargetMemoryDescriptor;
+    using Targets::TargetAddressSpaceDescriptor;
+    using Targets::TargetMemorySegmentDescriptor;
+    using Targets::TargetState;
 
     HexViewerWidget::HexViewerWidget(
-        const TargetMemoryDescriptor& targetMemoryDescriptor,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         HexViewerWidgetSettings& settings,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -25,7 +29,9 @@ namespace Widgets
         QWidget* parent
     )
         : QWidget(parent)
-        , targetMemoryDescriptor(targetMemoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetState(targetState)
         , data(data)
         , settings(settings)
         , focusedMemoryRegions(focusedMemoryRegions)
@@ -34,29 +40,29 @@ namespace Widgets
         this->setObjectName("hex-viewer-widget");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto widgetUiFile = QFile(
+        auto widgetUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget"
                 + "/UiFiles/HexViewerWidget.ui"
             )
-        );
+        };
 
-        auto stylesheetFile = QFile(
+        auto stylesheetFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget"
                 + "/Stylesheets/HexViewerWidget.qss"
             )
-        );
+        };
 
         if (!widgetUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open HexViewerWidget UI file");
+            throw Exception{"Failed to open HexViewerWidget UI file"};
         }
 
         if (!stylesheetFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open HexViewerWidget stylesheet file");
+            throw Exception{"Failed to open HexViewerWidget stylesheet file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&widgetUiFile, this);
         this->setStyleSheet(stylesheetFile.readAll());
         this->container->setFixedSize(this->size());
@@ -95,7 +101,7 @@ namespace Widgets
         this->setAnnotationsEnabled(this->settings.displayAnnotations);
         this->setDisplayAsciiEnabled(this->settings.displayAsciiValues);
 
-        if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+        if (this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM) {
             this->groupStackMemoryButton->show();
             this->setStackMemoryGroupingEnabled(this->settings.groupStackMemory);
 
@@ -163,25 +169,20 @@ namespace Widgets
             &HexViewerWidget::onGoToAddressInputChanged
         );
 
-        QObject::connect(
-            InsightSignals::instance(),
-            &InsightSignals::targetStateUpdated,
-            this,
-            &HexViewerWidget::onTargetStateChanged
-        );
-
         this->show();
     }
 
     void HexViewerWidget::init() {
-        this->byteItemGraphicsView = new ItemGraphicsView(
-            this->targetMemoryDescriptor,
+        this->byteItemGraphicsView = new ItemGraphicsView{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
             this->container
-        );
+        };
 
         this->byteItemGraphicsView->hide();
 
@@ -271,11 +272,6 @@ namespace Widgets
         QWidget::showEvent(event);
     }
 
-    void HexViewerWidget::onTargetStateChanged(Targets::TargetState newState) {
-        using Targets::TargetState;
-        this->targetState = newState;
-    }
-
     void HexViewerWidget::setStackMemoryGroupingEnabled(bool enabled) {
         this->groupStackMemoryButton->setChecked(enabled);
         this->settings.groupStackMemory = enabled;
@@ -336,12 +332,14 @@ namespace Widgets
             return;
         }
 
-        auto addressConversionOk = false;
-        const auto address = this->goToAddressInput->text().toUInt(&addressConversionOk, 16);
+        auto conversionStatus = false;
+        const auto address = this->goToAddressInput->text().toUInt(&conversionStatus, 16);
 
-        const auto& memoryAddressRange = this->targetMemoryDescriptor.addressRange;
-
-        if (addressConversionOk && memoryAddressRange.contains(address) && this->goToAddressInput->hasFocus()) {
+        if (
+            conversionStatus
+            && this->memorySegmentDescriptor.addressRange.contains(address)
+            && this->goToAddressInput->hasFocus()
+        ) {
             this->byteItemGraphicsScene->selectByteItems({address});
             this->byteItemGraphicsView->scrollToByteItemAtAddress(address);
             return;
@@ -361,7 +359,7 @@ namespace Widgets
             16
         ).rightJustified(8, '0').toUpper();
 
-        const auto relativeAddress = *address - this->targetMemoryDescriptor.addressRange.startAddress;
+        const auto relativeAddress = *address - this->memorySegmentDescriptor.addressRange.startAddress;
         const auto relativeAddressHex = "0x" + QString::number(
             relativeAddress,
             16
@@ -383,7 +381,7 @@ namespace Widgets
         }
 
         this->selectionCountLabel->setText(
-            QLocale(QLocale::English).toString(selectionCount) + " " + QString(selectionCount == 1 ? "byte" : "bytes")
+            QLocale{QLocale::English}.toString(selectionCount) + " " + QString(selectionCount == 1 ? "byte" : "bytes")
                 + " selected"
         );
         this->selectionCountLabel->show();
@@ -392,7 +390,7 @@ namespace Widgets
     std::set<Targets::TargetMemoryAddress> HexViewerWidget::addressRangesToAddresses(
         const std::set<Targets::TargetMemoryAddressRange>& addressRanges
     ) {
-        auto addresses = std::set<Targets::TargetMemoryAddress>();
+        auto addresses = std::set<Targets::TargetMemoryAddress>{};
         auto addressesIt = addresses.end();
 
         for (const auto& range : addressRanges) {

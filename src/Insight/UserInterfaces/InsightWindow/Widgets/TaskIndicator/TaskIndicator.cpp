@@ -13,7 +13,7 @@ namespace Widgets
         this->setObjectName("task-indicator");
         this->setFixedSize(50, 26);
 
-        this->taskWindow = new TaskWindow(this);
+        this->taskWindow = new TaskWindow{this};
 
         auto* insightSignals = InsightSignals::instance();
 
@@ -50,13 +50,13 @@ namespace Widgets
     }
 
     void TaskIndicator::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         painter.setPen(Qt::PenStyle::NoPen);
 
         const auto size = this->size();
 
-        static constexpr auto activeItemColor = QColor(0x7C, 0x5D, 0x3B);
-        static constexpr auto inactiveItemColor = QColor(0x83, 0x83, 0x82);
+        static constexpr auto activeItemColor = QColor{0x7C, 0x5D, 0x3B};
+        static constexpr auto inactiveItemColor = QColor{0x83, 0x83, 0x82};
         static constexpr auto itemSize = QSize(3, 3);
 
         static constexpr auto rowCount = 3;
@@ -66,7 +66,7 @@ namespace Widgets
         static constexpr auto itemBottomMargin = 2;
 
         if (this->hovered) {
-            static constexpr auto hoveredBackgroundColor = QColor(0x45, 0x45, 0x41);
+            static constexpr auto hoveredBackgroundColor = QColor{0x45, 0x45, 0x41};
             painter.setBrush(hoveredBackgroundColor);
             painter.drawRect(0, 1, size.width(), size.height() - 1);
         }

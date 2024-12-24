@@ -60,7 +60,7 @@ namespace Widgets
         static constexpr int DEFAULT_HEIGHT = 20;
 
         QString title;
-        QColor lineColor = QColor(0x4A, 0x4A, 0x4A);
+        QColor lineColor = QColor{0x4A, 0x4A, 0x4A};
         int marginLeft = 0;
         int marginRight = 10;
     };

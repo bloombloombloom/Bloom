@@ -12,8 +12,10 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
-
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"
+
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
@@ -36,7 +38,10 @@ namespace Widgets
 
     public:
         TargetMemoryInspectionPane(
-            const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             TargetMemoryInspectionPaneSettings& settings,
             PaneState& paneState,
             PanelWidget* parent
@@ -54,7 +59,10 @@ namespace Widgets
         void postDetach();
 
     private:
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetDescriptor& targetDescriptor;
+        const Targets::TargetState& targetState;
 
         TargetMemoryInspectionPaneSettings& settings;
 
@@ -86,14 +94,12 @@ namespace Widgets
         TaskProgressIndicator* taskProgressIndicator = nullptr;
         QWidget* staleDataLabelContainer = nullptr;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
-
         MemoryRegionManagerWindow* memoryRegionManagerWindow = nullptr;
 
         bool staleData = false;
 
         void sanitiseSettings();
-        void onTargetStateChanged(Targets::TargetState newState);
+        void onTargetStateChanged(Targets::TargetState newState, Targets::TargetState previousState);
         void setRefreshOnTargetStopEnabled(bool enabled);
         void setRefreshOnActivationEnabled(bool enabled);
         void onMemoryRead(const Targets::TargetMemoryBuffer& data);
@@ -104,7 +110,8 @@ namespace Widgets
         void onProgrammingModeEnabled();
         void onProgrammingModeDisabled();
         void onTargetMemoryWritten(
-            Targets::TargetMemoryType memoryType,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             Targets::TargetMemoryAddressRange addressRange
         );
         void onSubtaskCreated(const QSharedPointer<InsightWorkerTask>& task);

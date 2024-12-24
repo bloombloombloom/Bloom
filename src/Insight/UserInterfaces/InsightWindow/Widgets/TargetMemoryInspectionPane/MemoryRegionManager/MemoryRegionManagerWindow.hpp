@@ -11,6 +11,8 @@
 #include <QAction>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
@@ -30,7 +32,8 @@ namespace Widgets
 
     public:
         explicit MemoryRegionManagerWindow(
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
             std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
             QWidget* parent = nullptr
@@ -46,7 +49,8 @@ namespace Widgets
         void keyPressEvent(QKeyEvent* event) override;
 
     private:
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
         std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
 

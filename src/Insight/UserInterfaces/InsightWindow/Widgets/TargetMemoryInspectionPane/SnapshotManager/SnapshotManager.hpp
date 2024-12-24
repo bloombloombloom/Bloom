@@ -12,8 +12,12 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 
-#include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
+
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/FocusedMemoryRegion.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ExcludedMemoryRegion.hpp"
@@ -35,7 +39,10 @@ namespace Widgets
         CreateSnapshotWindow* createSnapshotWindow = nullptr;
 
         explicit SnapshotManager(
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             const bool& staleData,
             const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -56,15 +63,17 @@ namespace Widgets
         void showEvent(QShowEvent* event) override;
 
     private:
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+        const Targets::TargetDescriptor& targetDescriptor;
+        const Targets::TargetState& targetState;
+
         const std::optional<Targets::TargetMemoryBuffer>& data;
         const bool& staleData;
 
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions;
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions;
         const std::optional<Targets::TargetStackPointer>& stackPointer;
-
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
 
         QMap<QString, MemorySnapshot> snapshotsById;
         QMap<QString, MemorySnapshotItem*> snapshotItemsById;
@@ -83,11 +92,11 @@ namespace Widgets
 
         std::list<MemorySnapshotItem*> selectedSnapshotItems;
 
-        QAction* openSnapshotViewerAction = new QAction("Open", this);
-        QAction* openSnapshotDiffAction = new QAction("Compare Selection", this);
-        QAction* openSnapshotCurrentDiffAction = new QAction("Compare with Current", this);
-        QAction* deleteSnapshotAction = new QAction("Delete", this);
-        QAction* restoreSnapshotAction = new QAction("Restore", this);
+        QAction* openSnapshotViewerAction = new QAction{"Open", this};
+        QAction* openSnapshotDiffAction = new QAction{"Compare Selection", this};
+        QAction* openSnapshotCurrentDiffAction = new QAction{"Compare with Current", this};
+        QAction* deleteSnapshotAction = new QAction{"Delete", this};
+        QAction* restoreSnapshotAction = new QAction{"Restore", this};
 
         void createSnapshot(
             const QString& name,
@@ -105,6 +114,5 @@ namespace Widgets
         void restoreSnapshot(const QString& snapshotId, bool confirmationPromptEnabled);
         void onSnapshotItemDoubleClick(MemorySnapshotItem* item);
         void onSnapshotItemContextMenu(ListItem* item, QPoint sourcePosition);
-        void onTargetStateChanged(Targets::TargetState newState);
     };
 }

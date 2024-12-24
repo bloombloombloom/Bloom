@@ -6,7 +6,9 @@ namespace Widgets
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
         DifferentialHexViewerSharedState& state,
         const SnapshotDiffSettings& snapshotDiffSettings,
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -14,7 +16,9 @@ namespace Widgets
         QWidget* parent
     )
         : ItemGraphicsView(
-            targetMemoryDescriptor,
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            targetState,
             data,
             focusedMemoryRegions,
             excludedMemoryRegions,
@@ -27,17 +31,19 @@ namespace Widgets
     {}
 
     void DifferentialItemGraphicsView::initScene() {
-        this->differentialScene = new DifferentialItemGraphicsScene(
+        this->differentialScene = new DifferentialItemGraphicsScene{
             this->differentialHexViewerWidgetType,
             this->state,
             this->snapshotDiffSettings,
-            this->targetMemoryDescriptor,
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
             this
-        );
+        };
 
         this->scene = this->differentialScene;
         this->setScene(this->scene);
@@ -47,7 +53,7 @@ namespace Widgets
             &ItemGraphicsScene::ready,
             this,
             [this] {
-            this->differentialScene->updateByteItemChangedStates();
+                this->differentialScene->updateByteItemChangedStates();
                 this->scene->setEnabled(this->isEnabled());
                 emit this->sceneReady();
             }

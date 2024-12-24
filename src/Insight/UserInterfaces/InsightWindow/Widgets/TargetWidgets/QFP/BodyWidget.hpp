@@ -37,7 +37,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
 
     private:
         // These properties can be modified via Qt style sheets (see Stylesheets/QuadFlatPackage.qss)
-        QColor bodyColor = QColor("#8E8B83");
+        QColor bodyColor = {"#8E8B83"};
         int disableAlphaLevel = 100;
     };
 }

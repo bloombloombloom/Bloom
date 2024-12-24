@@ -4,23 +4,17 @@
 
 #include "InsightWorkerTask.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
-
 class DeleteMemorySnapshot: public InsightWorkerTask
 {
     Q_OBJECT
 
 public:
-    DeleteMemorySnapshot(const QString& snapshotId, Targets::TargetMemoryType memoryType);
-
-    QString brief() const override {
-        return "Deleting memory snapshot " + this->snapshotId;
-    }
+    explicit DeleteMemorySnapshot(const QString& snapshotId);
+    [[nodiscard]] QString brief() const override ;
 
 protected:
     void run(Services::TargetControllerService& targetControllerService) override;
 
 private:
     QString snapshotId;
-    Targets::TargetMemoryType memoryType;
 };

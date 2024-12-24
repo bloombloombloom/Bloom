@@ -28,7 +28,7 @@ namespace Widgets
 
     void SvgToolButton::contextMenuEvent(QContextMenuEvent* event) {
         if (this->contextMenu != nullptr) {
-            this->contextMenu->exec(this->mapToGlobal(QPoint(0, this->height())));
+            this->contextMenu->exec(this->mapToGlobal(QPoint{0, this->height()}));
         }
     }
 }

@@ -41,15 +41,16 @@ namespace Widgets::InsightTargetWidgets::Dip
 
         PinWidget(
             const Targets::TargetPinDescriptor& pinDescriptor,
-            const Targets::TargetVariant& targetVariant,
+            std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
             QWidget* parent
         );
 
-        void updatePinState(const Targets::TargetPinState& pinState) override {
-            TargetPinWidget::updatePinState(pinState);
+        void updatePadState(const Targets::TargetGpioPadState& padState) override {
+            TargetPinWidget::updatePadState(padState);
 
             if (this->bodyWidget != nullptr) {
-                this->bodyWidget->setPinState(pinState);
+                this->bodyWidget->setPadState(padState);
             }
         }
 

@@ -69,7 +69,7 @@ void InsightWorker::executeTasks() {
         return std::nullopt;
     };
 
-    auto queuedTask = std::optional<QSharedPointer<InsightWorkerTask>>();
+    auto queuedTask = std::optional<QSharedPointer<InsightWorkerTask>>{};
 
     while ((queuedTask = getQueuedTask())) {
         auto& task = *queuedTask;

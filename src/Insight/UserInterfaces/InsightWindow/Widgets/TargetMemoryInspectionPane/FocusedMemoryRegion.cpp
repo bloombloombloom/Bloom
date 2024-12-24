@@ -4,10 +4,13 @@
 
 FocusedMemoryRegion::FocusedMemoryRegion(
     const QString& name,
-    Targets::TargetMemoryType memoryType,
     const Targets::TargetMemoryAddressRange& addressRange
 )
-    : MemoryRegion(name, memoryType, MemoryRegionType::FOCUSED, addressRange)
+    : MemoryRegion(
+        name,
+        MemoryRegionType::FOCUSED,
+        addressRange
+    )
 {}
 
 FocusedMemoryRegion::FocusedMemoryRegion(const QJsonObject& jsonObject)
@@ -16,11 +19,11 @@ FocusedMemoryRegion::FocusedMemoryRegion(const QJsonObject& jsonObject)
     using Exceptions::Exception;
 
     if (this->type != MemoryRegionType::FOCUSED) {
-        throw Exception("Invalid memory region type");
+        throw Exception{"Invalid memory region type"};
     }
 
     if (!jsonObject.contains("dataType") || !jsonObject.contains("endianness")) {
-        throw Exception("Missing data");
+        throw Exception{"Missing data"};
     }
 
     this->dataType = FocusedMemoryRegion::regionDataTypesByName.at(jsonObject.find("dataType")->toString());

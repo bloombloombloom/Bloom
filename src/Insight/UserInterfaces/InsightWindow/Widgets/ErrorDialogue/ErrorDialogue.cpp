@@ -22,29 +22,29 @@ namespace Widgets
         this->setAttribute(Qt::WA_DeleteOnClose, true);
         this->setWindowTitle(windowTitle);
 
-        auto dialogueUiFile = QFile(
+        auto dialogueUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/UiFiles/ErrorDialogue.ui"
             )
-        );
+        };
 
-        auto dialogueStylesheet = QFile(
+        auto dialogueStylesheet = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/Stylesheets/ErrorDialogue.qss"
             )
-        );
+        };
 
         if (!dialogueUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open ErrorDialogue UI file");
+            throw Exception{"Failed to open ErrorDialogue UI file"};
         }
 
         if (!dialogueStylesheet.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open ErrorDialogue stylesheet file");
+            throw Exception{"Failed to open ErrorDialogue stylesheet file"};
         }
 
         this->setStyleSheet(dialogueStylesheet.readAll());
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&dialogueUiFile, this);
 
         this->errorMessageDescriptionLabel = this->container->findChild<Label*>(
@@ -61,10 +61,10 @@ namespace Widgets
 
     void ErrorDialogue::showEvent(QShowEvent* event) {
         const auto containerSize = this->container->sizeHint();
-        const auto windowSize = QSize(
+        const auto windowSize = QSize{
             std::max(containerSize.width(), 500),
             std::max(containerSize.height(), 100)
-        );
+        };
 
         this->setFixedSize(windowSize);
         this->container->setFixedSize(windowSize);

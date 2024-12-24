@@ -10,12 +10,14 @@
 #include <QEvent>
 #include <QAction>
 #include <optional>
+#include <functional>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PanelWidget.hpp"
 
-#include "RegisterItem.hpp"
+#include "PeripheralItem.hpp"
 #include "RegisterGroupItem.hpp"
+#include "RegisterItem.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/TargetRegisterInspectorWindow.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListView.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/SvgToolButton.hpp"
@@ -31,6 +33,7 @@ namespace Widgets
     public:
         TargetRegistersPaneWidget(
             const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             PaneState& paneState,
             PanelWidget *parent
         );
@@ -40,7 +43,7 @@ namespace Widgets
         void expandAllRegisterGroups();
 
         void refreshRegisterValues(
-            std::optional<Targets::TargetRegisterDescriptorId> registerDescriptorId = std::nullopt,
+            std::optional<std::reference_wrapper<const Targets::TargetRegisterDescriptor>> registerDescriptor = std::nullopt,
             std::optional<std::function<void(void)>> callback = std::nullopt
         );
 
@@ -49,6 +52,7 @@ namespace Widgets
 
     private:
         const Targets::TargetDescriptor& targetDescriptor;
+        const Targets::TargetState& targetState;
 
         QWidget* container = nullptr;
 
@@ -60,28 +64,29 @@ namespace Widgets
         ListView* registerListView = nullptr;
         ListScene* registerListScene = nullptr;
 
-        Targets::TargetRegisterDescriptors registerDescriptors;
-        std::vector<RegisterGroupItem*> registerGroupItems;
-        std::unordered_map<Targets::TargetRegisterDescriptorId, RegisterItem*> registerItemsByDescriptorId;
-        std::unordered_map<Targets::TargetRegisterDescriptorId, TargetRegisterInspectorWindow*> inspectionWindowsByDescriptorId;
-        std::unordered_map<Targets::TargetRegisterDescriptorId, Targets::TargetMemoryBuffer> currentRegisterValuesByDescriptorId;
+        Targets::TargetRegisterDescriptors flattenedRegisterDescriptors;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
+        std::vector<PeripheralItem*> peripheralItems;
+        std::unordered_map<Targets::TargetRegisterId, RegisterItem*> flattenedRegisterItemsByRegisterId;
+        std::unordered_map<Targets::TargetRegisterId, TargetRegisterInspectorWindow*> inspectionWindowsByRegisterId;
+        std::unordered_map<Targets::TargetRegisterId, Targets::TargetMemoryBuffer> currentRegisterValuesByRegisterId;
 
-        // Context-menu actions
-        QAction* openInspectionWindowAction = new QAction("Inspect", this);
-        QAction* refreshValueAction = new QAction("Refresh Value", this);
-        QAction* copyNameAction = new QAction("Register Name", this);
-        QAction* copyValueDecimalAction = new QAction("Value as Decimal", this);
-        QAction* copyValueHexAction = new QAction("...as Hex String", this);
-        QAction* copyValueBinaryAction = new QAction("...as Binary Bit String", this);
+        // Context menus and actions
+        QMenu* contextMenu = new QMenu{this};
+        QMenu* copyMenu = new QMenu{"Copy", this};
+        QAction* openInspectionWindowAction = new QAction{"Inspect", this};
+        QAction* refreshValueAction = new QAction{"Refresh Value", this};
+        QAction* copyNameAction = new QAction{"Register Name", this};
+        QAction* copyValueDecimalAction = new QAction{"Value as Decimal", this};
+        QAction* copyValueHexAction = new QAction{"...as Hex String", this};
+        QAction* copyValueBinaryAction = new QAction{"...as Binary Bit String", this};
 
         RegisterItem* contextMenuRegisterItem = nullptr;
 
         void onItemDoubleClicked(ListItem* clickedItem);
         void onItemContextMenu(ListItem* item, QPoint sourcePosition);
-        void onTargetStateChanged(Targets::TargetState newState);
-        void onRegistersRead(const Targets::TargetRegisters& registers);
+        void onTargetStateChanged(const Targets::TargetState& newState, const Targets::TargetState& previousState);
+        void onRegistersRead(const Targets::TargetRegisterDescriptorAndValuePairs& registerPairs);
         void clearInlineRegisterValues();
         void openInspectionWindow(const Targets::TargetRegisterDescriptor& registerDescriptor);
         void copyRegisterName(const Targets::TargetRegisterDescriptor& registerDescriptor);

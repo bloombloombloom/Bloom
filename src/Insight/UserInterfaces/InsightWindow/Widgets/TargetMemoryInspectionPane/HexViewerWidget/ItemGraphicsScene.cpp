@@ -11,14 +11,14 @@
 #include <algorithm>
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-#include "src/Insight/InsightSignals.hpp"
-
 #include "src/Insight/InsightWorker/Tasks/ConstructHexViewerTopLevelGroupItem.hpp"
 
 namespace Widgets
 {
     ItemGraphicsScene::ItemGraphicsScene(
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -27,19 +27,21 @@ namespace Widgets
     )
         : QGraphicsScene(parent)
         , state(
-            HexViewerSharedState(
-                targetMemoryDescriptor,
+            HexViewerSharedState{
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
                 data,
                 settings
-            )
+            }
         )
+        , targetState(targetState)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
         , parent(parent)
     {
         this->setObjectName("byte-widget-container");
 
-        this->byteAddressContainer = new ByteAddressContainer(this->state);
+        this->byteAddressContainer = new ByteAddressContainer{this->state};
         this->addItem(this->byteAddressContainer);
 
         this->displayRelativeAddressAction->setCheckable(true);
@@ -47,13 +49,6 @@ namespace Widgets
 
         this->setAddressType(this->state.settings.addressLabelType);
         this->setItemIndexMethod(QGraphicsScene::ItemIndexMethod::NoIndex);
-
-        QObject::connect(
-            InsightSignals::instance(),
-            &InsightSignals::targetStateUpdated,
-            this,
-            &ItemGraphicsScene::onTargetStateChanged
-        );
 
         QObject::connect(
             this->displayRelativeAddressAction,
@@ -168,14 +163,14 @@ namespace Widgets
     void ItemGraphicsScene::init() {
         this->byteAddressContainer->setPos(this->addressContainerPosition());
 
-        const auto constructHexViewerTopLevelGroupItem = QSharedPointer<ConstructHexViewerTopLevelGroupItem>(
-            new ConstructHexViewerTopLevelGroupItem(
+        const auto constructHexViewerTopLevelGroupItem = QSharedPointer<ConstructHexViewerTopLevelGroupItem>{
+            new ConstructHexViewerTopLevelGroupItem{
                 this->focusedMemoryRegions,
                 this->excludedMemoryRegions,
                 this->state
-            ),
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             constructHexViewerTopLevelGroupItem.get(),
@@ -186,7 +181,7 @@ namespace Widgets
 
                 this->topLevelGroup.reset(item);
                 this->topLevelGroup->setPosition(
-                    QPoint(ByteAddressContainer::WIDTH + margins.left(), margins.top())
+                    QPoint{ByteAddressContainer::WIDTH + margins.left(), margins.top()}
                 );
 
                 this->itemIndex = std::make_unique<HexViewerItemIndex>(this->topLevelGroup.get(), this);
@@ -267,14 +262,13 @@ namespace Widgets
         this->topLevelGroup->adjustItemPositions(availableWidth);
         this->itemIndex->refreshIndex();
 
-        const auto sceneSize = QSize(
+        const auto sceneSize = QSize{
             width,
             std::max(
-                static_cast<int>(this->topLevelGroup->size().height())
-                    + margins.top() + margins.bottom(),
+                static_cast<int>(this->topLevelGroup->size().height()) + margins.top() + margins.bottom(),
                 this->parent->height()
             )
-        );
+        };
         this->setSceneRect(
             0,
             0,
@@ -317,7 +311,7 @@ namespace Widgets
             return byteItemIt->second.position();
         }
 
-        return QPointF();
+        return QPointF{};
     }
 
     void ItemGraphicsScene::addExternalContextMenuAction(ContextMenuAction* action) {
@@ -329,22 +323,22 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::initRenderer() {
-        this->renderer = new HexViewerItemRenderer(
+        this->renderer = new HexViewerItemRenderer{
             this->state,
             *(this->topLevelGroup.get()),
             *(this->itemIndex.get()),
             this->views().first()
-        );
+        };
         this->renderer->setPos(0, 0);
         this->addItem(this->renderer);
     }
 
     QMargins ItemGraphicsScene::margins() {
-        return QMargins(10, 10, 10, 10);
+        return QMargins{10, 10, 10, 10};
     }
 
     QPointF ItemGraphicsScene::addressContainerPosition() {
-        return QPointF(0, 0);
+        return QPointF{0, 0};
     }
 
     bool ItemGraphicsScene::event(QEvent* event) {
@@ -360,8 +354,8 @@ namespace Widgets
     }
 
     void ItemGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent) {
-        static const auto rubberBandRectBackgroundColor = QColor(0x3C, 0x59, 0x5C, 0x82);
-        static const auto rubberBandRectBorderColor = QColor(0x3C, 0x59, 0x5C, 255);
+        static const auto rubberBandRectBackgroundColor = QColor{0x3C, 0x59, 0x5C, 0x82};
+        static const auto rubberBandRectBorderColor = QColor{0x3C, 0x59, 0x5C, 255};
 
         const auto button = mouseEvent->button();
         const auto mousePosition = mouseEvent->buttonDownScenePos(button);
@@ -377,7 +371,7 @@ namespace Widgets
         this->update();
 
         if (button == Qt::MouseButton::RightButton) {
-            ByteItem* clickedByteItem = this->itemIndex->byteItemAt(mousePosition);
+            auto* clickedByteItem = this->itemIndex->byteItemAt(mousePosition);
 
             if (clickedByteItem == nullptr || clickedByteItem->selected) {
                 return;
@@ -389,12 +383,12 @@ namespace Widgets
             this->clearSelectionRectItem();
 
             this->rubberBandInitPoint = std::move(mousePosition);
-            this->rubberBandRectItem = new QGraphicsRectItem(
+            this->rubberBandRectItem = new QGraphicsRectItem{
                 this->rubberBandInitPoint->x(),
                 this->rubberBandInitPoint->y(),
                 1,
                 1
-            );
+            };
             this->rubberBandRectItem->setBrush(rubberBandRectBackgroundColor);
             this->rubberBandRectItem->setPen(rubberBandRectBorderColor);
             this->addItem(this->rubberBandRectItem);
@@ -409,7 +403,7 @@ namespace Widgets
             if ((modifiers & Qt::ShiftModifier) != 0) {
                 for (
                     auto i = static_cast<std::int64_t>(clickedByteItem->startAddress);
-                    i >= this->state.memoryDescriptor.addressRange.startAddress;
+                    i >= this->state.memorySegmentDescriptor.addressRange.startAddress;
                     --i
                 ) {
                     auto& byteItem = this->topLevelGroup->byteItemsByAddress.at(
@@ -500,11 +494,11 @@ namespace Widgets
 
     void ItemGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event) {
         if (event->scenePos().x() <= ByteAddressContainer::WIDTH) {
-            auto* menu = new QMenu(this->parent);
+            auto* menu = new QMenu{this->parent};
             menu->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
             menu->setObjectName("byte-item-address-container-context-menu");
 
-            auto* addressTypeMenu = new QMenu("Address Type", menu);
+            auto* addressTypeMenu = new QMenu{"Address Type", menu};
             addressTypeMenu->addAction(this->displayAbsoluteAddressAction);
             addressTypeMenu->addAction(this->displayRelativeAddressAction);
             menu->addMenu(addressTypeMenu);
@@ -515,13 +509,13 @@ namespace Widgets
 
         const auto itemsSelected = !this->selectedByteItemAddresses.empty();
 
-        auto* menu = new QMenu(this->parent);
+        auto* menu = new QMenu{this->parent};
         menu->setLayoutDirection(Qt::LayoutDirection::LeftToRight);
         menu->addAction(this->selectAllByteItemsAction);
         menu->addAction(this->deselectByteItemsAction);
         menu->addSeparator();
 
-        auto* copyMenu = new QMenu("Copy Selection", menu);
+        auto* copyMenu = new QMenu{"Copy Selection", menu};
         copyMenu->addAction(this->copyAbsoluteAddressAction);
         copyMenu->addAction(this->copyRelativeAddressAction);
         copyMenu->addSeparator();
@@ -559,10 +553,6 @@ namespace Widgets
 
     int ItemGraphicsScene::getScrollbarValue() {
         return this->views().first()->verticalScrollBar()->value();
-    }
-
-    void ItemGraphicsScene::onTargetStateChanged(Targets::TargetState newState) {
-        this->targetState = newState;
     }
 
     void ItemGraphicsScene::onByteItemEnter(ByteItem& byteItem) {
@@ -646,7 +636,7 @@ namespace Widgets
     }
 
     std::set<Targets::TargetMemoryAddress> ItemGraphicsScene::excludedAddresses() {
-        auto output = std::set<Targets::TargetMemoryAddress>();
+        auto output = std::set<Targets::TargetMemoryAddress>{};
 
         for (const auto& excludedRegion : this->excludedMemoryRegions) {
             const auto regionAddresses = excludedRegion.addressRange.addresses();
@@ -661,8 +651,8 @@ namespace Widgets
             return;
         }
 
-        auto data = QString();
-        const auto memoryStartAddress = this->state.memoryDescriptor.addressRange.startAddress;
+        auto data = QString{};
+        const auto memoryStartAddress = this->state.memorySegmentDescriptor.addressRange.startAddress;
 
         for (const auto& address : this->selectedByteItemAddresses) {
             data.append(
@@ -684,12 +674,12 @@ namespace Widgets
         }
 
         const auto excludedAddresses = this->excludedAddresses();
-        auto data = QString();
+        auto data = QString{};
 
         for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memorySegmentDescriptor.addressRange.startAddress];
 
             data.append(
                 withDelimiters
@@ -707,12 +697,12 @@ namespace Widgets
         }
 
         const auto excludedAddresses = this->excludedAddresses();
-        auto data = QString();
+        auto data = QString{};
 
         for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memorySegmentDescriptor.addressRange.startAddress];
             data.append(QString::number(byteValue, 10) + "\n");
         }
 
@@ -725,12 +715,12 @@ namespace Widgets
         }
 
         const auto excludedAddresses = this->excludedAddresses();
-        auto data = QString();
+        auto data = QString{};
 
         for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memorySegmentDescriptor.addressRange.startAddress];
 
             data.append(
                 withDelimiters
@@ -748,12 +738,12 @@ namespace Widgets
         }
 
         const auto excludedAddresses = this->excludedAddresses();
-        auto data = QJsonObject();
+        auto data = QJsonObject{};
 
         for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue = excludedAddresses.contains(address)
                 ? 0x00
-                : (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
+                : (*this->state.data)[address - this->state.memorySegmentDescriptor.addressRange.startAddress];
 
             data.insert(
                 "0x" + QString::number(address, 16).rightJustified(8, '0').toUpper(),
@@ -761,7 +751,7 @@ namespace Widgets
             );
         }
 
-        QApplication::clipboard()->setText(QJsonDocument(data).toJson(QJsonDocument::JsonFormat::Indented));
+        QApplication::clipboard()->setText(QJsonDocument{data}.toJson(QJsonDocument::JsonFormat::Indented));
     }
 
     void ItemGraphicsScene::copyAsciiValueToClipboard() {
@@ -770,17 +760,17 @@ namespace Widgets
         }
 
         const auto excludedAddresses = this->excludedAddresses();
-        auto data = QString();
+        auto data = QString{};
 
         for (const auto& address : this->selectedByteItemAddresses) {
             const unsigned char byteValue =
-                (*this->state.data)[address - this->state.memoryDescriptor.addressRange.startAddress];
+                (*this->state.data)[address - this->state.memorySegmentDescriptor.addressRange.startAddress];
 
             if (excludedAddresses.contains(address) || byteValue < 32 || byteValue > 126) {
                 continue;
             }
 
-            data.append(QChar(byteValue));
+            data.append(QChar{byteValue});
         }
 
         QApplication::clipboard()->setText(std::move(data));
@@ -789,7 +779,7 @@ namespace Widgets
     std::set<Targets::TargetMemoryAddress> ItemGraphicsScene::addressRangesToAddresses(
         const std::set<Targets::TargetMemoryAddressRange>& addressRanges
     ) {
-        auto addresses = std::set<Targets::TargetMemoryAddress>();
+        auto addresses = std::set<Targets::TargetMemoryAddress>{};
 
         for (const auto& range : addressRanges) {
             const auto rangeAddresses = range.addresses();

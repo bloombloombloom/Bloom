@@ -3,8 +3,12 @@
 #include <QWidget>
 #include <QEvent>
 #include <QMouseEvent>
+#include <optional>
+#include <functional>
 
 #include "src/Targets/TargetPinDescriptor.hpp"
+#include "src/Targets/TargetPadDescriptor.hpp"
+#include "src/Targets/TargetGpioPadState.hpp"
 
 namespace Widgets::InsightTargetWidgets
 {
@@ -23,10 +27,14 @@ namespace Widgets::InsightTargetWidgets
         Q_PROPERTY(int disableAlphaLevel READ getDisableAlphaLevel WRITE setDisableAlphaLevel DESIGNABLE true)
 
     public:
-        TargetPinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor);
+        TargetPinBodyWidget(
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+            QWidget* parent
+        );
 
-        void setPinState(const Targets::TargetPinState& pinState) {
-            this->pinState = pinState;
+        void setPadState(const Targets::TargetGpioPadState& padState) {
+            this->padState = padState;
         }
 
         const QColor& getDefaultBodyColor() const {
@@ -81,16 +89,17 @@ namespace Widgets::InsightTargetWidgets
         void clicked();
 
     protected:
-        Targets::TargetPinDescriptor pinDescriptor;
-        std::optional<Targets::TargetPinState> pinState;
+        const Targets::TargetPinDescriptor& pinDescriptor;
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor;
+        std::optional<Targets::TargetGpioPadState> padState;
 
         bool hoverActive = false;
 
-        QColor defaultBodyColor = QColor("#908D85");
-        QColor vccBodyColor = QColor("#70383A");
-        QColor gndBodyColor = QColor("#484A4B");
-        QColor outputHighBodyColor = QColor("#3C5E62");
-        QColor inputHighBodyColor = QColor("#7B5E38");
+        QColor defaultBodyColor = {"#908D85"};
+        QColor vccBodyColor = {"#70383A"};
+        QColor gndBodyColor = {"#484A4B"};
+        QColor outputHighBodyColor = {"#3C5E62"};
+        QColor inputHighBodyColor = {"#7B5E38"};
 
         int disableAlphaLevel = 100;
 

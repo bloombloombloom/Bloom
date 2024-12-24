@@ -13,7 +13,6 @@
 #include <QPointF>
 
 #include "ListItem.hpp"
-#include "src/Helpers/DereferenceLessComparator.hpp"
 
 namespace Widgets
 {
@@ -22,17 +21,16 @@ namespace Widgets
         Q_OBJECT
 
     public:
-        using ListItemSetType = std::set<ListItem*, DereferenceLessComparator<ListItem*>>;
-        QMargins margins = QMargins(0, 0, 0, 10);
+        QMargins margins = {0, 0, 0, 10};
 
         ListScene(
-            ListScene::ListItemSetType&& items,
+            const ListItem::ListItemSetType& items,
             QGraphicsView* parent
         );
 
         void refreshGeometry();
         void setSelectionLimit(std::uint8_t selectionLimit);
-        void setItems(const ListScene::ListItemSetType& items);
+        void setItems(const ListItem::ListItemSetType& items);
         void addListItem(ListItem* item);
         void removeListItem(ListItem* item);
         void clearListItems();
@@ -53,7 +51,7 @@ namespace Widgets
         void keyPressEvent(QKeyEvent* keyEvent) override;
 
     private:
-        ListScene::ListItemSetType listItems;
+        ListItem::ListItemSetType listItems;
         QGraphicsView* const parent;
         bool enabled = false;
         bool keyNavigationEnabled = true;

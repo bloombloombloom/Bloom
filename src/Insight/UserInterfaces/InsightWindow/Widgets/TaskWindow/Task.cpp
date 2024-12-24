@@ -6,10 +6,7 @@
 
 namespace Widgets
 {
-    Task::Task(
-        const QSharedPointer<InsightWorkerTask>& task,
-        QWidget* parent
-    )
+    Task::Task(const QSharedPointer<InsightWorkerTask>& task, QWidget* parent)
         : QWidget(parent)
         , task(task)
     {
@@ -56,20 +53,20 @@ namespace Widgets
     }
 
     void Task::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
 
         const auto margins = this->contentsMargins();
         const auto size = this->size();
 
-        static constexpr auto backgroundBarColor = QColor(0x8E, 0x8B, 0x83, 40);
-        static constexpr auto barColor = QColor(0x8E, 0x8B, 0x83, 90);
-        static constexpr auto fontColor = QColor(0x99, 0x9a, 0x9d);
-        static constexpr auto statusFontColor = QColor(0x99, 0x9a, 0x9d, 200);
+        static constexpr auto backgroundBarColor = QColor{0x8E, 0x8B, 0x83, 40};
+        static constexpr auto barColor = QColor{0x8E, 0x8B, 0x83, 90};
+        static constexpr auto fontColor = QColor{0x99, 0x9a, 0x9d};
+        static constexpr auto statusFontColor = QColor{0x99, 0x9a, 0x9d, 200};
 
-        static auto font = QFont("'Ubuntu', sans-serif");
+        static auto font = QFont{"'Ubuntu', sans-serif"};
         font.setPixelSize(14);
 
-        static auto statusFont = QFont("'Ubuntu', sans-serif");
+        static auto statusFont = QFont{"'Ubuntu', sans-serif"};
         statusFont.setPixelSize(12);
 
         painter.setFont(font);
@@ -84,7 +81,7 @@ namespace Widgets
             this->task->brief()
         );
 
-        const auto status = QString(
+        const auto status = QString{
             this->task->state == InsightWorkerTaskState::FAILED
                 ? "Failed"
                 : this->task->state == InsightWorkerTaskState::COMPLETED
@@ -92,7 +89,7 @@ namespace Widgets
                     : this->task->state == InsightWorkerTaskState::STARTED
                         ? "Running"
                         : "Queued"
-        );
+        };
 
         painter.setFont(statusFont);
         painter.setPen(statusFontColor);

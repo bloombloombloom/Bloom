@@ -10,7 +10,6 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PlainTextEdit.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ErrorDialogue/ErrorDialogue.hpp"
 
-
 #include "src/Services/PathService.hpp"
 #include "src/Exceptions/Exception.hpp"
 
@@ -24,51 +23,53 @@ namespace Widgets
     using Targets::TargetRegisterDescriptors;
     using Targets::TargetRegisterType;
     using Targets::TargetState;
+    using Targets::TargetExecutionState;
 
     TargetRegisterInspectorWindow::TargetRegisterInspectorWindow(
         const Targets::TargetRegisterDescriptor& registerDescriptor,
-        TargetState currentTargetState,
+        const TargetState& targetState,
         QWidget* parent
     )
         : QWidget(parent)
         , registerDescriptor(registerDescriptor)
+        , targetState(targetState)
         , registerValue(Targets::TargetMemoryBuffer(registerDescriptor.size, 0))
     {
         this->setWindowFlag(Qt::Window);
-        auto registerName = QString::fromStdString(this->registerDescriptor.name.value()).toUpper();
+        auto registerName = QString::fromStdString(this->registerDescriptor.name).toUpper();
         this->setObjectName("target-register-inspector-window");
         this->setWindowTitle("Inspect Register");
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/UiFiles/"
-                  "TargetRegisterInspectorWindow.ui"
+                "TargetRegisterInspectorWindow.ui"
             )
-        );
+        };
 
-        auto windowStylesheet = QFile(
+        auto windowStylesheet = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/Stylesheets/"
-                  "TargetRegisterInspectorWindow.qss"
+                "TargetRegisterInspectorWindow.qss"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open TargetRegisterInspectorWindow UI file");
+            throw Exception{"Failed to open TargetRegisterInspectorWindow UI file"};
         }
 
         if (!windowStylesheet.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open TargetRegisterInspectorWindow stylesheet file");
+            throw Exception{"Failed to open TargetRegisterInspectorWindow stylesheet file"};
         }
 
         this->setStyleSheet(windowStylesheet.readAll());
         this->setFixedSize(1120, 610);
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&windowUiFile, this);
 
         this->container->setMinimumSize(this->size());
-        this->container->setContentsMargins(QMargins(0, 0, 0, 0));
+        this->container->setContentsMargins(QMargins{0, 0, 0, 0});
 
         this->contentContainer = this->container->findChild<QScrollArea*>("content-container");
         auto* contentContainerViewport = this->contentContainer->widget();
@@ -86,11 +87,11 @@ namespace Widgets
         this->helpButton = this->container->findChild<PushButton*>("help-btn");
         this->closeButton = this->container->findChild<PushButton*>("close-btn");
 
-        this->registerHistoryWidget = new RegisterHistoryWidget(
+        this->registerHistoryWidget = new RegisterHistoryWidget{
             this->registerDescriptor,
             this->registerValue,
             this->container
-        );
+        };
 
         auto* contentLayout = this->container->findChild<QHBoxLayout*>("content-layout");
         contentLayout->insertWidget(0, this->registerHistoryWidget, 0);
@@ -111,7 +112,7 @@ namespace Widgets
         );
         registerDetailsNameInput->setText(registerName);
         registerDetailsStartAddressInput->setText(
-            "0x" + QString::number(this->registerDescriptor.startAddress.value(), 16).toUpper()
+            "0x" + QString::number(this->registerDescriptor.startAddress, 16).toUpper()
         );
         registerDetailsSizeInput->setText(QString::number(this->registerDescriptor.size));
         registerDetailsDescriptionInput->setPlainText(
@@ -136,19 +137,19 @@ namespace Widgets
          * Each row of the BitsetWidget container should hold two BitsetWidgets. So we have a horizontal layout nested
          * within a vertical layout.
          */
-        auto* bitsetSingleHorizontalLayout = new QHBoxLayout();
+        auto* bitsetSingleHorizontalLayout = new QHBoxLayout{};
         bitsetSingleHorizontalLayout->setSpacing(BitWidget::SPACING);
         bitsetSingleHorizontalLayout->setContentsMargins(0, 0, 0, 0);
 
         // The register value will be in MSB, which is OK for us as we present the bit widgets in MSB.
         auto byteNumber = static_cast<int>(this->registerValue.size() - 1);
         for (std::uint32_t registerByteIndex = 0; registerByteIndex < this->registerValue.size(); registerByteIndex++) {
-            auto* bitsetWidget = new BitsetWidget(
+            auto* bitsetWidget = new BitsetWidget{
                 byteNumber,
                 this->registerValue.at(registerByteIndex),
                 !this->registerDescriptor.access.writable,
                 this
-            );
+            };
 
             bitsetSingleHorizontalLayout->addWidget(bitsetWidget, 0, Qt::AlignmentFlag::AlignLeft);
             QObject::connect(
@@ -162,7 +163,7 @@ namespace Widgets
             if (((registerByteIndex + 1) % 4) == 0) {
                 bitsetSingleHorizontalLayout->addStretch(1);
                 registerBitsetWidgetLayout->addLayout(bitsetSingleHorizontalLayout);
-                bitsetSingleHorizontalLayout = new QHBoxLayout();
+                bitsetSingleHorizontalLayout = new QHBoxLayout{};
                 bitsetSingleHorizontalLayout->setSpacing(BitWidget::SPACING);
                 bitsetSingleHorizontalLayout->setContentsMargins(0, 0, 0, 0);
             }
@@ -206,7 +207,6 @@ namespace Widgets
         );
 
         this->updateRegisterValueInputField();
-        this->onTargetStateChanged(currentTargetState);
 
         // Position the inspection window at the center of the main Insight window
         this->move(parent->window()->geometry().center() - this->rect().center());
@@ -283,18 +283,18 @@ namespace Widgets
         }
     }
 
-    void TargetRegisterInspectorWindow::onTargetStateChanged(TargetState newState) {
-        if (this->targetState == newState) {
+    void TargetRegisterInspectorWindow::onTargetStateChanged(TargetState newState, TargetState previousState) {
+        if (newState.executionState == previousState.executionState) {
             return;
         }
 
-        if (newState != TargetState::STOPPED) {
+        if (newState.executionState != TargetExecutionState::STOPPED) {
             this->registerValueTextInput->setDisabled(true);
             this->registerValueBitsetWidgetContainer->setDisabled(true);
             this->applyButton->setDisabled(true);
             this->refreshValueButton->setDisabled(true);
 
-        } else if (this->targetState != TargetState::STOPPED && this->registerValueContainer->isEnabled()) {
+        } else if (this->registerValueContainer->isEnabled()) {
             this->registerValueBitsetWidgetContainer->setDisabled(false);
             this->refreshValueButton->setDisabled(false);
 
@@ -303,8 +303,6 @@ namespace Widgets
                 this->applyButton->setDisabled(false);
             }
         }
-
-        this->targetState = newState;
     }
 
     void TargetRegisterInspectorWindow::onHistoryItemSelected(
@@ -322,12 +320,14 @@ namespace Widgets
     }
 
     void TargetRegisterInspectorWindow::updateRegisterValueInputField() {
-        auto value = QByteArray(
-            reinterpret_cast<const char*>(this->registerValue.data()),
-            static_cast<qsizetype>(this->registerValue.size())
+        this->registerValueTextInput->setText(
+            "0x" + QString{
+                QByteArray{
+                    reinterpret_cast<const char *>(this->registerValue.data()),
+                    static_cast<qsizetype>(this->registerValue.size())
+                }.toHex()
+            }.toUpper()
         );
-
-        this->registerValueTextInput->setText("0x" + QString(value.toHex()).toUpper());
     }
 
     void TargetRegisterInspectorWindow::updateRegisterValueBitsetWidgets() {
@@ -343,21 +343,21 @@ namespace Widgets
 
     void TargetRegisterInspectorWindow::refreshRegisterValue() {
         this->registerValueContainer->setDisabled(true);
-        const auto readTargetRegisterTask = QSharedPointer<ReadTargetRegisters>(
-            new ReadTargetRegisters({this->registerDescriptor.id}),
+        const auto readTargetRegisterTask = QSharedPointer<ReadTargetRegisters>{
+            new ReadTargetRegisters{{&(this->registerDescriptor)}},
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             readTargetRegisterTask.get(),
             &ReadTargetRegisters::targetRegistersRead,
             this,
-            [this] (Targets::TargetRegisters targetRegisters) {
+            [this] (const Targets::TargetRegisterDescriptorAndValuePairs& pairs) {
                 this->registerValueContainer->setDisabled(false);
 
-                for (const auto& targetRegister : targetRegisters) {
-                    if (targetRegister.descriptorId == this->registerDescriptor.id) {
-                        this->setValue(targetRegister.value);
+                for (const auto& [descriptor, value] : pairs) {
+                    if (descriptor.id == this->registerDescriptor.id) {
+                        this->setValue(value);
                     }
                 }
             }
@@ -377,30 +377,27 @@ namespace Widgets
 
     void TargetRegisterInspectorWindow::applyChanges() {
         this->registerValueContainer->setDisabled(true);
-        const auto targetRegister = Targets::TargetRegister(
-            this->registerDescriptor.id,
-            this->registerValue
-        );
-        const auto writeRegisterTask = QSharedPointer<WriteTargetRegister>(
-            new WriteTargetRegister(targetRegister),
-            &QObject::deleteLater
-        );
 
-        QObject::connect(writeRegisterTask.get(), &InsightWorkerTask::completed, this, [this, targetRegister] {
+        const auto pair = Targets::TargetRegisterDescriptorAndValuePair{this->registerDescriptor, this->registerValue};
+        const auto writeRegisterTask = QSharedPointer<WriteTargetRegister>{
+            new WriteTargetRegister{pair},
+            &QObject::deleteLater
+        };
+
+        QObject::connect(writeRegisterTask.get(), &InsightWorkerTask::completed, this, [this, pair] {
             this->registerValueContainer->setDisabled(false);
-            this->registerHistoryWidget->updateCurrentItemValue(targetRegister.value);
+            this->registerHistoryWidget->updateCurrentItemValue(pair.second);
             this->registerHistoryWidget->selectCurrentItem();
         });
 
         QObject::connect(writeRegisterTask.get(), &InsightWorkerTask::failed, this, [this] (QString errorMessage) {
             this->registerValueContainer->setDisabled(false);
-            auto* errorDialogue = new ErrorDialogue(
+            auto* errorDialogue = new ErrorDialogue{
                 "Error",
-                "Failed to update " + QString::fromStdString(
-                    this->registerDescriptor.name.value_or("")
-                ).toUpper() + " register value - " + errorMessage,
+                "Failed to update " + QString::fromStdString(this->registerDescriptor.name).toUpper()
+                    + " register value - " + errorMessage,
                 this
-            );
+            };
             errorDialogue->show();
         });
 
@@ -409,7 +406,7 @@ namespace Widgets
 
     void TargetRegisterInspectorWindow::openHelpPage() {
         QDesktopServices::openUrl(
-            QUrl(QString::fromStdString(Services::PathService::homeDomainName() + "/docs/register-inspection"))
+            QUrl{QString::fromStdString(Services::PathService::homeDomainName() + "/docs/register-inspection")}
         );
     }
 }

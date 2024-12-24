@@ -7,6 +7,8 @@
 #include <QJsonObject>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Services/DateTimeService.hpp"
 
 #include "FocusedMemoryRegion.hpp"
@@ -18,7 +20,8 @@ public:
     QString id;
     QString name;
     QString description;
-    Targets::TargetMemoryType memoryType;
+    QString addressSpaceKey;
+    QString memorySegmentKey;
     Targets::TargetMemoryBuffer data;
     Targets::TargetMemoryAddress programCounter;
     Targets::TargetStackPointer stackPointer;
@@ -30,7 +33,8 @@ public:
     MemorySnapshot(
         const QString& name,
         const QString& description,
-        Targets::TargetMemoryType memoryType,
+        const QString& addressSpaceKey,
+        const QString& memorySegmentKey,
         const Targets::TargetMemoryBuffer& data,
         Targets::TargetMemoryAddress programCounter,
         Targets::TargetStackPointer stackPointer,
@@ -38,11 +42,11 @@ public:
         const std::vector<ExcludedMemoryRegion>& excludedRegions
     );
 
-    MemorySnapshot(const QJsonObject& jsonObject);
+    MemorySnapshot(const QJsonObject& jsonObject, const Targets::TargetDescriptor& targetDescriptor);
 
     QJsonObject toJson() const;
 
-    bool isCompatible(const Targets::TargetMemoryDescriptor& memoryDescriptor) const;
+    bool isCompatible(const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor) const;
     std::set<Targets::TargetMemoryAddress> excludedAddresses() const;
 
     virtual ~MemorySnapshot() = default;

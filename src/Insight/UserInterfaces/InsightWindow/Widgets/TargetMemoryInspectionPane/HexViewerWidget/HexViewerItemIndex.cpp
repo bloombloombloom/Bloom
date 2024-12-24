@@ -32,7 +32,7 @@ namespace Widgets
         );
 
         if (startGridPointIndex >= gridPointCount) {
-            return HexViewerItemIndex::ItemRangeType();
+            return HexViewerItemIndex::ItemRangeType{};
         }
 
         const auto endGridPointIndex = static_cast<decltype(this->byteItemGrid)::size_type>(std::min(
@@ -44,12 +44,12 @@ namespace Widgets
             gridPointCount - 1
         ));
 
-        return HexViewerItemIndex::ItemRangeType(
+        return HexViewerItemIndex::ItemRangeType{
             this->byteItemGrid[startGridPointIndex],
             endGridPointIndex == gridPointCount - 1
                 ? this->flattenedItems.end()
                 : this->byteItemGrid[endGridPointIndex]
-        );
+        };
     }
 
     ByteItem* HexViewerItemIndex::byteItemAt(const QPointF& position) const {
@@ -115,11 +115,11 @@ namespace Widgets
         // Sanity check
         assert(gridPointCount > gridPointIndex);
 
-        return static_cast<ByteItem*>(*(this->byteItemGrid[gridPointIndex]));
+        return dynamic_cast<ByteItem*>(*(this->byteItemGrid[gridPointIndex]));
     }
 
     std::vector<ByteItem*> HexViewerItemIndex::intersectingByteItems(const QRectF& rect) const {
-        auto output = std::vector<ByteItem*>();
+        auto output = std::vector<ByteItem*>{};
 
         const auto yStart = static_cast<int>(std::max(rect.y(), static_cast<qreal>(0)));
         const auto yEnd = static_cast<int>(std::max(rect.y() + rect.height(), static_cast<qreal>(0)));
@@ -127,7 +127,7 @@ namespace Widgets
         const auto items = this->items(yStart, yEnd);
 
         for (auto& item : items) {
-            const auto itemRect = QRectF(item->position(), item->size());
+            const auto itemRect = QRectF{item->position(), item->size()};
 
             if (itemRect.y() > yEnd) {
                 break;
@@ -252,7 +252,7 @@ namespace Widgets
 
             if (itemYEndPosition >= currentByteItemGridPoint) {
                 // This byte item is the first to exceed or intersect with the currentByteItemGridPoint
-                this->byteItemGrid.push_back(itemIt);
+                this->byteItemGrid.emplace_back(itemIt);
                 currentByteItemGridPoint += HexViewerItemIndex::GRID_SIZE;
             }
         }

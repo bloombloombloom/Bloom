@@ -2,48 +2,74 @@
 
 #include <QFile>
 #include <QDir>
-#include <QStringList>
+#include <QDirIterator>
 #include <QJsonDocument>
+#include <algorithm>
+#include <utility>
 
 #include "src/Services/PathService.hpp"
-#include "src/Helpers/EnumToStringMappings.hpp"
-#include "src/Exceptions/Exception.hpp"
 #include "src/Logger/Logger.hpp"
+
+#include "src/Exceptions/Exception.hpp"
 
 using Services::TargetControllerService;
 
-RetrieveMemorySnapshots::RetrieveMemorySnapshots(Targets::TargetMemoryType memoryType)
-    : memoryType(memoryType)
+RetrieveMemorySnapshots::RetrieveMemorySnapshots(
+    const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+    const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+    const Targets::TargetDescriptor& targetDescriptor
+)
+    : addressSpaceDescriptor(addressSpaceDescriptor)
+    , memorySegmentDescriptor(memorySegmentDescriptor)
+    , targetDescriptor(targetDescriptor)
 {}
 
-void RetrieveMemorySnapshots::run(TargetControllerService& targetControllerService) {
-    emit this->memorySnapshotsRetrieved(this->getSnapshots(this->memoryType));
+QString RetrieveMemorySnapshots::brief() const {
+    return "Loading \"" + QString::fromStdString(this->memorySegmentDescriptor.name)
+        + "\" memory snapshots";
 }
 
-std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots(Targets::TargetMemoryType memoryType) {
-    constexpr auto MAX_SNAPSHOTS = 30;
-    auto snapshotDir = QDir(QString::fromStdString(Services::PathService::projectSettingsDirPath())
-        + "/memory_snapshots/" + EnumToStringMappings::targetMemoryTypes.at(memoryType));
+void RetrieveMemorySnapshots::run(TargetControllerService& targetControllerService) {
+    if (
+        this->targetDescriptor.family == Targets::TargetFamily::AVR_8
+        && (
+            this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::FLASH
+            || this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::EEPROM
+            || this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM
+       )
+    ) {
+        /*
+         * Support for RISC-V targets was introduced in the same release as the new snapshots, so all old snapshots
+         * will be for AVR targets. This is why we only need to perform snapshot migration for AVR targets.
+         */
+        this->migrateOldSnapshotFiles();
+    }
 
+    emit this->memorySnapshotsRetrieved(this->getSnapshots());
+}
+
+std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots() {
+    constexpr auto MAX_SNAPSHOTS = 30;
+
+    const auto snapshotDir = QDir{QString::fromStdString(Services::PathService::memorySnapshotsPath())};
     if (!snapshotDir.exists()) {
         return {};
     }
 
-    auto snapshots = std::vector<MemorySnapshot>();
-
     const auto snapshotFileEntries = snapshotDir.entryInfoList(
-        QStringList("*.json"),
+        {"*.json"},
         QDir::Files,
         QDir::SortFlag::Time
     );
 
+    auto snapshots = std::vector<MemorySnapshot>{};
     for (const auto& snapshotFileEntry : snapshotFileEntries) {
-        auto snapshotFile = QFile(snapshotFileEntry.absoluteFilePath());
+        auto snapshotFile = QFile{snapshotFileEntry.absoluteFilePath()};
 
         if (snapshots.size() >= MAX_SNAPSHOTS) {
             Logger::warning(
-                "The total number of " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper().toStdString()
-                    + " snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
+                "The total number of \"" + this->memorySegmentDescriptor.key
+                    + "\" snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
                     + ". Only the most recent " + std::to_string(MAX_SNAPSHOTS) + " snapshots will be loaded."
             );
             break;
@@ -51,10 +77,18 @@ std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots(Targets::Targe
 
         try {
             if (!snapshotFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                throw Exceptions::Exception("Failed to open snapshot file");
+                throw Exceptions::Exception{"Failed to open snapshot file"};
             }
 
-            snapshots.emplace_back(QJsonDocument::fromJson(snapshotFile.readAll()).object());
+            auto snapshot = MemorySnapshot{QJsonDocument::fromJson(snapshotFile.readAll()).object(), targetDescriptor};
+            if (
+                snapshot.addressSpaceKey != QString::fromStdString(this->addressSpaceDescriptor.key)
+                || snapshot.memorySegmentKey != QString::fromStdString(this->memorySegmentDescriptor.key)
+            ) {
+                continue;
+            }
+
+            snapshots.emplace_back(std::move(snapshot));
 
         } catch (const Exceptions::Exception& exception) {
             Logger::error(
@@ -67,4 +101,71 @@ std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots(Targets::Targe
     }
 
     return snapshots;
+}
+
+void RetrieveMemorySnapshots::migrateOldSnapshotFiles() {
+    const auto newSnapshotDirPath = QString::fromStdString(Services::PathService::memorySnapshotsPath());
+    auto oldSnapshotDir = QDir{
+        this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::FLASH
+            ? QString::fromStdString(Services::PathService::memorySnapshotsPath()) + "/flash/"
+            : this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::EEPROM
+                ? QString::fromStdString(Services::PathService::memorySnapshotsPath()) + "/eeprom/"
+                : QString::fromStdString(Services::PathService::memorySnapshotsPath()) + "/ram/"
+    };
+
+    if (!oldSnapshotDir.exists()) {
+        return;
+    }
+
+    const auto snapshotFileEntries = oldSnapshotDir.entryInfoList(
+        {"*.json"},
+        QDir::Files,
+        QDir::SortFlag::Time
+    );
+
+    for (const auto& snapshotFileEntry : snapshotFileEntries) {
+        auto snapshotFile = QFile{snapshotFileEntry.absoluteFilePath()};
+        Logger::info("Migrating memory snapshot file \"" + snapshotFileEntry.absoluteFilePath().toStdString() + "\"");
+
+        try {
+            if (!snapshotFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                throw Exceptions::Exception{"Failed to open snapshot file"};
+            }
+
+            auto snapshot = MemorySnapshot{QJsonDocument::fromJson(snapshotFile.readAll()).object(), targetDescriptor};
+            if (
+                snapshot.addressSpaceKey != QString::fromStdString(this->addressSpaceDescriptor.key)
+                || snapshot.memorySegmentKey != QString::fromStdString(this->memorySegmentDescriptor.key)
+            ) {
+                continue;
+            }
+
+            const auto snapshotFilePath = newSnapshotDirPath + "/" + snapshot.id + ".json";
+            Logger::info("Saving new memory snapshot file to \"" + snapshotFilePath.toStdString() + "\"");
+
+            auto outputFile = QFile{snapshotFilePath};
+            if (!outputFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
+                Logger::error("Failed to save snapshot - cannot open " + snapshotFilePath.toStdString());
+                return;
+            }
+
+            outputFile.write(QJsonDocument{snapshot.toJson()}.toJson(QJsonDocument::JsonFormat::Compact));
+            outputFile.close();
+
+            snapshotFile.remove();
+
+        } catch (const Exceptions::Exception& exception) {
+            Logger::error(
+                "Failed to migrate snapshot file " + snapshotFileEntry.absoluteFilePath().toStdString() + " - "
+                    + exception.getMessage()
+            );
+        }
+
+        snapshotFile.close();
+    }
+
+//    if (oldSnapshotDir.isEmpty()) {
+//        Logger::info("Deleting old snapshot directory: \"" + oldSnapshotDir.absolutePath().toStdString() + "\"");
+//        oldSnapshotDir.removeRecursively();
+//    }
 }

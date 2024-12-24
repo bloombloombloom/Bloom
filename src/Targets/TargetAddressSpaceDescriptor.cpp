@@ -47,6 +47,18 @@ namespace Targets
         return std::cref(segmentIt->second);
     }
 
+    std::optional<
+        std::reference_wrapper<TargetMemorySegmentDescriptor>
+    > TargetAddressSpaceDescriptor::tryGetMemorySegmentDescriptor(const std::string& key) {
+        const auto segmentIt = this->segmentDescriptorsByKey.find(key);
+
+        if (segmentIt == this->segmentDescriptorsByKey.end()) {
+            return std::nullopt;
+        }
+
+        return std::ref(segmentIt->second);
+    }
+
     const TargetMemorySegmentDescriptor& TargetAddressSpaceDescriptor::getMemorySegmentDescriptor(
         const std::string& key
     ) const {
@@ -59,6 +71,12 @@ namespace Targets
         }
 
         return segment->get();
+    }
+
+    TargetMemorySegmentDescriptor& TargetAddressSpaceDescriptor::getMemorySegmentDescriptor(const std::string& key) {
+        return const_cast<TargetMemorySegmentDescriptor&>(
+            const_cast<const TargetAddressSpaceDescriptor*>(this)->getMemorySegmentDescriptor(key)
+        );
     }
 
     std::vector<

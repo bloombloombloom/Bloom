@@ -21,29 +21,29 @@ namespace Widgets
         this->setAttribute(Qt::WA_DeleteOnClose, true);
         this->setWindowTitle(windowTitle);
 
-        auto dialogUiFile = QFile(
+        auto dialogUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/Dialog/UiFiles/Dialog.ui"
             )
-        );
+        };
 
-        auto dialogStylesheet = QFile(
+        auto dialogStylesheet = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/Dialog/Stylesheets/Dialog.qss"
             )
-        );
+        };
 
         if (!dialogUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open Dialog UI file");
+            throw Exception{"Failed to open Dialog UI file"};
         }
 
         if (!dialogStylesheet.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open Dialog stylesheet file");
+            throw Exception{"Failed to open Dialog stylesheet file"};
         }
 
         this->setStyleSheet(dialogStylesheet.readAll());
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&dialogUiFile, this);
 
         this->textLabel = this->container->findChild<Label*>("text-label");
@@ -58,10 +58,10 @@ namespace Widgets
 
     void Dialog::showEvent(QShowEvent* event) {
         const auto containerSize = this->container->sizeHint();
-        const auto windowSize = QSize(
+        const auto windowSize = QSize{
             std::max(containerSize.width(), 500),
             std::max(containerSize.height(), 100)
-        );
+        };
 
         this->setFixedSize(windowSize);
         this->container->setFixedSize(windowSize);

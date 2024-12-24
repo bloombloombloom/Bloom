@@ -23,7 +23,7 @@ namespace Widgets
 
         void setSvgFilePath(const QString& svgFilePath) {
             this->svgFilePath = svgFilePath;
-            this->renderer.load(this->svgFilePath);
+            this->renderer->load(this->svgFilePath);
         }
 
         QString getSvgFilePath() {
@@ -86,7 +86,7 @@ namespace Widgets
         void changeEvent(QEvent* event) override;
 
     private:
-        QSvgRenderer renderer = new QSvgRenderer(this);
+        QSvgRenderer* renderer = new QSvgRenderer{this};
         QString svgFilePath;
         QString disabledSvgFilePath;
         int containerWidth = 0;

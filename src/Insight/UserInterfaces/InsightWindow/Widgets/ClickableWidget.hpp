@@ -11,7 +11,9 @@ namespace Widgets
         Q_OBJECT
 
     public:
-        explicit ClickableWidget(QWidget* parent): QFrame(parent) {};
+        explicit ClickableWidget(QWidget* parent)
+            : QFrame(parent)
+        {};
 
     signals:
         void rightClicked();

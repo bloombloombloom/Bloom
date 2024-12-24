@@ -13,14 +13,16 @@ namespace Widgets
     class RegisterItem: public ListItem
     {
     public:
-        const Targets::TargetRegisterDescriptor registerDescriptor;
+        const Targets::TargetRegisterDescriptor& registerDescriptor;
+        std::size_t nestedLevel;
         const QString registerName;
         const QString searchKeywords;
-        bool excluded = false;
         bool valueChanged = false;
 
         explicit RegisterItem(
-            const Targets::TargetRegisterDescriptor& registerDescriptor
+            const Targets::TargetRegisterDescriptor& registerDescriptor,
+            std::size_t nestedLevel,
+            QGraphicsItem* parent
         );
 
         void setValue(const Targets::TargetMemoryBuffer& value);
@@ -31,7 +33,7 @@ namespace Widgets
 
         bool operator < (const ListItem& rhs) const override {
             const auto& rhsRegisterItem = dynamic_cast<const RegisterItem&>(rhs);
-            return this->registerName < rhsRegisterItem.registerName;
+            return this->registerDescriptor.startAddress < rhsRegisterItem.registerDescriptor.startAddress;
         }
 
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
@@ -40,7 +42,7 @@ namespace Widgets
         static constexpr int HEIGHT = 25;
         static inline std::optional<QPixmap> registerIconPixmap = std::nullopt;
 
-        QString valueText = "";
+        QString valueText = {};
 
         void generatePixmaps() const;
     };

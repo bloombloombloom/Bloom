@@ -2,7 +2,9 @@
 
 namespace Widgets::InsightTargetWidgets::Dip
 {
-    BodyWidget::BodyWidget(QWidget* parent, std::size_t pinCount): QWidget(parent) {
+    BodyWidget::BodyWidget(QWidget* parent, std::size_t pinCount)
+        : QWidget(parent)
+    {
         this->setObjectName("target-body");
 
         /*
@@ -32,7 +34,7 @@ namespace Widgets::InsightTargetWidgets::Dip
     }
 
     void BodyWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 
@@ -68,7 +70,7 @@ namespace Widgets::InsightTargetWidgets::Dip
             this->orientationIndicatorDiameter
         );
 
-        static const auto backgroundColor = QColor(0x37, 0x38, 0x35);
+        static const auto backgroundColor = QColor{0x37, 0x38, 0x35};
         auto targetBodyColor = this->getBodyColor();
 
         if (!this->isEnabled()) {

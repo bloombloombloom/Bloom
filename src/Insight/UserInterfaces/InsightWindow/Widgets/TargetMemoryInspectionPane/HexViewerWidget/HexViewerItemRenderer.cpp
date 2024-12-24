@@ -74,7 +74,7 @@ namespace Widgets
             this->hexViewerState.hoveredByteItem != nullptr
             && this->hexViewerState.settings.highlightHoveredRowAndCol
         ) {
-            static const auto hoverRectBackgroundColor = QColor(0x8E, 0x8B, 0x83, 45);
+            static const auto hoverRectBackgroundColor = QColor{0x8E, 0x8B, 0x83, 45};
 
             painter->setBrush(hoverRectBackgroundColor);
             painter->setPen(Qt::NoPen);
@@ -108,7 +108,7 @@ namespace Widgets
 
     void HexViewerItemRenderer::paintByteItem(const ByteItem* item, QPainter* painter) {
         const auto position = item->position();
-        const auto boundingRect = QRect(position.x(), position.y(), ByteItem::WIDTH, ByteItem::HEIGHT);
+        const auto boundingRect = QRect{position.x(), position.y(), ByteItem::WIDTH, ByteItem::HEIGHT};
 
         painter->setOpacity(
             !this->isEnabled()
@@ -133,7 +133,8 @@ namespace Widgets
             return;
         }
 
-        const auto byteIndex = item->startAddress - this->hexViewerState.memoryDescriptor.addressRange.startAddress;
+        const auto byteIndex = item->startAddress
+            - this->hexViewerState.memorySegmentDescriptor.addressRange.startAddress;
         const auto value = (*(this->hexViewerState.data))[byteIndex];
 
         const auto hoveredPrimary = this->hexViewerState.hoveredByteItem == item;
@@ -257,7 +258,7 @@ namespace Widgets
         const auto endItemPos = endItem->position();
         const auto endItemSize = endItem->size();
 
-        auto painterPath = QPainterPath();
+        auto painterPath = QPainterPath{};
 
         if (startItemPos.y() != endItemPos.y()) {
             // The highlighted range spans more than one line - draw the border around all lines containing the range
@@ -288,7 +289,7 @@ namespace Widgets
         }
 
         painter->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::SmoothPixmapTransform, true);
-        painter->setPen(QPen(QColor(0x58, 0x58, 0x58), 2));
+        painter->setPen(QPen{QColor{0x58, 0x58, 0x58}, 2});
         painter->setBrush(Qt::BrushStyle::NoBrush);
         painter->drawPath(painterPath);
     }
@@ -304,10 +305,10 @@ namespace Widgets
         {
             auto labelText = item->focusedMemoryRegion.name;
 
-            static constexpr auto lineColor = QColor(0x4F, 0x4F, 0x4F);
-            static constexpr auto labelFontColor = QColor(0x68, 0x68, 0x68);
+            static constexpr auto lineColor = QColor{0x4F, 0x4F, 0x4F};
+            static constexpr auto labelFontColor = QColor{0x68, 0x68, 0x68};
 
-            static auto labelFont = QFont("'Ubuntu', sans-serif");
+            static auto labelFont = QFont{"'Ubuntu', sans-serif"};
             labelFont.setPixelSize(12);
 
             painter->setFont(labelFont);
@@ -329,51 +330,50 @@ namespace Widgets
             const auto verticalLineYStart = position.y() + static_cast<int>(heightOffset);
             const auto verticalLineYEnd = position.y() + static_cast<int>(heightOffset + 5);
 
-            const auto labelRect = QRect(
+            const auto labelRect = QRect{
                 position.x() + (groupWidth - labelSize.width()) / 2,
                 verticalLineYEnd + 10,
                 labelSize.width(),
                 labelSize.height()
-            );
+            };
 
             painter->setPen(lineColor);
 
-            if (item->focusedMemoryRegion.addressRange.startAddress !=
-                item->focusedMemoryRegion.addressRange.endAddress) {
+            if (item->focusedMemoryRegion.addressRange.startAddress != item->focusedMemoryRegion.addressRange.endAddress) {
                 const auto lineStartX =
                     position.x() + item->items.front()->relativePosition.x() + (ByteItem::WIDTH / 2);
                 const auto lineEndX = item->multiLine
                     ? position.x() + groupWidth - (ByteItem::WIDTH / 2)
                     : position.x() + item->items.back()->relativePosition.x() + (ByteItem::WIDTH / 2);
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineStartX,
                     verticalLineYStart,
                     lineStartX,
                     verticalLineYEnd
-                ));
+                });
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineEndX,
                     verticalLineYStart,
                     lineEndX,
                     verticalLineYEnd
-                ));
+                });
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineStartX,
                     verticalLineYEnd,
                     lineEndX,
                     verticalLineYEnd
-                ));
+                });
             }
 
-            painter->drawLine(QLine(
+            painter->drawLine(QLine{
                 position.x() + groupWidth / 2,
                 verticalLineYEnd,
                 position.x() + groupWidth / 2,
                 verticalLineYEnd + 4
-            ));
+            });
 
             painter->setPen(labelFontColor);
             painter->drawText(labelRect, Qt::AlignCenter, labelText);
@@ -385,10 +385,10 @@ namespace Widgets
 
             auto labelText = item->valueLabel.value_or("??");
 
-            static const auto lineColor = QColor(0x4F, 0x4F, 0x4F);
-            static const auto labelFontColor = QColor(0x94, 0x6F, 0x30);
+            static const auto lineColor = QColor{0x4F, 0x4F, 0x4F};
+            static const auto labelFontColor = QColor{0x94, 0x6F, 0x30};
 
-            static auto labelFont = QFont("'Ubuntu', sans-serif");
+            static auto labelFont = QFont{"'Ubuntu', sans-serif"};
             labelFont.setPixelSize(12);
             labelFont.setItalic(true);
 
@@ -399,11 +399,7 @@ namespace Widgets
             auto labelSize = fontMetrics.size(Qt::TextSingleLine, labelText);
             if (labelSize.width() > groupWidth) {
                 labelSize.setWidth(groupWidth);
-                labelText = fontMetrics.elidedText(
-                    labelText,
-                    Qt::TextElideMode::ElideRight,
-                    groupWidth
-                );
+                labelText = fontMetrics.elidedText(labelText, Qt::TextElideMode::ElideRight, groupWidth);
             }
 
             const auto heightOffset = FocusedRegionGroupItem::ANNOTATION_HEIGHT - 4;
@@ -411,12 +407,12 @@ namespace Widgets
             const auto verticalLineYStart = position.y() + static_cast<int>(heightOffset - 5);
             const auto verticalLineYEnd = position.y() + static_cast<int>(heightOffset);
 
-            const auto labelRect = QRect(
+            const auto labelRect = QRect{
                 position.x() + (groupWidth - labelSize.width()) / 2,
                 verticalLineYStart - 10 - labelSize.height(),
                 labelSize.width(),
                 labelSize.height()
-            );
+            };
 
             painter->setPen(lineColor);
 
@@ -426,26 +422,26 @@ namespace Widgets
                     ? position.x() + groupWidth - + (ByteItem::WIDTH / 2)
                     : position.x() + item->items.back()->relativePosition.x() + (ByteItem::WIDTH / 2);
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineStartX,
                     verticalLineYStart,
                     lineStartX,
                     verticalLineYEnd
-                ));
+                });
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineEndX,
                     verticalLineYStart,
                     lineEndX,
                     verticalLineYEnd
-                ));
+                });
 
-                painter->drawLine(QLine(
+                painter->drawLine(QLine{
                     lineStartX,
                     verticalLineYStart,
                     lineEndX,
                     verticalLineYStart
-                ));
+                });
 
                 /*
                  * Draw a circle just above the first byte item of the region, to indicate the first byte used to generate
@@ -455,23 +451,23 @@ namespace Widgets
 
                 constexpr auto radius = 2;
                 painter->drawEllipse(
-                    QPoint(
+                    QPoint{
                         item->focusedMemoryRegion.endianness == TargetMemoryEndianness::BIG ? lineStartX : lineEndX,
                         !item->multiLine || item->focusedMemoryRegion.endianness == TargetMemoryEndianness::BIG
                             ? verticalLineYStart
                             : position.y() + item->groupSize.height() - FocusedRegionGroupItem::ANNOTATION_HEIGHT + 4 + 5
-                    ),
+                    },
                     radius,
                     radius
                 );
             }
 
-            painter->drawLine(QLine(
+            painter->drawLine(QLine{
                 position.x() + groupWidth / 2,
                 verticalLineYStart - 4,
                 position.x() + groupWidth / 2,
                 verticalLineYStart
-            ));
+            });
 
             painter->setPen(labelFontColor);
             painter->drawText(labelRect, Qt::AlignCenter, labelText);
@@ -481,30 +477,31 @@ namespace Widgets
     void HexViewerItemRenderer::paintStackMemoryGroupItem(const StackMemoryGroupItem* item, QPainter* painter) {
         const auto position = item->position();
 
-        const auto headingText = QString("Stack Memory");
+        const auto headingText = QString{"Stack Memory"};
 
-        const auto stackSize = this->hexViewerState.memoryDescriptor.addressRange.endAddress - item->startAddress + 1;
-        const auto& memoryCapacity = this->hexViewerState.memoryDescriptor.size();
+        const auto stackSize = this->hexViewerState.memorySegmentDescriptor.addressRange.endAddress
+            - item->startAddress + 1;
+        const auto& memoryCapacity = this->hexViewerState.memorySegmentDescriptor.size();
 
-        const auto stackSizeHeadingText = QString("Stack size:");
+        const auto stackSizeHeadingText = QString{"Stack size:"};
         const auto stackSizeValueText = QString::number(stackSize) + " byte(s) ("
             + QString::number(static_cast<float>(stackSize) / static_cast<float>(memoryCapacity / 100), 'f' , 1)
             + "% of memory capacity)";
 
-        const auto stackPointerHeadingText = QString("Stack pointer:");
+        const auto stackPointerHeadingText = QString{"Stack pointer:"};
         const auto stackPointerValueText = "0x" + QString::number(
             item->stackPointer,
             16
         ).rightJustified(8, '0').toUpper();
 
-        static constexpr auto lineColor = QColor(0x4F, 0x4F, 0x4F);
-        static constexpr auto headingLabelFontColor = QColor(0x6F, 0x6F, 0x6F);
-        static constexpr auto valueLabelFontColor = QColor(0x94, 0x6F, 0x30, 230);
+        static constexpr auto lineColor = QColor{0x4F, 0x4F, 0x4F};
+        static constexpr auto headingLabelFontColor = QColor{0x6F, 0x6F, 0x6F};
+        static constexpr auto valueLabelFontColor = QColor{0x94, 0x6F, 0x30, 230};
 
-        static auto headingLabelFont = QFont("'Ubuntu', sans-serif");
+        static auto headingLabelFont = QFont{"'Ubuntu', sans-serif"};
         headingLabelFont.setPixelSize(13);
 
-        static auto valueFont = QFont("'Ubuntu', sans-serif");
+        static auto valueFont = QFont{"'Ubuntu', sans-serif"};
         valueFont.setPixelSize(13);
         valueFont.setItalic(true);
 
@@ -534,75 +531,75 @@ namespace Widgets
         const auto lineStartX = position.x() + ByteItem::WIDTH / 2;
         const auto lineEndX = position.x() + groupWidth - (ByteItem::WIDTH / 2);
 
-        const auto labelRect = QRect(
+        const auto labelRect = QRect{
             position.x() + (groupWidth - headingLabelSize.width()) / 2,
             verticalLineYStart - stackPointerHeadingLabelSize.height() - stackSizeHeadingLabelSize.height()
                 - headingLabelSize.height() - labelLineHeight - (labelBottomMargin * 2) - 3,
             headingLabelSize.width(),
             headingLabelSize.height()
-        );
+        };
 
-        const auto stackPointerHeadingLabelRect = QRect(
+        const auto stackPointerHeadingLabelRect = QRect{
             labelRect.left() + (labelRect.width() / 2) - (
                 (stackPointerHeadingLabelSize.width() + stackPointerLabelSize.width()) / 2
             ),
             labelRect.bottom() + labelBottomMargin,
             stackPointerHeadingLabelSize.width(),
             stackPointerHeadingLabelSize.height()
-        );
+        };
 
-        const auto stackPointerValueLabelRect = QRect(
+        const auto stackPointerValueLabelRect = QRect{
             stackPointerHeadingLabelRect.right() + labelRightMargin,
             labelRect.bottom() + labelBottomMargin,
             stackPointerLabelSize.width(),
             stackPointerLabelSize.height()
-        );
+        };
 
-        const auto stackSizeHeadingLabelRect = QRect(
+        const auto stackSizeHeadingLabelRect = QRect{
             labelRect.left() + (labelRect.width() / 2) - (
                 (stackSizeHeadingLabelSize.width() + stackSizeLabelSize.width()) / 2
             ),
             stackPointerHeadingLabelRect.bottom() + labelBottomMargin,
             stackSizeHeadingLabelSize.width(),
             stackSizeHeadingLabelSize.height()
-        );
+        };
 
-        const auto stackSizeValueLabelRect = QRect(
+        const auto stackSizeValueLabelRect = QRect{
             stackSizeHeadingLabelRect.right() + labelRightMargin,
             stackPointerHeadingLabelRect.bottom() + labelBottomMargin,
             stackSizeLabelSize.width(),
             stackSizeLabelSize.height()
-        );
+        };
 
         painter->setPen(lineColor);
 
-        painter->drawLine(QLine(
+        painter->drawLine(QLine{
             lineStartX,
             verticalLineYStart,
             lineStartX,
             verticalLineYEnd
-        ));
+        });
 
-        painter->drawLine(QLine(
+        painter->drawLine(QLine{
             lineEndX,
             verticalLineYStart,
             lineEndX,
             verticalLineYEnd
-        ));
+        });
 
-        painter->drawLine(QLine(
+        painter->drawLine(QLine{
             lineStartX,
             verticalLineYStart,
             lineEndX,
             verticalLineYStart
-        ));
+        });
 
-        painter->drawLine(QLine(
+        painter->drawLine(QLine{
             position.x() + groupWidth / 2,
             verticalLineYStart - labelLineHeight,
             position.x() + groupWidth / 2,
             verticalLineYStart
-        ));
+        });
 
         painter->setPen(headingLabelFontColor);
 
@@ -623,77 +620,77 @@ namespace Widgets
             return;
         }
 
-        static constexpr auto standardBackgroundColor = QColor(0x32, 0x33, 0x30, 0);
-        static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C, 255);
-        static constexpr auto primaryHighlightedBackgroundColor = QColor(0x3B, 0x59, 0x37, 255);
-        static constexpr auto groupedBackgroundColor = QColor(0x44, 0x44, 0x41, 255);
-        static constexpr auto stackMemoryBackgroundColor = QColor(0x44, 0x44, 0x41, 200);
-        static constexpr auto stackMemoryBarColor = QColor(0x67, 0x57, 0x20, 255);
-        static constexpr auto changedMemoryBackgroundColor = QColor(0x5C, 0x49, 0x5D, 200);
-        static constexpr auto changedMemoryFadedBackgroundColor = QColor(0x5C, 0x49, 0x5D, 125);
+        static constexpr auto standardBackgroundColor = QColor{0x32, 0x33, 0x30, 0};
+        static constexpr auto selectedBackgroundColor = QColor{0x3C, 0x59, 0x5C, 255};
+        static constexpr auto primaryHighlightedBackgroundColor = QColor{0x3B, 0x59, 0x37, 255};
+        static constexpr auto groupedBackgroundColor = QColor{0x44, 0x44, 0x41, 255};
+        static constexpr auto stackMemoryBackgroundColor = QColor{0x44, 0x44, 0x41, 200};
+        static constexpr auto stackMemoryBarColor = QColor{0x67, 0x57, 0x20, 255};
+        static constexpr auto changedMemoryBackgroundColor = QColor{0x5C, 0x49, 0x5D, 200};
+        static constexpr auto changedMemoryFadedBackgroundColor = QColor{0x5C, 0x49, 0x5D, 125};
 
-        static const auto hoveredStackMemoryBackgroundColor = QColor(
+        static const auto hoveredStackMemoryBackgroundColor = QColor{
             stackMemoryBackgroundColor.red(),
             stackMemoryBackgroundColor.green(),
             stackMemoryBackgroundColor.blue(),
             255
-        );
+        };
 
-        static constexpr auto hoveredBackgroundColor = QColor(0x8E, 0x8B, 0x83, 70);
+        static constexpr auto hoveredBackgroundColor = QColor{0x8E, 0x8B, 0x83, 70};
 
-        static constexpr auto standardFontColor = QColor(0xAF, 0xB1, 0xB3);
-        static constexpr auto fadedFontColor = QColor(0xAF, 0xB1, 0xB3, 100);
-        static constexpr auto asciiFontColor = QColor(0xA7, 0x77, 0x26);
-        static constexpr auto changedMemoryAsciiFontColor = QColor(0xB7, 0x7F, 0x21);
+        static constexpr auto standardFontColor = QColor{0xAF, 0xB1, 0xB3};
+        static constexpr auto fadedFontColor = QColor{0xAF, 0xB1, 0xB3, 100};
+        static constexpr auto asciiFontColor = QColor{0xA7, 0x77, 0x26};
+        static constexpr auto changedMemoryAsciiFontColor = QColor{0xB7, 0x7F, 0x21};
 
-        const auto byteItemRect = QRect(0, 0, ByteItem::WIDTH, ByteItem::HEIGHT);
+        const auto byteItemRect = QRect{0, 0, ByteItem::WIDTH, ByteItem::HEIGHT};
         const auto byteItemSize = byteItemRect.size();
 
-        auto standardTemplatePixmap = QPixmap(byteItemSize);
+        auto standardTemplatePixmap = QPixmap{byteItemSize};
         standardTemplatePixmap.fill(standardBackgroundColor);
 
-        auto primaryHighlightedTemplatePixmap = QPixmap(byteItemSize);
+        auto primaryHighlightedTemplatePixmap = QPixmap{byteItemSize};
         primaryHighlightedTemplatePixmap.fill(primaryHighlightedBackgroundColor);
 
-        auto selectedTemplatePixmap = QPixmap(byteItemSize);
+        auto selectedTemplatePixmap = QPixmap{byteItemSize};
         selectedTemplatePixmap.fill(selectedBackgroundColor);
 
-        auto groupedTemplatePixmap = QPixmap(byteItemSize);
+        auto groupedTemplatePixmap = QPixmap{byteItemSize};
         groupedTemplatePixmap.fill(groupedBackgroundColor);
 
-        auto stackMemoryTemplatePixmap = QPixmap(byteItemSize);
+        auto stackMemoryTemplatePixmap = QPixmap{byteItemSize};
         stackMemoryTemplatePixmap.fill(stackMemoryBackgroundColor);
 
         {
-            auto painter = QPainter(&stackMemoryTemplatePixmap);
+            auto painter = QPainter{&stackMemoryTemplatePixmap};
             painter.setBrush(stackMemoryBarColor);
             painter.setPen(Qt::PenStyle::NoPen);
             painter.drawRect(0, byteItemSize.height() - 3, byteItemSize.width(), 3);
         }
 
-        auto changedMemoryTemplatePixmap = QPixmap(byteItemSize);
+        auto changedMemoryTemplatePixmap = QPixmap{byteItemSize};
         changedMemoryTemplatePixmap.fill(changedMemoryBackgroundColor);
 
-        auto changedMemoryFadedTemplatePixmap = QPixmap(byteItemSize);
+        auto changedMemoryFadedTemplatePixmap = QPixmap{byteItemSize};
         changedMemoryFadedTemplatePixmap.fill(changedMemoryFadedBackgroundColor);
 
-        auto hoveredStackMemoryTemplatePixmap = QPixmap(byteItemSize);
+        auto hoveredStackMemoryTemplatePixmap = QPixmap{byteItemSize};
         hoveredStackMemoryTemplatePixmap.fill(hoveredStackMemoryBackgroundColor);
 
-        auto hoveredPrimaryTemplatePixmap = QPixmap(byteItemSize);
+        auto hoveredPrimaryTemplatePixmap = QPixmap{byteItemSize};
         hoveredPrimaryTemplatePixmap.fill(hoveredBackgroundColor);
 
-        static auto font = QFont("'Ubuntu', sans-serif", 8);
+        static auto font = QFont{"'Ubuntu', sans-serif", 8};
 
-        for (std::uint16_t value = 0x00; value <= 0xFF; ++value) {
+        for (auto value = std::uint16_t{0}; value <= 0xFF; ++value) {
             const auto hexValue = QString::number(value, 16).rightJustified(2, '0').toUpper();
             const auto asciiValue = value >= 32 && value <= 126
-                ? std::optional("'" + QString(QChar(value)) + "'")
+                ? std::optional{"'" + QString{QChar{value}} + "'"}
                 : std::nullopt;
 
             {
                 auto standardPixmap = standardTemplatePixmap;
-                auto painter = QPainter(&standardPixmap);
+                auto painter = QPainter{&standardPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -703,7 +700,7 @@ namespace Widgets
 
             {
                 auto selectedPixmap = selectedTemplatePixmap;
-                auto painter = QPainter(&selectedPixmap);
+                auto painter = QPainter{&selectedPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -713,7 +710,7 @@ namespace Widgets
 
             {
                 auto primaryHighlightedPixmap = primaryHighlightedTemplatePixmap;
-                auto painter = QPainter(&primaryHighlightedPixmap);
+                auto painter = QPainter{&primaryHighlightedPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -723,7 +720,7 @@ namespace Widgets
 
             {
                 auto groupedPixmap = groupedTemplatePixmap;
-                auto painter = QPainter(&groupedPixmap);
+                auto painter = QPainter{&groupedPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -733,7 +730,7 @@ namespace Widgets
 
             {
                 auto stackMemoryPixmap = stackMemoryTemplatePixmap;
-                auto painter = QPainter(&stackMemoryPixmap);
+                auto painter = QPainter{&stackMemoryPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -743,7 +740,7 @@ namespace Widgets
 
             {
                 auto changedMemoryPixmap = changedMemoryTemplatePixmap;
-                auto painter = QPainter(&changedMemoryPixmap);
+                auto painter = QPainter{&changedMemoryPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -753,7 +750,7 @@ namespace Widgets
 
             {
                 auto hoveredPrimaryPixmap = hoveredPrimaryTemplatePixmap;
-                auto painter = QPainter(&hoveredPrimaryPixmap);
+                auto painter = QPainter{&hoveredPrimaryPixmap};
                 painter.setFont(font);
                 painter.setPen(standardFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, hexValue);
@@ -763,7 +760,7 @@ namespace Widgets
 
             {
                 auto standardAsciiPixmap = standardTemplatePixmap;
-                auto painter = QPainter(&standardAsciiPixmap);
+                auto painter = QPainter{&standardAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -773,7 +770,7 @@ namespace Widgets
 
             {
                 auto selectedAsciiPixmap = selectedTemplatePixmap;
-                auto painter = QPainter(&selectedAsciiPixmap);
+                auto painter = QPainter{&selectedAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -783,7 +780,7 @@ namespace Widgets
 
             {
                 auto primaryHighlightedAsciiPixmap = primaryHighlightedTemplatePixmap;
-                auto painter = QPainter(&primaryHighlightedAsciiPixmap);
+                auto painter = QPainter{&primaryHighlightedAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -795,7 +792,7 @@ namespace Widgets
 
             {
                 auto groupedAsciiPixmap = groupedTemplatePixmap;
-                auto painter = QPainter(&groupedAsciiPixmap);
+                auto painter = QPainter{&groupedAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -805,7 +802,7 @@ namespace Widgets
 
             {
                 auto stackMemoryAsciiPixmap = stackMemoryTemplatePixmap;
-                auto painter = QPainter(&stackMemoryAsciiPixmap);
+                auto painter = QPainter{&stackMemoryAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -818,7 +815,7 @@ namespace Widgets
                     ? changedMemoryTemplatePixmap
                     : changedMemoryFadedTemplatePixmap;
 
-                auto painter = QPainter(&changedMemoryAsciiPixmap);
+                auto painter = QPainter{&changedMemoryAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? changedMemoryAsciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -828,7 +825,7 @@ namespace Widgets
 
             {
                 auto hoveredPrimaryAsciiPixmap = hoveredPrimaryTemplatePixmap;
-                auto painter = QPainter(&hoveredPrimaryAsciiPixmap);
+                auto painter = QPainter{&hoveredPrimaryAsciiPixmap};
                 painter.setFont(font);
                 painter.setPen(asciiValue.has_value() ? asciiFontColor : fadedFontColor);
                 painter.drawText(byteItemRect, Qt::AlignCenter, asciiValue.value_or(hexValue));
@@ -839,7 +836,7 @@ namespace Widgets
 
         {
             HexViewerItemRenderer::missingDataPixmap = standardTemplatePixmap;
-            auto painter = QPainter(&HexViewerItemRenderer::missingDataPixmap.value());
+            auto painter = QPainter{&HexViewerItemRenderer::missingDataPixmap.value()};
             painter.setFont(font);
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");
@@ -847,7 +844,7 @@ namespace Widgets
 
         {
             HexViewerItemRenderer::selectedMissingDataPixmap = selectedTemplatePixmap;
-            auto painter = QPainter(&HexViewerItemRenderer::selectedMissingDataPixmap.value());
+            auto painter = QPainter{&HexViewerItemRenderer::selectedMissingDataPixmap.value()};
             painter.setFont(font);
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");
@@ -855,7 +852,7 @@ namespace Widgets
 
         {
             HexViewerItemRenderer::primaryHighlightedMissingDataPixmap = primaryHighlightedTemplatePixmap;
-            auto painter = QPainter(&HexViewerItemRenderer::primaryHighlightedMissingDataPixmap.value());
+            auto painter = QPainter{&HexViewerItemRenderer::primaryHighlightedMissingDataPixmap.value()};
             painter.setFont(font);
             painter.setPen(standardFontColor);
             painter.drawText(byteItemRect, Qt::AlignCenter, "??");

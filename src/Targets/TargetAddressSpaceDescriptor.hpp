@@ -63,9 +63,12 @@ namespace Targets
          * @return
          *  A reference wrapper of the memory segment descriptor, if found. Otherwise, std::nullopt.
          */
-        std::optional<std::reference_wrapper<const TargetMemorySegmentDescriptor>> tryGetMemorySegmentDescriptor(
-            const std::string& key
-        ) const;
+        [[nodiscard]] std::optional<
+            std::reference_wrapper<const TargetMemorySegmentDescriptor>
+        > tryGetMemorySegmentDescriptor(const std::string& key) const;
+        [[nodiscard]] std::optional<
+            std::reference_wrapper<TargetMemorySegmentDescriptor>
+        > tryGetMemorySegmentDescriptor(const std::string& key);
 
         /**
          * Fetches a memory segment descriptor with the given key. If the descriptor doesn't exist, an
@@ -77,7 +80,8 @@ namespace Targets
          * @return
          *  A reference to the memory segment descriptor.
          */
-        const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key) const;
+        [[nodiscard]] const TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key) const;
+        TargetMemorySegmentDescriptor& getMemorySegmentDescriptor(const std::string& key);
 
         /**
          * Fetches all memory segments in the address space that intersect with the given address range.
@@ -88,7 +92,7 @@ namespace Targets
          * @return
          *  Pointers to descriptors of all intersecting memory segments.
          */
-        std::vector<const TargetMemorySegmentDescriptor*> getIntersectingMemorySegmentDescriptors(
+        [[nodiscard]] std::vector<const TargetMemorySegmentDescriptor*> getIntersectingMemorySegmentDescriptors(
             const TargetMemoryAddressRange& addressRange
         ) const;
 

@@ -18,15 +18,15 @@ namespace Widgets
         static constexpr int RIGHT_MARGIN = 5;
         static constexpr int BOTTOM_MARGIN = 5;
 
-        const Targets::TargetMemoryAddress startAddress = 0;
+        const Targets::TargetMemoryAddress startAddress;
 
         HexViewerItem* parent = nullptr;
 
         QPoint relativePosition = {};
 
-        HexViewerItem(Targets::TargetMemoryAddress startAddress, HexViewerItem* parent = nullptr);
-        QPoint position() const;
-        virtual QSize size() const = 0;
+        explicit HexViewerItem(Targets::TargetMemoryAddress startAddress, HexViewerItem* parent = nullptr);
+        [[nodiscard]] QPoint position() const;
+        [[nodiscard]] virtual QSize size() const = 0;
     };
 #pragma pack(pop)
 }

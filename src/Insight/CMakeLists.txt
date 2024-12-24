@@ -29,14 +29,11 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/InsightWorkerTask.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadTargetRegisters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/WriteTargetRegister.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/RefreshTargetPinStates.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/SetTargetPinState.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadTargetGpioPadStates.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/SetTargetGpioPadState.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadTargetMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/WriteTargetMemory.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadStackPointer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ReadProgramCounter.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/GetTargetState.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/GetTargetDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/ConstructHexViewerTopLevelGroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/CaptureMemorySnapshot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/InsightWorker/Tasks/RetrieveMemorySnapshots.cpp
@@ -73,6 +70,7 @@ target_sources(
 
         # Target register side pane
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/TargetRegistersPaneWidget.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/PeripheralItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterGroupItem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/RegisterItem.cpp
 
@@ -87,6 +85,7 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/BitsetWidget/BitBodyWidget.cpp
 
         # Target memory inspection pane
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/ToolButton.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerWidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/ItemGraphicsView.cpp

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDateTime>
 #include <QHBoxLayout>
 
 #include "Item.hpp"
@@ -16,13 +15,10 @@ namespace Widgets
         Q_OBJECT
 
     public:
-        CurrentItem(
-            const Targets::TargetMemoryBuffer& registerValue,
-            QWidget *parent
-        );
+        CurrentItem(const Targets::TargetMemoryBuffer& registerValue, QWidget* parent);
 
     private:
-        QHBoxLayout* layout = new QHBoxLayout(this);
-        Label* titleLabel = new Label(this);
+        QHBoxLayout* layout = new QHBoxLayout{this};
+        Label* titleLabel = new Label{this};
     };
 }

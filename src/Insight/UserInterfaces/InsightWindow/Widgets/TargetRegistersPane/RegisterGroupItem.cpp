@@ -6,27 +6,69 @@
 #include <QPainter>
 #include <QString>
 #include <QRect>
+#include <algorithm>
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListScene.hpp"
 #include "src/Services/PathService.hpp"
+#include "src/Logger/Logger.hpp"
 
 namespace Widgets
 {
     RegisterGroupItem::RegisterGroupItem(
-        QString name,
-        const std::set<Targets::TargetRegisterDescriptor>& registerDescriptors,
-        std::unordered_map<Targets::TargetRegisterDescriptorId, RegisterItem*>& registerItemsByDescriptorIds
+        const Targets::TargetRegisterGroupDescriptor& registerGroupDescriptor,
+        std::size_t nestedLevel,
+        std::unordered_map<Targets::TargetRegisterId, RegisterItem*>& flattenedRegisterItemsByRegisterIds,
+        Targets::TargetRegisterDescriptors& flattenedRegisterDescriptors,
+        QGraphicsItem* parent
     )
-        : groupName(name)
+        : ListItem(parent)
+        , registerGroupDescriptor(registerGroupDescriptor)
+        , nestedLevel(nestedLevel)
+        , startAddress(this->registerGroupDescriptor.startAddress())
+        , name(QString::fromStdString(this->registerGroupDescriptor.name))
+        , searchKeywords(
+            this->name + " " + QString::fromStdString(this->registerGroupDescriptor.description.value_or(""))
+        )
     {
-        for (const auto& registerDescriptor : registerDescriptors) {
-            auto* registerItem = new RegisterItem(registerDescriptor);
-            registerItem->setParentItem(this);
-            registerItem->setVisible(this->isExpanded());
+        for (const auto& [groupKey, groupDescriptor] : this->registerGroupDescriptor.subgroupDescriptorsByKey) {
+            auto* subgroupItem = new RegisterGroupItem{
+                groupDescriptor,
+                this->nestedLevel + 1,
+                flattenedRegisterItemsByRegisterIds,
+                flattenedRegisterDescriptors,
+                this
+            };
+            subgroupItem->setVisible(this->expanded);
 
-            this->registerItems.push_back(registerItem);
-            registerItemsByDescriptorIds.insert(std::pair(registerDescriptor.id, registerItem));
+            this->childItems.emplace_back(subgroupItem);
         }
+
+        for (const auto& [registerKey, registerDescriptor] : this->registerGroupDescriptor.registerDescriptorsByKey) {
+            auto* registerItem = new RegisterItem{registerDescriptor, this->nestedLevel + 1, this};
+            registerItem->setVisible(this->expanded);
+
+            this->childItems.emplace_back(registerItem);
+            flattenedRegisterItemsByRegisterIds.emplace(registerDescriptor.id, registerItem);
+            flattenedRegisterDescriptors.emplace_back(&registerDescriptor);
+        }
+
+        std::sort(
+            this->childItems.begin(),
+            this->childItems.end(),
+            [] (const ListItem* itemA, const ListItem* itemB) {
+                const auto* registerItemA = dynamic_cast<const RegisterItem*>(itemA);
+                const auto startAddressA = registerItemA != nullptr
+                    ? registerItemA->registerDescriptor.startAddress
+                    : dynamic_cast<const RegisterGroupItem*>(itemA)->startAddress;
+
+                const auto* registerItemB = dynamic_cast<const RegisterItem*>(itemB);
+                const auto startAddressB = registerItemB != nullptr
+                    ? registerItemB->registerDescriptor.startAddress
+                    : dynamic_cast<const RegisterGroupItem*>(itemB)->startAddress;
+
+                return startAddressA < startAddressB;
+            }
+        );
 
         if (!RegisterGroupItem::registerGroupIconPixmap.has_value()) {
             this->generatePixmaps();
@@ -40,8 +82,21 @@ namespace Widgets
 
         this->expanded = expanded;
 
-        for (auto& registerItem : this->registerItems) {
-            registerItem->setVisible(this->expanded);
+        for (auto* childItem : this->childItems) {
+            childItem->setVisible(expanded);
+        }
+    }
+
+    void RegisterGroupItem::setAllExpanded(bool expanded) {
+        this->expanded = expanded;
+
+        for (auto* childItem : this->childItems) {
+            childItem->setVisible(expanded);
+
+            auto* groupItem = dynamic_cast<RegisterGroupItem*>(childItem);
+            if (groupItem != nullptr) {
+                groupItem->setAllExpanded(expanded);
+            }
         }
     }
 
@@ -51,34 +106,80 @@ namespace Widgets
         const auto startXPosition = 0;
         auto startYPosition = RegisterGroupItem::GROUP_LIST_ITEM_HEIGHT;
 
-        if (this->isExpanded()) {
-            for (auto& registerItem : this->registerItems) {
-                if (!registerItem->isVisible() || registerItem->excluded) {
+        if (this->expanded) {
+            for (auto& childItem : this->childItems) {
+                if (childItem->excluded || !childItem->isVisible()) {
                     continue;
                 }
 
-                registerItem->size.setWidth(groupWidth);
-                registerItem->setPos(startXPosition, startYPosition);
+                auto* groupItem = dynamic_cast<RegisterGroupItem*>(childItem);
+                if (groupItem != nullptr) {
+                    groupItem->refreshGeometry();
+                }
 
-                registerItem->onGeometryChanged();
+                childItem->size.setWidth(groupWidth);
+                childItem->setPos(startXPosition, startYPosition);
 
-                startYPosition += registerItem->size.height();
+                childItem->onGeometryChanged();
+
+                startYPosition += childItem->size.height();
             }
         }
 
         this->size.setHeight(startYPosition);
     }
 
-    void RegisterGroupItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        static constexpr auto selectedBackgroundColor = QColor(0x3C, 0x59, 0x5C);
+    void RegisterGroupItem::applyFilter(const QString& keyword, bool displayEntirePeripheral) {
+        const auto displayEntireGroup = displayEntirePeripheral || keyword.isEmpty()
+            || this->searchKeywords.contains(keyword, Qt::CaseInsensitive);
 
-        static constexpr auto itemLeftPadding = 3;
+        auto visibleChildCount = std::size_t{0};
+        for (auto* childItem : this->childItems) {
+            auto* groupItem = dynamic_cast<RegisterGroupItem*>(childItem);
+            if (groupItem != nullptr) {
+                groupItem->applyFilter(keyword, displayEntirePeripheral);
+
+                if (!groupItem->excluded) {
+                    ++visibleChildCount;
+                }
+                continue;
+            }
+
+            auto* registerItem = dynamic_cast<RegisterItem*>(childItem);
+            if (registerItem != nullptr) {
+                registerItem->excluded = !displayEntireGroup
+                    && !registerItem->searchKeywords.contains(keyword, Qt::CaseInsensitive);
+
+                if (!registerItem->excluded) {
+                    ++visibleChildCount;
+                }
+            }
+        }
+
+        this->excluded = !displayEntireGroup && visibleChildCount == 0 && !keyword.isEmpty();
+        this->setExpanded((displayEntireGroup || visibleChildCount > 0) && !keyword.isEmpty());
+    }
+
+    void RegisterGroupItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+        if (this->excluded) {
+            return;
+        }
+
+        const auto& collapsedArrowIconPixmap = *(RegisterGroupItem::collapsedArrowIconPixmap);
+        const auto& expandedArrowIconPixmap = *(RegisterGroupItem::expandedArrowIconPixmap);
+        const auto& registerGroupIconPixmap = *(RegisterGroupItem::registerGroupIconPixmap);
+
+        static constexpr auto selectedBackgroundColor = QColor{0x3C, 0x59, 0x5C};
+
         static constexpr auto itemTopPadding = 4;
         static constexpr auto iconLeftMargin = 5;
         static constexpr auto labelLeftMargin = 6;
+        const auto itemLeftPadding = (
+            (expandedArrowIconPixmap.width() + iconLeftMargin) * static_cast<int>(this->nestedLevel)
+        ) + 3;
 
-        static const auto nameLabelFont = QFont("'Ubuntu', sans-serif", 11);
-        static constexpr auto nameLabelFontColor = QColor(0xAF, 0xB1, 0xB3);
+        static const auto nameLabelFont = QFont{"'Ubuntu', sans-serif", 11};
+        static constexpr auto nameLabelFontColor = QColor{0xAF, 0xB1, 0xB3};
 
         if (this->selected) {
             painter->setBrush(selectedBackgroundColor);
@@ -86,15 +187,11 @@ namespace Widgets
             painter->drawRect(0, 0, this->size.width(), RegisterGroupItem::GROUP_LIST_ITEM_HEIGHT);
         }
 
-        const auto& collapsedArrowIconPixmap = *(RegisterGroupItem::collapsedArrowIconPixmap);
-        const auto& expandedArrowIconPixmap = *(RegisterGroupItem::expandedArrowIconPixmap);
-        const auto& registerGroupIconPixmap = *(RegisterGroupItem::registerGroupIconPixmap);
-
-        const QPixmap& arrowPixmap = this->isExpanded() ? expandedArrowIconPixmap : collapsedArrowIconPixmap;
+        const auto& arrowPixmap = this->isExpanded() ? expandedArrowIconPixmap : collapsedArrowIconPixmap;
 
         painter->drawPixmap(itemLeftPadding, itemTopPadding + 2, arrowPixmap);
         painter->drawPixmap(
-            arrowPixmap.width() + itemLeftPadding + iconLeftMargin,
+            itemLeftPadding + arrowPixmap.width() + iconLeftMargin,
             itemTopPadding + 1,
             registerGroupIconPixmap
         );
@@ -104,19 +201,19 @@ namespace Widgets
 
         const auto fontMetrics = painter->fontMetrics();
 
-        const auto nameLabelSize = fontMetrics.size(Qt::TextSingleLine, this->groupName);
-        const auto nameLabelRect = QRect(
-            arrowPixmap.width() + itemLeftPadding + registerGroupIconPixmap.width() + itemLeftPadding + labelLeftMargin,
+        const auto nameLabelSize = fontMetrics.size(Qt::TextSingleLine, this->name);
+        const auto nameLabelRect = QRect{
+            itemLeftPadding + arrowPixmap.width() + iconLeftMargin + registerGroupIconPixmap.width() + labelLeftMargin,
             itemTopPadding,
             nameLabelSize.width(),
             nameLabelSize.height()
-        );
+        };
 
-        painter->drawText(nameLabelRect, Qt::AlignLeft, this->groupName);
+        painter->drawText(nameLabelRect, Qt::AlignLeft, this->name);
     }
 
     void RegisterGroupItem::generatePixmaps() const {
-        auto svgRenderer = QSvgRenderer();
+        auto svgRenderer = QSvgRenderer{};
 
         {
             svgRenderer.load(QString::fromStdString(
@@ -124,10 +221,10 @@ namespace Widgets
                     + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/Images/register-group.svg"
             ));
 
-            auto registerGroupIconPixmap = QPixmap(svgRenderer.defaultSize());
+            auto registerGroupIconPixmap = QPixmap{svgRenderer.defaultSize()};
             registerGroupIconPixmap.fill(Qt::GlobalColor::transparent);
 
-            auto painter = QPainter(&registerGroupIconPixmap);
+            auto painter = QPainter{&registerGroupIconPixmap};
             svgRenderer.render(&painter);
 
             RegisterGroupItem::registerGroupIconPixmap = registerGroupIconPixmap;
@@ -140,10 +237,10 @@ namespace Widgets
             ));
 
             const auto iconSize = svgRenderer.defaultSize();
-            auto arrowIconPixmap = QPixmap(iconSize);
+            auto arrowIconPixmap = QPixmap{iconSize};
             arrowIconPixmap.fill(Qt::GlobalColor::transparent);
 
-            auto painter = QPainter(&arrowIconPixmap);
+            auto painter = QPainter{&arrowIconPixmap};
             svgRenderer.render(&painter);
 
             RegisterGroupItem::collapsedArrowIconPixmap = arrowIconPixmap;

@@ -1,6 +1,7 @@
 #include "TaskWindow.hpp"
 
 #include <QScrollArea>
+#include <QFile>
 #include <QTimer>
 
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
@@ -21,27 +22,27 @@ namespace Widgets
         this->setWindowFlag(Qt::Window);
         this->setWindowTitle("Background Tasks");
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TaskWindow/UiFiles/TaskWindow.ui"
             )
-        );
+        };
 
-        auto stylesheetFile = QFile(
+        auto stylesheetFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TaskWindow/Stylesheets/TaskWindow.qss"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exceptions::Exception("Failed to open TaskWindow UI file");
+            throw Exceptions::Exception{"Failed to open TaskWindow UI file"};
         }
 
         if (!stylesheetFile.open(QFile::ReadOnly)) {
-            throw Exceptions::Exception("Failed to open TaskWindow stylesheet file");
+            throw Exceptions::Exception{"Failed to open TaskWindow stylesheet file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&windowUiFile, this);
         this->container->setStyleSheet(stylesheetFile.readAll());
 
@@ -50,10 +51,8 @@ namespace Widgets
         this->taskWidgetLayout = this->container->findChild<QVBoxLayout*>();
         this->taskPlaceholderLabel = this->container->findChild<Label*>("loading-placeholder-label");
 
-        auto* insightSignals = InsightSignals::instance();
-
         QObject::connect(
-            insightSignals,
+            InsightSignals::instance(),
             &InsightSignals::taskQueued,
             this,
             &TaskWindow::onTaskQueued
@@ -65,11 +64,11 @@ namespace Widgets
     }
 
     void TaskWindow::onTaskQueued(const QSharedPointer<InsightWorkerTask>& task) {
-        auto* taskWidget = new Task(task, this);
+        auto* taskWidget = new Task{task, this};
         this->taskWidgetLayout->insertWidget(0, taskWidget);
 
         QObject::connect(taskWidget, &Task::taskComplete, this, [this] (InsightWorkerTask::IdType taskId) {
-            auto* finishedSignalTimer = new QTimer();
+            auto* finishedSignalTimer = new QTimer{};
             finishedSignalTimer->setSingleShot(true);
             finishedSignalTimer->setInterval(10000);
 

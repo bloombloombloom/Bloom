@@ -27,7 +27,7 @@ namespace Widgets
         std::unordered_map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>> tasksById;
 
         std::uint8_t progressPercentage = 0;
-        QTimer* clearCompletedTasksTimer = new QTimer(this);
+        QTimer* clearCompletedTasksTimer = new QTimer{this};
 
         void clearCompletedTasks();
         void refreshProgressPercentage();

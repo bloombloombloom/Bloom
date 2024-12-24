@@ -18,7 +18,7 @@ namespace Widgets
 
     public:
         static constexpr int WIDTH = 19;
-        static constexpr int HEIGHT = 28;
+        static constexpr int HEIGHT = 29;
 
         BitBodyWidget(
             int bitIndex,

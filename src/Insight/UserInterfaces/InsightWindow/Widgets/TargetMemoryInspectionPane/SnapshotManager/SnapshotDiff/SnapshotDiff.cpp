@@ -26,12 +26,15 @@ namespace Widgets
     SnapshotDiff::SnapshotDiff(
         MemorySnapshot& snapshotA,
         MemorySnapshot& snapshotB,
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
-        Targets::TargetState currentTargetState,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         QWidget* parent
     )
         : QWidget(parent)
-        , memoryDescriptor(memoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetState(targetState)
         , hexViewerDataA(snapshotA.data)
         , focusedRegionsA(snapshotA.focusedRegions)
         , excludedRegionsA(snapshotA.excludedRegions)
@@ -43,11 +46,9 @@ namespace Widgets
         , comparingWithCurrent(false)
     {
         this->init();
-        this->onTargetStateChanged(currentTargetState);
+        this->onTargetStateChanged();
 
-        this->setWindowTitle(
-            "Comparing snapshot \"" + snapshotA.name + "\" with snapshot \"" + snapshotB.name + "\""
-        );
+        this->setWindowTitle("Comparing snapshot \"" + snapshotA.name + "\" with snapshot \"" + snapshotB.name + "\"");
 
         this->dataAPrimaryLabel->setText(snapshotA.name);
         this->dataBPrimaryLabel->setText(snapshotB.name);
@@ -61,12 +62,15 @@ namespace Widgets
         std::vector<FocusedMemoryRegion> focusedRegionsB,
         std::vector<ExcludedMemoryRegion> excludedRegionsB,
         Targets::TargetStackPointer stackPointerB,
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
-        Targets::TargetState currentTargetState,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         QWidget* parent
     )
         : QWidget(parent)
-        , memoryDescriptor(memoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetState(targetState)
         , hexViewerDataA(snapshotA.data)
         , focusedRegionsA(snapshotA.focusedRegions)
         , excludedRegionsA(snapshotA.excludedRegions)
@@ -78,26 +82,24 @@ namespace Widgets
         , comparingWithCurrent(true)
     {
         this->init();
-        this->onTargetStateChanged(currentTargetState);
+        this->onTargetStateChanged();
 
-        this->setWindowTitle(
-            "Comparing snapshot \"" + snapshotA.name + "\" with current memory"
-        );
+        this->setWindowTitle("Comparing snapshot \"" + snapshotA.name + "\" with current memory");
 
         this->dataAPrimaryLabel->setText(snapshotA.name);
         this->dataBPrimaryLabel->setText("Current");
         this->dataASecondaryLabel->setText(snapshotA.createdDate.toString("dd/MM/yyyy hh:mm"));
         this->dataBSecondaryLabel->setVisible(false);
 
-        this->restoreBytesAction = new ContextMenuAction(
+        this->restoreBytesAction = new ContextMenuAction{
             "Restore Selection",
             [this] (const std::set<Targets::TargetMemoryAddress>&) {
                 return
-                    this->memoryDescriptor.access.writeableDuringDebugSession
-                    && this->targetState == Targets::TargetState::STOPPED;
+                    this->memorySegmentDescriptor.debugModeAccess.writeable
+                    && this->targetState.executionState == Targets::TargetExecutionState::STOPPED;
             },
             this
-        );
+        };
 
         QObject::connect(
             this->restoreBytesAction,
@@ -129,7 +131,7 @@ namespace Widgets
         this->excludedRegionsB = excludedRegions;
         this->stackPointerB = stackPointer;
 
-        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+        if (this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM) {
             this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
         }
 
@@ -170,26 +172,26 @@ namespace Widgets
         this->setWindowFlag(Qt::Window);
         this->setObjectName("snapshot-diff");
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/SnapshotDiff/UiFiles/SnapshotDiff.ui"
             )
-        );
+        };
 
-        auto stylesheetFile = QFile(
+        auto stylesheetFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/SnapshotDiff/Stylesheets/SnapshotDiff.qss"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open SnapshotDiff UI file");
+            throw Exception{"Failed to open SnapshotDiff UI file"};
         }
 
         if (!stylesheetFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open SnapshotDiff stylesheet file");
+            throw Exception{"Failed to open SnapshotDiff stylesheet file"};
         }
 
         // Set ideal window size
@@ -197,7 +199,7 @@ namespace Widgets
         this->setMinimumSize(800, 600);
         this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         const auto styleSheet = stylesheetFile.readAll();
         this->container = uiLoader.load(&windowUiFile, this);
         this->container->setStyleSheet(styleSheet);
@@ -216,7 +218,7 @@ namespace Widgets
             "sub-container"
         )->findChild<QHBoxLayout*>("sub-layout");
 
-        this->leftPanel = new PanelWidget(PanelWidgetType::LEFT, this->leftPanelState, this);
+        this->leftPanel = new PanelWidget{PanelWidgetType::LEFT, this->leftPanelState, this};
         this->leftPanel->setObjectName("left-panel");
         this->leftPanel->setMinimumResize(200);
         this->leftPanel->setHandleSize(6);
@@ -233,29 +235,33 @@ namespace Widgets
         auto snapshotAContainerLayout = this->dataAContainer->findChild<QVBoxLayout*>();
         auto snapshotBContainerLayout = this->dataBContainer->findChild<QVBoxLayout*>();
 
-        this->hexViewerWidgetA = new DifferentialHexViewerWidget(
+        this->hexViewerWidgetA = new DifferentialHexViewerWidget{
             DifferentialHexViewerWidgetType::PRIMARY,
             this->differentialHexViewerSharedState,
             this->settings,
-            this->memoryDescriptor,
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->hexViewerDataA,
             this->hexViewerWidgetSettingsA,
             this->focusedRegionsA,
             this->excludedRegionsA,
             this
-        );
+        };
 
-        this->hexViewerWidgetB = new DifferentialHexViewerWidget(
+        this->hexViewerWidgetB = new DifferentialHexViewerWidget{
             DifferentialHexViewerWidgetType::SECONDARY,
             this->differentialHexViewerSharedState,
             this->settings,
-            this->memoryDescriptor,
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->hexViewerDataB,
             this->hexViewerWidgetSettingsB,
             this->focusedRegionsB,
             this->excludedRegionsB,
             this
-        );
+        };
 
         this->hexViewerWidgetA->setObjectName("differential-hex-viewer-widget-a");
         this->hexViewerWidgetB->setObjectName("differential-hex-viewer-widget-b");
@@ -266,17 +272,17 @@ namespace Widgets
         snapshotAContainerLayout->addWidget(this->hexViewerWidgetA);
         snapshotBContainerLayout->addWidget(this->hexViewerWidgetB);
 
-        this->changeListPane = new ChangeListPane(
+        this->changeListPane = new ChangeListPane{
             this->hexViewerWidgetA,
             this->hexViewerWidgetB,
             this->changeListPaneState,
             this->leftPanel
-        );
+        };
 
         this->changeListPane->setRestoreEnabled(
             this->comparingWithCurrent
-            && this->memoryDescriptor.access.writeableDuringDebugSession
-            && this->targetState == Targets::TargetState::STOPPED
+            && this->memorySegmentDescriptor.debugModeAccess.writeable
+            && this->targetState.executionState == Targets::TargetExecutionState::STOPPED
         );
 
         this->leftPanel->layout()->addWidget(this->changeListPane);
@@ -286,15 +292,13 @@ namespace Widgets
         this->bottomBarLayout = this->bottomBar->findChild<QHBoxLayout*>();
 
         this->memoryCapacityLabel = this->bottomBar->findChild<Label*>("memory-capacity-label");
-        this->memoryTypeLabel = this->bottomBar->findChild<Label*>("memory-type-label");
+        this->memorySegmentNameLabel = this->bottomBar->findChild<Label*>("memory-segment-name-label");
         this->diffCountLabel = this->bottomBar->findChild<Label*>("diff-count-label");
 
-        this->memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->hexViewerDataA->size()) + " bytes");
-        this->memoryTypeLabel->setText(EnumToStringMappings::targetMemoryTypes.at(
-            this->memoryDescriptor.type).toUpper()
-        );
+        this->memoryCapacityLabel->setText(QLocale{QLocale::English}.toString(this->hexViewerDataA->size()) + " bytes");
+        this->memorySegmentNameLabel->setText(QString::fromStdString(this->memorySegmentDescriptor.name));
 
-        this->taskProgressIndicator = new TaskProgressIndicator(this);
+        this->taskProgressIndicator = new TaskProgressIndicator{this};
         this->bottomBarLayout->insertWidget(7, this->taskProgressIndicator);
 
         this->setSyncHexViewerSettingsEnabled(this->settings.syncHexViewerSettings);
@@ -345,10 +349,8 @@ namespace Widgets
             }
         );
 
-        auto* insightSignals = InsightSignals::instance();
-
         QObject::connect(
-            insightSignals,
+            InsightSignals::instance(),
             &InsightSignals::targetStateUpdated,
             this,
             &SnapshotDiff::onTargetStateChanged
@@ -372,7 +374,7 @@ namespace Widgets
             this->hexViewerWidgetA->addExternalContextMenuAction(this->restoreBytesAction);
         }
 
-        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+        if (this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM) {
             this->hexViewerWidgetA->setStackPointer(this->stackPointerA);
         }
     }
@@ -380,7 +382,7 @@ namespace Widgets
     void SnapshotDiff::onHexViewerBReady() {
         this->hexViewerWidgetA->setOther(this->hexViewerWidgetB);
 
-        if (this->memoryDescriptor.type == Targets::TargetMemoryType::RAM) {
+        if (this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM) {
             this->hexViewerWidgetB->setStackPointer(this->stackPointerB);
         }
     }
@@ -392,7 +394,7 @@ namespace Widgets
         assert(this->hexViewerDataB.has_value());
 
         this->differentialHexViewerSharedState.differences.clear();
-        auto diffRanges = std::vector<TargetMemoryAddressRange>();
+        auto diffRanges = std::vector<TargetMemoryAddressRange>{};
 
         const auto& dataA = *(this->hexViewerDataA);
         const auto& dataB = *(this->hexViewerDataB);
@@ -413,10 +415,10 @@ namespace Widgets
             return false;
         };
 
-        const auto& memoryStartAddress = this->memoryDescriptor.addressRange.startAddress;
-        auto lastDiffRange = std::optional<TargetMemoryAddressRange>();
+        const auto& memoryStartAddress = this->memorySegmentDescriptor.addressRange.startAddress;
+        auto lastDiffRange = std::optional<TargetMemoryAddressRange>{};
 
-        for (Targets::TargetMemoryBuffer::size_type i = 0; i < dataA.size(); ++i) {
+        for (auto i = Targets::TargetMemoryBuffer::size_type{0}; i < dataA.size(); ++i) {
             const auto address = memoryStartAddress + static_cast<Targets::TargetMemoryAddress>(i);
 
             if (dataA[i] != dataB[i] && !isAddressExcluded(address)) {
@@ -430,7 +432,7 @@ namespace Widgets
                         diffRanges.push_back(*lastDiffRange);
                     }
 
-                    lastDiffRange = TargetMemoryAddressRange(address, address);
+                    lastDiffRange = TargetMemoryAddressRange{address, address};
                 }
             }
         }
@@ -445,7 +447,7 @@ namespace Widgets
         this->diffCountLabel->setText(
             diffCount == 0
                 ? "Contents are identical"
-                : QLocale(QLocale::English).toString(diffCount) + (diffCount == 1 ? " difference" : " differences")
+                : QLocale{QLocale::English}.toString(diffCount) + (diffCount == 1 ? " difference" : " differences")
         );
     }
 
@@ -484,7 +486,7 @@ namespace Widgets
         std::set<Targets::TargetMemoryAddress> addresses,
         bool confirmationPromptEnabled
     ) {
-        auto excludedAddresses = std::set<Targets::TargetMemoryAddress>();
+        auto excludedAddresses = std::set<Targets::TargetMemoryAddress>{};
         for (const auto& excludedRegion : this->excludedRegionsA) {
             const auto regionAddresses = excludedRegion.addressRange.addresses();
             excludedAddresses.insert(regionAddresses.begin(), regionAddresses.end());
@@ -500,15 +502,15 @@ namespace Widgets
         }
 
         if (confirmationPromptEnabled) {
-            auto* confirmationDialog = new ConfirmationDialog(
+            auto* confirmationDialog = new ConfirmationDialog{
                 "Restore selected bytes",
-                "This operation will write " + QString::number(addresses.size()) + " byte(s) to the target's "
-                    + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
-                    + ".<br/><br/>Are you sure you want to proceed?",
+                "This operation will write " + QString::number(addresses.size()) + " byte(s) to the target's \""
+                    + QString::fromStdString(this->memorySegmentDescriptor.name)
+                    + "\" segment.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this
-            );
+            };
 
             QObject::connect(
                 confirmationDialog,
@@ -523,23 +525,23 @@ namespace Widgets
             return;
         }
 
-        auto writeBlocks = std::vector<WriteTargetMemory::Block>();
+        auto writeBlocks = std::vector<WriteTargetMemory::Block>{};
 
-        Targets::TargetMemoryAddress blockStartAddress = *(addresses.begin());
-        Targets::TargetMemoryAddress blockEndAddress = blockStartAddress;
+        auto blockStartAddress = *(addresses.begin());
+        auto blockEndAddress = blockStartAddress;
 
         for (const auto& address : addresses) {
             if (address > (blockEndAddress + 1)) {
                 // Commit the block
-                const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
-                const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+                const auto dataBeginOffset = blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+                const auto dataEndOffset = blockEndAddress - this->memorySegmentDescriptor.addressRange.startAddress + 1;
 
                 writeBlocks.emplace_back(
                     blockStartAddress,
-                    Targets::TargetMemoryBuffer(
+                    Targets::TargetMemoryBuffer{
                         this->hexViewerDataA->begin() + dataBeginOffset,
                         this->hexViewerDataA->begin() + dataEndOffset
-                    )
+                    }
                 );
 
                 blockStartAddress = address;
@@ -551,15 +553,16 @@ namespace Widgets
         }
 
         {
-            const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
-            const auto dataEndOffset = blockEndAddress - this->memoryDescriptor.addressRange.startAddress + 1;
+            // Last block
+            const auto dataBeginOffset = blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+            const auto dataEndOffset = blockEndAddress - this->memorySegmentDescriptor.addressRange.startAddress + 1;
 
             writeBlocks.emplace_back(
                 blockStartAddress,
-                Targets::TargetMemoryBuffer(
+                Targets::TargetMemoryBuffer{
                     this->hexViewerDataA->begin() + dataBeginOffset,
                     this->hexViewerDataA->begin() + dataEndOffset
-                )
+                }
             );
         }
 
@@ -571,7 +574,7 @@ namespace Widgets
                     writeBlock.data.begin(),
                     writeBlock.data.end(),
                     hexViewerDataB.begin()
-                        + (writeBlock.startAddress - this->memoryDescriptor.addressRange.startAddress)
+                        + (writeBlock.startAddress - this->memorySegmentDescriptor.addressRange.startAddress)
                 );
             }
 
@@ -580,10 +583,14 @@ namespace Widgets
             this->hexViewerWidgetB->updateValues();
         };
 
-        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>(
-            new WriteTargetMemory(this->memoryDescriptor, std::move(writeBlocks)),
+        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>{
+            new WriteTargetMemory{
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
+                std::move(writeBlocks)
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(writeMemoryTask.get(), &WriteTargetMemory::targetMemoryWritten, this, after);
 
@@ -591,13 +598,11 @@ namespace Widgets
         InsightWorker::queueTask(writeMemoryTask);
     }
 
-    void SnapshotDiff::onTargetStateChanged(Targets::TargetState newState) {
-        this->targetState = newState;
-
+    void SnapshotDiff::onTargetStateChanged() {
         this->changeListPane->setRestoreEnabled(
             this->comparingWithCurrent
-            && this->memoryDescriptor.access.writeableDuringDebugSession
-            && this->targetState == Targets::TargetState::STOPPED
+            && this->memorySegmentDescriptor.debugModeAccess.writeable
+            && this->targetState.executionState == Targets::TargetExecutionState::STOPPED
         );
     }
 }

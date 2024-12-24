@@ -8,6 +8,9 @@ namespace Widgets
         bool open = false;
 
         PanelState() = default;
-        PanelState(int size, bool open): size(size), open(open) {};
+        PanelState(int size, bool open)
+            : size(size)
+            , open(open)
+        {};
     };
 }

@@ -35,18 +35,18 @@ namespace Widgets
 
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto widgetUiFile = QFile(
+        auto widgetUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegisterInspector/RegisterHistoryWidget"
                 + "/UiFiles/RegisterHistoryWidget.ui"
             )
-        );
+        };
 
         if (!widgetUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open RegisterHistoryWidget UI file");
+            throw Exception{"Failed to open RegisterHistoryWidget UI file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&widgetUiFile, this);
         this->container->setMinimumSize(this->size());
         this->container->setContentsMargins(1, 1, 1, 1);
@@ -59,30 +59,21 @@ namespace Widgets
         titleBar->setContentsMargins(0, 0, 0, 0);
         title->setFixedHeight(titleBar->height());
 
-        auto* insightSignals = InsightSignals::instance();
-
         QObject::connect(
-            insightSignals,
-            &InsightSignals::targetStateUpdated,
-            this,
-            &RegisterHistoryWidget::onTargetStateChanged
-        );
-
-        QObject::connect(
-            insightSignals,
+            InsightSignals::instance(),
             &InsightSignals::targetRegistersWritten,
             this,
             &RegisterHistoryWidget::onRegistersWritten
         );
 
-        this->currentItem = new CurrentItem(currentValue, this);
+        this->currentItem = new CurrentItem{currentValue, this};
         QObject::connect(this->currentItem, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
         this->itemContainerLayout->addWidget(this->currentItem);
         this->currentItem->setSelected(true);
 
-        auto* separatorWidget = new QWidget(this);
-        auto* separatorLayout = new QHBoxLayout(separatorWidget);
-        auto* separatorLabel = new Label("Select an item to restore", separatorWidget);
+        auto* separatorWidget = new QWidget{this};
+        auto* separatorLayout = new QHBoxLayout{separatorWidget};
+        auto* separatorLabel = new Label{"Select an item to restore", separatorWidget};
         separatorWidget->setFixedHeight(40);
         separatorWidget->setObjectName("separator-widget");
         separatorLayout->setContentsMargins(0, 10, 0, 10);
@@ -106,7 +97,7 @@ namespace Widgets
     }
 
     void RegisterHistoryWidget::addItem(const Targets::TargetMemoryBuffer& registerValue, const QDateTime& changeDate) {
-        auto* item = new RegisterHistoryItem(registerValue, changeDate, this->itemContainer);
+        auto* item = new RegisterHistoryItem{registerValue, changeDate, this->itemContainer};
         QObject::connect(item, &Item::selected, this, &RegisterHistoryWidget::onItemSelectionChange);
         this->itemContainerLayout->insertWidget(2, item);
     }
@@ -116,11 +107,6 @@ namespace Widgets
             this->width(),
             this->height()
         );
-    }
-
-    void RegisterHistoryWidget::onTargetStateChanged(Targets::TargetState newState) {
-        using Targets::TargetState;
-        this->targetState = newState;
     }
 
     void RegisterHistoryWidget::onItemSelectionChange(Item* newlySelectedWidget) {
@@ -136,13 +122,13 @@ namespace Widgets
     }
 
     void RegisterHistoryWidget::onRegistersWritten(
-        Targets::TargetRegisters targetRegisters,
+        const Targets::TargetRegisterDescriptorAndValuePairs& targetRegisters,
         const QDateTime& changeDate
     ) {
-        for (const auto& targetRegister : targetRegisters) {
-            if (targetRegister.descriptorId == this->registerDescriptor.id) {
-                this->addItem(targetRegister.value, changeDate);
-                this->updateCurrentItemValue(targetRegister.value);
+        for (const auto& [descriptor, value] : targetRegisters) {
+            if (descriptor == this->registerDescriptor) {
+                this->addItem(value, changeDate);
+                this->updateCurrentItemValue(value);
             }
         }
     }

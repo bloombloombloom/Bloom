@@ -12,43 +12,55 @@ namespace Widgets::InsightTargetWidgets::Qfp
     using namespace Targets;
 
     PinWidget::PinWidget(
-        const TargetPinDescriptor& pinDescriptor,
-        const TargetVariant& targetVariant,
+        const Targets::TargetPinDescriptor& pinDescriptor,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor,
         QWidget* parent
-    ): TargetPinWidget(pinDescriptor, targetVariant, parent) {
-        this->layout = new QBoxLayout(QBoxLayout::TopToBottom);
+    )
+        : TargetPinWidget(
+            pinDescriptor,
+            padDescriptor,
+            pinoutDescriptor,
+            parent
+        )
+    {
+        this->layout = new QBoxLayout{QBoxLayout::TopToBottom};
         this->layout->setContentsMargins(0, 0, 0, 0);
         this->layout->setSpacing(0);
+        const auto pinNumber = pinDescriptor.numericPosition;
 
-        auto pinCountPerLayout = (targetVariant.pinDescriptorsByNumber.size() / 4);
+        auto pinCountPerLayout = (pinoutDescriptor.pinDescriptors.size() / 4);
 
-        if (pinDescriptor.number <= pinCountPerLayout) {
+        if (pinNumber <= pinCountPerLayout) {
             this->position = Position::LEFT;
 
-        } else if (pinDescriptor.number > pinCountPerLayout && pinDescriptor.number <= (pinCountPerLayout * 2)) {
+        } else if (pinNumber > pinCountPerLayout && pinNumber <= (pinCountPerLayout * 2)) {
             this->position = Position::BOTTOM;
 
-        } else if (pinDescriptor.number > (pinCountPerLayout * 2) && pinDescriptor.number <= (pinCountPerLayout * 3)) {
+        } else if (pinNumber > (pinCountPerLayout * 2) && pinNumber <= (pinCountPerLayout * 3)) {
             this->position = Position::RIGHT;
 
-        } else if (pinDescriptor.number > (pinCountPerLayout * 3) && pinDescriptor.number <= (pinCountPerLayout * 4)) {
+        } else if (pinNumber > (pinCountPerLayout * 3) && pinNumber <= (pinCountPerLayout * 4)) {
             this->position = Position::TOP;
         }
 
-        this->bodyWidget = new PinBodyWidget(
-            this,
+        this->bodyWidget = new PinBodyWidget{
             this->pinDescriptor,
-            (this->position == Position::TOP || this->position == Position::BOTTOM)
-        );
+            padDescriptor,
+            (this->position == Position::TOP || this->position == Position::BOTTOM),
+            this
+        };
 
-        this->pinNameLabelText = QString::fromStdString(pinDescriptor.name).toUpper();
+        this->pinNameLabelText = QString::fromStdString(
+            this->padDescriptor.has_value() ? padDescriptor->get().name : "NC"
+        );
         this->pinNameLabelText.truncate(5);
 
-        this->pinNumberLabel = new Label(this);
+        this->pinNumberLabel = new Label{this};
         this->pinNumberLabel->setObjectName("target-pin-number");
-        auto pinNumberText = QString::number(pinDescriptor.number);
+        auto pinNumberText = QString::number(pinNumber);
         pinNumberText.truncate(5);
-        this->pinNumberLabel->setText(QString::number(pinDescriptor.number));
+        this->pinNumberLabel->setText(QString::number(pinNumber));
         this->pinNumberLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
 
         if (this->position == Position::LEFT) {
@@ -92,11 +104,11 @@ namespace Widgets::InsightTargetWidgets::Qfp
         connect(this->bodyWidget, &PinBodyWidget::clicked, this, &TargetPinWidget::onWidgetBodyClicked);
     }
 
-    void PinWidget::updatePinState(const Targets::TargetPinState& pinState) {
-        TargetPinWidget::updatePinState(pinState);
+    void PinWidget::updatePadState(const Targets::TargetGpioPadState& padState) {
+        TargetPinWidget::updatePadState(padState);
 
         if (this->bodyWidget != nullptr) {
-            this->bodyWidget->setPinState(pinState);
+            this->bodyWidget->setPadState(padState);
         }
     }
 }

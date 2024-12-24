@@ -20,50 +20,52 @@ namespace Widgets
 {
     using namespace Exceptions;
 
-    using Targets::TargetMemoryDescriptor;
-    using Targets::TargetMemoryType;
     using Targets::TargetMemoryAddressRange;
 
     TargetMemoryInspectionPane::TargetMemoryInspectionPane(
-        const TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         TargetMemoryInspectionPaneSettings& settings,
         PaneState& paneState,
         PanelWidget* parent
     )
         : PaneWidget(paneState, parent)
-        , targetMemoryDescriptor(targetMemoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetDescriptor(targetDescriptor)
+        , targetState(targetState)
         , settings(settings)
     {
         this->setObjectName("target-memory-inspection-pane");
 
-        const auto memoryName = "Internal " + EnumToStringMappings::targetMemoryTypes.at(
-            this->targetMemoryDescriptor.type
-        ).toUpper();
+        const auto memoryName = QString::fromStdString(this->memorySegmentDescriptor.name);
 
         this->setWindowTitle("Memory Inspection - " + memoryName);
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto uiFile = QFile(
+        auto uiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/UiFiles/TargetMemoryInspectionPane.ui"
             )
-        );
+        };
 
-        auto stylesheetFile = QFile(
+        auto stylesheetFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/Stylesheets/TargetMemoryInspectionPane.qss"
             )
-        );
+        };
 
         if (!uiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open MemoryInspectionPane UI file");
+            throw Exception{"Failed to open MemoryInspectionPane UI file"};
         }
 
         if (!stylesheetFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open MemoryInspectionPane stylesheet file");
+            throw Exception{"Failed to open MemoryInspectionPane stylesheet file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&uiFile, this);
         this->container->setStyleSheet(stylesheetFile.readAll());
         this->container->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -94,35 +96,42 @@ namespace Widgets
         titleLabel->setText(memoryName);
 
         auto* memoryCapacityLabel = this->container->findChild<Label*>("memory-capacity-label");
-        memoryCapacityLabel->setText(QLocale(QLocale::English).toString(this->targetMemoryDescriptor.size()) + " bytes");
+        memoryCapacityLabel->setText(
+            QLocale{QLocale::English}.toString(this->memorySegmentDescriptor.size()) + " bytes"
+        );
 
         // Quick sanity check to ensure the validity of persisted settings.
         this->sanitiseSettings();
 
         this->refreshButton->setDisabled(true);
 
-        this->hexViewerWidget = new HexViewerWidget(
-            this->targetMemoryDescriptor,
+        this->hexViewerWidget = new HexViewerWidget{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->settings.hexViewerWidgetSettings,
             this->settings.focusedMemoryRegions,
             this->settings.excludedMemoryRegions,
             this
-        );
+        };
         this->hexViewerWidget->setDisabled(true);
 
         this->subContainerLayout->insertWidget(1, this->hexViewerWidget);
 
         this->hexViewerWidget->init();
 
-        this->rightPanel = new PanelWidget(PanelWidgetType::RIGHT, this->settings.rightPanelState, this);
+        this->rightPanel = new PanelWidget{PanelWidgetType::RIGHT, this->settings.rightPanelState, this};
         this->rightPanel->setObjectName("right-panel");
         this->rightPanel->setMinimumResize(200);
         this->rightPanel->setHandleSize(6);
         this->subContainerLayout->insertWidget(2, this->rightPanel);
 
-        this->snapshotManager = new SnapshotManager(
-            this->targetMemoryDescriptor,
+        this->snapshotManager = new SnapshotManager{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetDescriptor,
+            this->targetState,
             this->data,
             this->staleData,
             this->settings.focusedMemoryRegions,
@@ -130,13 +139,13 @@ namespace Widgets
             this->stackPointer,
             this->settings.snapshotManagerState,
             this->rightPanel
-        );
+        };
         this->rightPanel->layout()->addWidget(this->snapshotManager);
 
         this->setRefreshOnTargetStopEnabled(this->settings.refreshOnTargetStop);
         this->setRefreshOnActivationEnabled(this->settings.refreshOnActivation);
 
-        this->taskProgressIndicator = new TaskProgressIndicator(this);
+        this->taskProgressIndicator = new TaskProgressIndicator{this};
         this->bottomBarLayout->insertWidget(5, this->taskProgressIndicator);
 
         QObject::connect(
@@ -313,7 +322,7 @@ namespace Widgets
         this->refreshButton->setDisabled(true);
         this->refreshButton->startSpin();
 
-        auto excludedAddressRanges = std::set<Targets::TargetMemoryAddressRange>();
+        auto excludedAddressRanges = std::set<Targets::TargetMemoryAddressRange>{};
         std::transform(
             this->settings.excludedMemoryRegions.begin(),
             this->settings.excludedMemoryRegions.end(),
@@ -323,15 +332,16 @@ namespace Widgets
             }
         );
 
-        const auto readMemoryTask = QSharedPointer<ReadTargetMemory>(
-            new ReadTargetMemory(
-                this->targetMemoryDescriptor.type,
-                this->targetMemoryDescriptor.addressRange.startAddress,
-                this->targetMemoryDescriptor.size(),
+        const auto readMemoryTask = QSharedPointer<ReadTargetMemory>{
+            new ReadTargetMemory{
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
+                this->memorySegmentDescriptor.addressRange.startAddress,
+                this->memorySegmentDescriptor.size(),
                 excludedAddressRanges
-            ),
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             readMemoryTask.get(),
@@ -341,11 +351,11 @@ namespace Widgets
                 this->onMemoryRead(data);
 
                 // Refresh the stack pointer if this is RAM.
-                if (this->targetMemoryDescriptor.type == Targets::TargetMemoryType::RAM) {
-                    const auto readStackPointerTask = QSharedPointer<ReadStackPointer>(
-                        new ReadStackPointer(),
+                if (this->memorySegmentDescriptor.type == Targets::TargetMemorySegmentType::RAM) {
+                    const auto readStackPointerTask = QSharedPointer<ReadStackPointer>{
+                        new ReadStackPointer{},
                         &QObject::deleteLater
-                    );
+                    };
 
                     QObject::connect(
                         readStackPointerTask.get(),
@@ -366,7 +376,7 @@ namespace Widgets
 
                             this->refreshButton->stopSpin();
 
-                            if (this->targetState == Targets::TargetState::STOPPED) {
+                            if (this->targetState.executionState == Targets::TargetExecutionState::STOPPED) {
                                 this->refreshButton->setDisabled(false);
                             }
                         }
@@ -402,7 +412,7 @@ namespace Widgets
         );
 
         // If we're refreshing RAM, the UI should only be updated once we've retrieved the current stack pointer.
-        if (this->targetMemoryDescriptor.type != Targets::TargetMemoryType::RAM) {
+        if (this->memorySegmentDescriptor.type != Targets::TargetMemorySegmentType::RAM) {
             QObject::connect(
                 readMemoryTask.get(),
                 &InsightWorkerTask::finished,
@@ -410,7 +420,7 @@ namespace Widgets
                 [this] {
                     this->refreshButton->stopSpin();
 
-                    if (this->targetState == Targets::TargetState::STOPPED) {
+                    if (this->targetState.executionState == Targets::TargetExecutionState::STOPPED) {
                         this->refreshButton->setDisabled(false);
                     }
                 }
@@ -433,7 +443,7 @@ namespace Widgets
                 [this] {
                     this->refreshButton->stopSpin();
 
-                    if (this->targetState == Targets::TargetState::STOPPED) {
+                    if (this->targetState.executionState == Targets::TargetExecutionState::STOPPED) {
                         this->refreshButton->setDisabled(false);
                     }
                 }
@@ -462,7 +472,7 @@ namespace Widgets
     }
 
     void TargetMemoryInspectionPane::postActivate() {
-        if (this->targetState == Targets::TargetState::STOPPED) {
+        if (this->targetState.executionState == Targets::TargetExecutionState::STOPPED) {
             if (
                 !this->activeRefreshTask.has_value()
                 && (this->settings.refreshOnActivation || !this->data.has_value())
@@ -494,8 +504,8 @@ namespace Widgets
 
     void TargetMemoryInspectionPane::sanitiseSettings() {
         // Remove any invalid memory regions. It's very unlikely that there will be any, but not impossible.
-        auto processedFocusedMemoryRegions = std::vector<FocusedMemoryRegion>();
-        auto processedExcludedMemoryRegions = std::vector<ExcludedMemoryRegion>();
+        auto processedFocusedMemoryRegions = std::vector<FocusedMemoryRegion>{};
+        auto processedExcludedMemoryRegions = std::vector<ExcludedMemoryRegion>{};
 
         const auto regionIntersects = [
             &processedFocusedMemoryRegions,
@@ -518,7 +528,7 @@ namespace Widgets
 
         for (const auto& focusedRegion : this->settings.focusedMemoryRegions) {
             if (
-                !this->targetMemoryDescriptor.addressRange.contains(focusedRegion.addressRange)
+                !this->memorySegmentDescriptor.addressRange.contains(focusedRegion.addressRange)
                 || regionIntersects(focusedRegion)
             ) {
                 continue;
@@ -529,7 +539,7 @@ namespace Widgets
 
         for (const auto& excludedRegion : this->settings.excludedMemoryRegions) {
             if (
-                !this->targetMemoryDescriptor.addressRange.contains(excludedRegion.addressRange)
+                !this->memorySegmentDescriptor.addressRange.contains(excludedRegion.addressRange)
                 || regionIntersects(excludedRegion)
             ) {
                 continue;
@@ -542,15 +552,17 @@ namespace Widgets
         this->settings.excludedMemoryRegions = std::move(processedExcludedMemoryRegions);
     }
 
-    void TargetMemoryInspectionPane::onTargetStateChanged(Targets::TargetState newState) {
-        if (this->targetState == newState) {
+    void TargetMemoryInspectionPane::onTargetStateChanged(
+        Targets::TargetState newState,
+        Targets::TargetState previousState
+    ) {
+        if (newState.executionState == previousState.executionState) {
             return;
         }
 
-        using Targets::TargetState;
-        this->targetState = newState;
+        using Targets::TargetExecutionState;
 
-        if (newState == TargetState::STOPPED) {
+        if (newState.executionState == TargetExecutionState::STOPPED) {
             if (this->state.activated && (this->settings.refreshOnTargetStop || !this->data.has_value())) {
                 this->refreshMemoryValues([this] {
                     this->hexViewerWidget->setDisabled(false);
@@ -562,7 +574,7 @@ namespace Widgets
             }
         }
 
-        if (newState == TargetState::RUNNING) {
+        if (newState.executionState == TargetExecutionState::RUNNING) {
             this->hexViewerWidget->setDisabled(true);
             this->refreshButton->setDisabled(true);
 
@@ -585,7 +597,7 @@ namespace Widgets
     }
 
     void TargetMemoryInspectionPane::onMemoryRead(const Targets::TargetMemoryBuffer& data) {
-        assert(data.size() == this->targetMemoryDescriptor.size());
+        assert(data.size() == this->memorySegmentDescriptor.size());
 
         this->data = data;
         this->hexViewerWidget->updateValues();
@@ -594,12 +606,13 @@ namespace Widgets
 
     void TargetMemoryInspectionPane::openMemoryRegionManagerWindow() {
         if (this->memoryRegionManagerWindow == nullptr) {
-            this->memoryRegionManagerWindow = new MemoryRegionManagerWindow(
-                this->targetMemoryDescriptor,
+            this->memoryRegionManagerWindow = new MemoryRegionManagerWindow{
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
                 this->settings.focusedMemoryRegions,
                 this->settings.excludedMemoryRegions,
                 this
-            );
+            };
 
             QObject::connect(
                 this->memoryRegionManagerWindow,
@@ -647,16 +660,18 @@ namespace Widgets
     }
 
     void TargetMemoryInspectionPane::onProgrammingModeDisabled() {
-        const auto disabled = this->targetState != Targets::TargetState::STOPPED || !this->data.has_value();
+        const auto disabled = this->targetState.executionState != Targets::TargetExecutionState::STOPPED
+            || !this->data.has_value();
         this->hexViewerWidget->setDisabled(disabled);
         this->refreshButton->setDisabled(disabled);
     }
 
     void TargetMemoryInspectionPane::onTargetMemoryWritten(
-        TargetMemoryType memoryType,
-        TargetMemoryAddressRange
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        Targets::TargetMemoryAddressRange addressRange
     ) {
-        if (memoryType == this->targetMemoryDescriptor.type && this->data.has_value()) {
+        if (memorySegmentDescriptor == this->memorySegmentDescriptor && this->data.has_value()) {
             this->setStaleData(true);
             this->snapshotManager->createSnapshotWindow->refreshForm();
         }

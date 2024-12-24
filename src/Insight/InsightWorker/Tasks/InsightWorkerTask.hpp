@@ -30,12 +30,8 @@ public:
     std::atomic<std::uint8_t> progressPercentage = 0;
 
     InsightWorkerTask();
-
-    virtual QString brief() const = 0;
-
-    virtual TaskGroups taskGroups() const {
-        return TaskGroups();
-    };
+    [[nodiscard]] virtual QString brief() const = 0;
+    [[nodiscard]] virtual TaskGroups taskGroups() const;
 
     void execute(Services::TargetControllerService& targetControllerService);
 

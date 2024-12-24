@@ -15,15 +15,10 @@ namespace Widgets
     public:
         static constexpr int WIDTH = 88;
 
-        ByteAddressContainer(const HexViewerSharedState& hexViewerState);
+        explicit ByteAddressContainer(const HexViewerSharedState& hexViewerState);
 
         [[nodiscard]] QRectF boundingRect() const override {
-            return QRectF(
-                0,
-                0,
-                ByteAddressContainer::WIDTH,
-                this->scene()->height()
-            );
+            return {0, 0, ByteAddressContainer::WIDTH, this->scene()->height()};
         }
 
         void adjustAddressLabels(const std::vector<const ByteItem*>& firstByteItemByLine);

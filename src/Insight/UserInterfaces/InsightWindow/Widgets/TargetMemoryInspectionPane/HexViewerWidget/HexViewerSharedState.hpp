@@ -3,6 +3,9 @@
 #include <optional>
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+
 #include "HexViewerWidgetSettings.hpp"
 
 namespace Widgets
@@ -12,7 +15,9 @@ namespace Widgets
     struct HexViewerSharedState
     {
     public:
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+
         const std::optional<Targets::TargetMemoryBuffer>& data;
 
         HexViewerWidgetSettings& settings;
@@ -23,11 +28,13 @@ namespace Widgets
         std::set<Targets::TargetMemoryAddressRange> highlightedPrimaryAddressRanges;
 
         HexViewerSharedState(
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             const std::optional<Targets::TargetMemoryBuffer>& data,
             HexViewerWidgetSettings& settings
         )
-            : memoryDescriptor(memoryDescriptor)
+            : addressSpaceDescriptor(addressSpaceDescriptor)
+            , memorySegmentDescriptor(memorySegmentDescriptor)
             , data(data)
             , settings(settings)
         {}

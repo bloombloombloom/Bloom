@@ -16,7 +16,7 @@ ProjectSettings::ProjectSettings(const QJsonObject& jsonObject) {
 }
 
 QJsonObject ProjectSettings::toJson() const {
-    auto projectSettingsObj = QJsonObject();
+    auto projectSettingsObj = QJsonObject{};
 
 #ifndef EXCLUDE_INSIGHT
     projectSettingsObj.insert("insight", this->insightSettings.toJson());
@@ -31,63 +31,47 @@ InsightProjectSettings::InsightProjectSettings(const QJsonObject& jsonObject) {
         const auto mainWindowSizeObj = jsonObject.find("mainWindowSize")->toObject();
 
         if (mainWindowSizeObj.contains("width") && mainWindowSizeObj.contains("height")) {
-            this->mainWindowSize = QSize(
+            this->mainWindowSize = QSize{
                 mainWindowSizeObj.find("width")->toInt(),
                 mainWindowSizeObj.find("height")->toInt()
-            );
+            };
         }
     }
 
     if (jsonObject.contains("leftPanelState")) {
-        this->leftPanelState = this->panelStateFromJson(
-            jsonObject.find("leftPanelState")->toObject()
-        );
+        this->leftPanelState = this->panelStateFromJson(jsonObject.find("leftPanelState")->toObject());
     }
 
     if (jsonObject.contains("bottomPanelState")) {
-        this->bottomPanelState = this->panelStateFromJson(
-            jsonObject.find("bottomPanelState")->toObject()
-        );
+        this->bottomPanelState = this->panelStateFromJson(jsonObject.find("bottomPanelState")->toObject());
     }
 
     if (jsonObject.contains("registersPaneState")) {
-        this->registersPaneState = this->paneStateFromJson(
-            jsonObject.find("registersPaneState")->toObject()
-        );
+        this->registersPaneState = this->paneStateFromJson(jsonObject.find("registersPaneState")->toObject());
     }
 
-    if (jsonObject.contains("ramInspectionPaneState")) {
-        this->ramInspectionPaneState = this->paneStateFromJson(
-            jsonObject.find("ramInspectionPaneState")->toObject()
-        );
+    if (jsonObject.contains("selectedVariantKey")) {
+        this->selectedVariantKey = jsonObject.find("selectedVariantKey")->toString().toStdString();
     }
 
-    if (jsonObject.contains("eepromInspectionPaneState")) {
-        this->eepromInspectionPaneState = this->paneStateFromJson(
-            jsonObject.find("eepromInspectionPaneState")->toObject()
-        );
+    if (jsonObject.contains("memoryInspectionPaneStatesByKey")) {
+        const auto stateMappingObj = jsonObject.find("memoryInspectionPaneStatesByKey")->toObject();
+
+        for (auto stateIt = stateMappingObj.begin(); stateIt != stateMappingObj.end(); stateIt++) {
+            this->memoryInspectionPaneStatesByKey.emplace(
+                stateIt.key(),
+                this->paneStateFromJson(stateIt.value().toObject())
+            );
+        }
     }
 
-    if (jsonObject.contains("flashInspectionPaneState")) {
-        this->flashInspectionPaneState = this->paneStateFromJson(
-            jsonObject.find("flashInspectionPaneState")->toObject()
-        );
-    }
-
-    if (jsonObject.contains("memoryInspectionPaneSettings")) {
-        const auto settingsMappingObj = jsonObject.find("memoryInspectionPaneSettings")->toObject();
+    if (jsonObject.contains("memoryInspectionSettingsByKey")) {
+        const auto settingsMappingObj = jsonObject.find("memoryInspectionSettingsByKey")->toObject();
 
         for (auto settingsIt = settingsMappingObj.begin(); settingsIt != settingsMappingObj.end(); settingsIt++) {
-            const auto settingsObj = settingsIt.value().toObject();
-            const auto memoryTypeName = settingsIt.key();
-
-            if (!EnumToStringMappings::targetMemoryTypes.contains(memoryTypeName)) {
-                continue;
-            }
-
-            this->memoryInspectionPaneSettingsByMemoryType.emplace(
-                EnumToStringMappings::targetMemoryTypes.at(memoryTypeName),
-                this->memoryInspectionPaneSettingsFromJson(settingsObj)
+            this->memoryInspectionSettingsByKey.emplace(
+                settingsIt.key(),
+                this->memoryInspectionPaneSettingsFromJson(settingsIt.value().toObject())
             );
         }
     }
@@ -103,65 +87,71 @@ QJsonObject InsightProjectSettings::toJson() const {
         });
     }
 
-    auto memoryInspectionPaneSettingsObj = QJsonObject{};
-
-    for (const auto& [memoryType, inspectionPaneSettings] : this->memoryInspectionPaneSettingsByMemoryType) {
-        if (!EnumToStringMappings::targetMemoryTypes.contains(memoryType)) {
-            // This is just a precaution - all known memory types should be in the mapping.
-            continue;
-        }
-
-        memoryInspectionPaneSettingsObj.insert(
-            EnumToStringMappings::targetMemoryTypes.at(memoryType),
-            this->memoryInspectionPaneSettingsToJson(inspectionPaneSettings)
-        );
-    }
-
-    insightObj.insert("memoryInspectionPaneSettings", memoryInspectionPaneSettingsObj);
-
     if (this->leftPanelState.has_value()) {
-        insightObj.insert(
-            "leftPanelState",
-            this->panelStateToJson(this->leftPanelState.value())
-        );
+        insightObj.insert("leftPanelState", this->panelStateToJson(this->leftPanelState.value()));
     }
 
     if (this->bottomPanelState.has_value()) {
-        insightObj.insert(
-            "bottomPanelState",
-            this->panelStateToJson(this->bottomPanelState.value())
-        );
+        insightObj.insert("bottomPanelState", this->panelStateToJson(this->bottomPanelState.value()));
     }
 
     if (this->registersPaneState.has_value()) {
-        insightObj.insert(
-            "registersPaneState",
-            this->paneStateToJson(this->registersPaneState.value())
-        );
+        insightObj.insert("registersPaneState", this->paneStateToJson(this->registersPaneState.value()));
     }
 
-    if (this->ramInspectionPaneState.has_value()) {
-        insightObj.insert(
-            "ramInspectionPaneState",
-            this->paneStateToJson(this->ramInspectionPaneState.value())
-        );
+    if (this->selectedVariantKey.has_value()) {
+        insightObj.insert("selectedVariantKey", QString::fromStdString(this->selectedVariantKey.value()));
     }
 
-    if (this->eepromInspectionPaneState.has_value()) {
-        insightObj.insert(
-            "eepromInspectionPaneState",
-            this->paneStateToJson(this->eepromInspectionPaneState.value())
-        );
+    auto memoryInspectionPaneStates = QJsonObject{};
+    for (const auto& [key, paneState] : this->memoryInspectionPaneStatesByKey) {
+        memoryInspectionPaneStates.insert(key, this->paneStateToJson(paneState));
     }
 
-    if (this->flashInspectionPaneState.has_value()) {
-        insightObj.insert(
-            "flashInspectionPaneState",
-            this->paneStateToJson(this->flashInspectionPaneState.value())
-        );
+    insightObj.insert("memoryInspectionPaneStatesByKey", memoryInspectionPaneStates);
+
+    auto memoryInspectionSettings = QJsonObject{};
+    for (const auto& [key, settings] : this->memoryInspectionSettingsByKey) {
+        memoryInspectionSettings.insert(key, this->memoryInspectionPaneSettingsToJson(settings));
     }
+
+    insightObj.insert("memoryInspectionSettingsByKey", memoryInspectionSettings);
 
     return insightObj;
+}
+
+Widgets::PaneState& InsightProjectSettings::findOrCreateMemoryInspectionPaneState(
+    const QString& addressSpaceKey,
+    const QString& memorySegmentKey
+) {
+    auto key = addressSpaceKey + "." + memorySegmentKey;
+    for (auto& [paneStateKey, paneState] : this->memoryInspectionPaneStatesByKey) {
+        if (paneStateKey == key) {
+            return paneState;
+        }
+    }
+
+    return this->memoryInspectionPaneStatesByKey.emplace(
+        std::move(key),
+        Widgets::PaneState{false, true, std::nullopt}
+    ).first->second;
+}
+
+Widgets::TargetMemoryInspectionPaneSettings& InsightProjectSettings::findOrCreateMemoryInspectionPaneSettings(
+    const QString& addressSpaceKey,
+    const QString& memorySegmentKey
+) {
+    auto key = addressSpaceKey + "." + memorySegmentKey;
+    for (auto& [settingsKey, settings] : this->memoryInspectionSettingsByKey) {
+        if (settingsKey == key) {
+            return settings;
+        }
+    }
+
+    return this->memoryInspectionSettingsByKey.emplace(
+        std::move(key),
+        Widgets::TargetMemoryInspectionPaneSettings{addressSpaceKey, memorySegmentKey}
+    ).first->second;
 }
 
 Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspectionPaneSettingsFromJson(
@@ -169,7 +159,10 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
 ) const {
     using Exceptions::Exception;
 
-    auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings{};
+    auto inspectionPaneSettings = Widgets::TargetMemoryInspectionPaneSettings{
+        jsonObject.value("addressSpaceKey").toString(),
+        jsonObject.value("memorySegmentKey").toString()
+    };
 
     if (jsonObject.contains("refreshOnTargetStop")) {
         inspectionPaneSettings.refreshOnTargetStop = jsonObject.value("refreshOnTargetStop").toBool();
@@ -217,7 +210,7 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
             try {
                 inspectionPaneSettings.focusedMemoryRegions.emplace_back(regionValue.toObject());
 
-            } catch (Exception exception) {
+            } catch (const Exception& exception) {
                 Logger::warning(
                     "Failed to parse focused memory region from project settings file - "
                         + exception.getMessage() + " - region will be ignored."
@@ -231,7 +224,7 @@ Widgets::TargetMemoryInspectionPaneSettings InsightProjectSettings::memoryInspec
             try {
                 inspectionPaneSettings.excludedMemoryRegions.emplace_back(regionValue.toObject());
 
-            } catch (Exception exception) {
+            } catch (const Exception& exception) {
                 Logger::warning(
                     "Failed to parse excluded memory region from project settings file - "
                         + exception.getMessage() + " - region will be ignored."
@@ -260,18 +253,18 @@ Widgets::PaneState InsightProjectSettings::paneStateFromJson(const QJsonObject& 
 
         if (detachedWindowStateObject.contains("size")) {
             const auto sizeObject = detachedWindowStateObject.value("size").toObject();
-            detachedWindowState->size = QSize(
+            detachedWindowState->size = QSize{
                 sizeObject.value("width").toInt(0),
                 sizeObject.value("height").toInt(0)
-            );
+            };
         }
 
         if (detachedWindowStateObject.contains("position")) {
             const auto positionObject = detachedWindowStateObject.value("position").toObject();
-            detachedWindowState->position = QPoint(
+            detachedWindowState->position = QPoint{
                 positionObject.value("x").toInt(0),
                 positionObject.value("y").toInt(0)
-            );
+            };
         }
     }
 

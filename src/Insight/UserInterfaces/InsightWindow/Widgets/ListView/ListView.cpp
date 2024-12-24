@@ -3,7 +3,7 @@
 namespace Widgets
 {
     ListView::ListView(
-        ListScene::ListItemSetType&& items,
+        ListItem::ListItemSetType&& items,
         QWidget* parent
     )
         : QGraphicsView(parent)
@@ -19,7 +19,7 @@ namespace Widgets
         this->setCacheMode(QGraphicsView::CacheModeFlag::CacheNone);
         this->setFocusPolicy(Qt::StrongFocus);
 
-        this->scene = new ListScene(std::move(items), this);
+        this->scene = new ListScene{std::move(items), this};
         this->setScene(this->scene);
     }
 

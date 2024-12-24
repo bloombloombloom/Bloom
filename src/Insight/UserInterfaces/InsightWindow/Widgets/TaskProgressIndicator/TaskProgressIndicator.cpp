@@ -76,15 +76,15 @@ namespace Widgets
             return;
         }
 
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
 
         const auto size = this->size();
 
-        static constexpr auto backgroundBarColor = QColor(0x8E, 0x8B, 0x83, 40);
-        static constexpr auto barColor = QColor(0x8E, 0x8B, 0x83, 90);
-        static constexpr auto fontColor = QColor(0x99, 0x9a, 0x9d);
+        static constexpr auto backgroundBarColor = QColor{0x8E, 0x8B, 0x83, 40};
+        static constexpr auto barColor = QColor{0x8E, 0x8B, 0x83, 90};
+        static constexpr auto fontColor = QColor{0x99, 0x9a, 0x9d};
 
-        static const auto font = QFont("'Ubuntu', sans-serif", 9);
+        static const auto font = QFont{"'Ubuntu', sans-serif", 9};
         painter.setFont(font);
         painter.setPen(fontColor);
 
@@ -95,13 +95,13 @@ namespace Widgets
 
         if (taskCount == 1) {
             auto* task = this->tasksById.begin()->second.get();
-            const auto status = QString(
+            const auto status = QString{
                 task->state == InsightWorkerTaskState::FAILED
                     ? " - Failed"
                     : task->state == InsightWorkerTaskState::COMPLETED
                         ? " - Completed"
                         : ""
-            );
+            };
 
             painter.drawText(
                 0,

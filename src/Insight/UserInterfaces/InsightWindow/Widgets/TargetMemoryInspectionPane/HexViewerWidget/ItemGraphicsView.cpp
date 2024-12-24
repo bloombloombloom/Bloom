@@ -6,10 +6,12 @@
 
 namespace Widgets
 {
-    using Targets::TargetMemoryDescriptor;
+    using Targets::TargetMemorySegmentDescriptor;
 
     ItemGraphicsView::ItemGraphicsView(
-        const TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -17,7 +19,9 @@ namespace Widgets
         QWidget* parent
     )
         : QGraphicsView(parent)
-        , targetMemoryDescriptor(targetMemoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetState(targetState)
         , data(data)
         , focusedMemoryRegions(focusedMemoryRegions)
         , excludedMemoryRegions(excludedMemoryRegions)
@@ -40,14 +44,16 @@ namespace Widgets
     }
 
     void ItemGraphicsView::initScene() {
-        this->scene = new ItemGraphicsScene(
-            this->targetMemoryDescriptor,
+        this->scene = new ItemGraphicsScene{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->focusedMemoryRegions,
             this->excludedMemoryRegions,
             this->settings,
             this
-        );
+        };
 
         this->setScene(this->scene);
 

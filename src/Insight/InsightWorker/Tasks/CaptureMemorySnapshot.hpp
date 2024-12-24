@@ -6,6 +6,9 @@
 #include "InsightWorkerTask.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 
 class CaptureMemorySnapshot: public InsightWorkerTask
@@ -16,21 +19,15 @@ public:
     CaptureMemorySnapshot(
         const QString& name,
         const QString& description,
-        Targets::TargetMemoryType memoryType,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         const std::vector<FocusedMemoryRegion>& focusedRegions,
         const std::vector<ExcludedMemoryRegion>& excludedRegions,
         const std::optional<Targets::TargetMemoryBuffer>& data
     );
 
-    QString brief() const override {
-        return "Capturing memory snapshot";
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups({
-            TaskGroup::USES_TARGET_CONTROLLER,
-        });
-    };
+    [[nodiscard]] QString brief() const override;
+    [[nodiscard]] TaskGroups taskGroups() const override;
 
 signals:
     void memorySnapshotCaptured(MemorySnapshot snapshot);
@@ -41,7 +38,8 @@ protected:
 private:
     QString name;
     QString description;
-    Targets::TargetMemoryType memoryType;
+    const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+    const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
     std::vector<FocusedMemoryRegion> focusedRegions;
     std::vector<ExcludedMemoryRegion> excludedRegions;
 

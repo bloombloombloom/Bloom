@@ -27,18 +27,18 @@ namespace Widgets
         this->setObjectName("change-list-pane");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto widgetUiFile = QFile(
+        auto widgetUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager"
                     + "/SnapshotDiff/ChangeListPane/UiFiles/ChangeListPane.ui"
             )
-        );
+        };
 
         if (!widgetUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open ChangeListPane UI file");
+            throw Exception{"Failed to open ChangeListPane UI file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&widgetUiFile, this);
 
         this->container->setFixedSize(this->size());
@@ -48,7 +48,7 @@ namespace Widgets
 
         auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
-        this->changeListView = new ListView({}, this);
+        this->changeListView = new ListView{{}, this};
         this->changeListView->viewport()->installEventFilter(parent);
         this->changeListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
@@ -113,7 +113,7 @@ namespace Widgets
         this->changeListScene->clearListItems();
 
         for (const auto& diffRange : diffRanges) {
-            this->changeListScene->addListItem(new ChangeListItem(diffRange));
+            this->changeListScene->addListItem(new ChangeListItem{diffRange});
         }
 
         this->changeListScene->refreshGeometry();
@@ -167,7 +167,7 @@ namespace Widgets
             return;
         }
 
-        auto* menu = new QMenu(this);
+        auto* menu = new QMenu{this};
 
         menu->addAction(this->selectBytesAction);
         menu->addSeparator();

@@ -1,54 +1,56 @@
 #include "TargetPinWidget.hpp"
 
 #include "src/Insight/InsightWorker/InsightWorker.hpp"
-#include "src/Insight/InsightWorker/Tasks/SetTargetPinState.hpp"
+#include "src/Insight/InsightWorker/Tasks/SetTargetGpioPadState.hpp"
 
 namespace Widgets::InsightTargetWidgets
 {
-    using Targets::TargetVariant;
-    using Targets::TargetPinDescriptor;
-    using Targets::TargetPinType;
-    using Targets::TargetPinState;
-
     TargetPinWidget::TargetPinWidget(
-        Targets::TargetPinDescriptor pinDescriptor,
-        Targets::TargetVariant targetVariant,
+        const Targets::TargetPinDescriptor& pinDescriptor,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        const Targets::TargetPinoutDescriptor& pinoutDescriptor,
         QWidget* parent
     )
         : QWidget(parent)
-        , targetVariant(std::move(targetVariant))
-        , pinDescriptor(std::move(pinDescriptor)
-    ) {
-        if (this->pinDescriptor.type == TargetPinType::UNKNOWN) {
+        , pinDescriptor(pinDescriptor)
+        , padDescriptor(padDescriptor)
+        , pinoutDescriptor(pinoutDescriptor)
+    {
+        if (!this->padDescriptor.has_value() || this->padDescriptor->get().type == Targets::TargetPadType::OTHER) {
             this->setDisabled(true);
         }
     }
 
     void TargetPinWidget::onWidgetBodyClicked() {
-        // Currently, we only allow users to toggle the IO state of output pins
-        if (this->pinState.has_value() && this->pinState.value().ioDirection == TargetPinState::IoDirection::OUTPUT) {
+        using Targets::TargetGpioPadState;
+
+        if (
+            this->padDescriptor.has_value()
+            && this->padState.has_value()
+            && this->padState->direction == TargetGpioPadState::DataDirection::OUTPUT
+        ) {
             this->setDisabled(true);
 
-            auto pinState = this->pinState.value();
-            pinState.ioState = (pinState.ioState == TargetPinState::IoState::HIGH)
-                ? TargetPinState::IoState::LOW
-                : TargetPinState::IoState::HIGH;
+            auto newPadState = *this->padState;
+            newPadState.value = this->padState->value == TargetGpioPadState::State::HIGH
+                ? TargetGpioPadState::State::LOW
+                : TargetGpioPadState::State::HIGH;
 
-            const auto setPinStateTask = QSharedPointer<SetTargetPinState>(
-                new SetTargetPinState(this->pinDescriptor, pinState),
+            const auto setPadStateTask = QSharedPointer<SetTargetGpioPadState>{
+                new SetTargetGpioPadState{this->padDescriptor->get(), newPadState},
                 &QObject::deleteLater
-            );
+            };
 
-            QObject::connect(setPinStateTask.get(), &InsightWorkerTask::completed, this, [this, pinState] {
-                this->updatePinState(pinState);
+            QObject::connect(setPadStateTask.get(), &InsightWorkerTask::completed, this, [this, newPadState] {
+                this->updatePadState(newPadState);
                 this->setDisabled(false);
             });
 
-            QObject::connect(setPinStateTask.get(), &InsightWorkerTask::failed, this, [this] {
+            QObject::connect(setPadStateTask.get(), &InsightWorkerTask::failed, this, [this] {
                 this->setDisabled(false);
             });
 
-            InsightWorker::queueTask(setPinStateTask);
+            InsightWorker::queueTask(setPadStateTask);
         }
     }
 }

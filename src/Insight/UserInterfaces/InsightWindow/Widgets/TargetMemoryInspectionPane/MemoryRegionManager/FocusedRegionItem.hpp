@@ -34,7 +34,7 @@ namespace Widgets
     public:
         FocusedRegionItem(
             const FocusedMemoryRegion& region,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             QWidget *parent
         );
 
@@ -52,20 +52,16 @@ namespace Widgets
         QComboBox* dataTypeInput = nullptr;
         QComboBox* endiannessInput = nullptr;
 
-        static const inline std::map<QString, DataTypeOption> dataTypeOptionsByName = std::map<
-            QString, DataTypeOption
-        >({
-              {"other", DataTypeOption("Other", MemoryRegionDataType::UNKNOWN)},
-              {"unsigned_integer", DataTypeOption("Unsigned Integer", MemoryRegionDataType::UNSIGNED_INTEGER)},
-              {"signed_integer", DataTypeOption("Signed Integer", MemoryRegionDataType::SIGNED_INTEGER)},
-              {"ascii", DataTypeOption("ASCII String", MemoryRegionDataType::ASCII_STRING)},
-        });
+        static const inline std::map<QString, DataTypeOption> dataTypeOptionsByName = {
+            {"other", DataTypeOption{"Other", MemoryRegionDataType::UNKNOWN}},
+            {"unsigned_integer", DataTypeOption{"Unsigned Integer", MemoryRegionDataType::UNSIGNED_INTEGER}},
+            {"signed_integer", DataTypeOption{"Signed Integer", MemoryRegionDataType::SIGNED_INTEGER}},
+            {"ascii", DataTypeOption{"ASCII String", MemoryRegionDataType::ASCII_STRING}},
+        };
 
-        static const inline std::map<QString, EndiannessOption> endiannessOptionsByName = std::map<
-            QString, EndiannessOption
-        >({
-              {"little", EndiannessOption("Little-endian", Targets::TargetMemoryEndianness::LITTLE)},
-              {"big", EndiannessOption("Big-endian", Targets::TargetMemoryEndianness::BIG)},
-        });
+        static const inline std::map<QString, EndiannessOption> endiannessOptionsByName = {
+            {"little", EndiannessOption{"Little-endian", Targets::TargetMemoryEndianness::LITTLE}},
+            {"big", EndiannessOption{"Big-endian", Targets::TargetMemoryEndianness::BIG}},
+        };
     };
 }

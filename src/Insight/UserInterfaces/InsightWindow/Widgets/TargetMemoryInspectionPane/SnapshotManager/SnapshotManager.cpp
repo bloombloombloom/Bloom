@@ -6,7 +6,6 @@
 #include "src/Insight/UserInterfaces/InsightWindow/UiLoader.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ConfirmationDialog.hpp"
 
-#include "src/Insight/InsightSignals.hpp"
 #include "src/Insight/InsightWorker/Tasks/RetrieveMemorySnapshots.hpp"
 #include "src/Insight/InsightWorker/Tasks/CaptureMemorySnapshot.hpp"
 #include "src/Insight/InsightWorker/Tasks/DeleteMemorySnapshot.hpp"
@@ -23,7 +22,10 @@ namespace Widgets
     using Exceptions::Exception;
 
     SnapshotManager::SnapshotManager(
-        const Targets::TargetMemoryDescriptor& memoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const bool& staleData,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
@@ -33,7 +35,10 @@ namespace Widgets
         PanelWidget* parent
     )
         : PaneWidget(state, parent)
-        , memoryDescriptor(memoryDescriptor)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetDescriptor(targetDescriptor)
+        , targetState(targetState)
         , data(data)
         , staleData(staleData)
         , focusedMemoryRegions(focusedMemoryRegions)
@@ -43,18 +48,18 @@ namespace Widgets
         this->setObjectName("snapshot-manager");
         this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-        auto widgetUiFile = QFile(
+        auto widgetUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
-                    + "/SnapshotManager/UiFiles/SnapshotManager.ui"
+                + "/SnapshotManager/UiFiles/SnapshotManager.ui"
             )
-        );
+        };
 
         if (!widgetUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open SnapshotManager UI file");
+            throw Exception{"Failed to open SnapshotManager UI file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&widgetUiFile, this);
 
         this->container->setFixedSize(this->size());
@@ -66,7 +71,7 @@ namespace Widgets
 
         auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
-        this->snapshotListView = new ListView({}, this);
+        this->snapshotListView = new ListView{{}, this};
         this->snapshotListView->viewport()->installEventFilter(parent);
         this->snapshotListView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
 
@@ -75,12 +80,14 @@ namespace Widgets
 
         containerLayout->addWidget(this->snapshotListView);
 
-        this->createSnapshotWindow = new CreateSnapshotWindow(
-            this->memoryDescriptor.type,
+        this->createSnapshotWindow = new CreateSnapshotWindow{
+            this->addressSpaceDescriptor,
+            this->memorySegmentDescriptor,
+            this->targetState,
             this->data,
             this->staleData,
             this
-        );
+        };
 
         QObject::connect(
             this->createSnapshotWindow,
@@ -200,19 +207,14 @@ namespace Widgets
             }
         );
 
-        auto* insightSignals = InsightSignals::instance();
-
-        QObject::connect(
-            insightSignals,
-            &InsightSignals::targetStateUpdated,
-            this,
-            &SnapshotManager::onTargetStateChanged
-        );
-
-        const auto retrieveSnapshotsTask = QSharedPointer<RetrieveMemorySnapshots>(
-            new RetrieveMemorySnapshots(this->memoryDescriptor.type),
+        const auto retrieveSnapshotsTask = QSharedPointer<RetrieveMemorySnapshots>{
+            new RetrieveMemorySnapshots{
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
+                this->targetDescriptor
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             retrieveSnapshotsTask.get(),
@@ -220,7 +222,7 @@ namespace Widgets
             this,
             [this] (std::vector<MemorySnapshot> snapshots) {
                 for (auto& snapshot : snapshots) {
-                    if (!snapshot.isCompatible(this->memoryDescriptor)) {
+                    if (!snapshot.isCompatible(this->memorySegmentDescriptor)) {
                         Logger::warning(
                             "Ignoring snapshot " + snapshot.id.toStdString()
                                 + " - snapshot incompatible with current memory descriptor"
@@ -275,17 +277,18 @@ namespace Widgets
         bool captureFocusedRegions,
         bool captureDirectlyFromTarget
     ) {
-        const auto captureTask = QSharedPointer<CaptureMemorySnapshot>(
-            new CaptureMemorySnapshot(
+        const auto captureTask = QSharedPointer<CaptureMemorySnapshot>{
+            new CaptureMemorySnapshot{
                 std::move(name),
                 std::move(description),
-                this->memoryDescriptor.type,
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
                 captureFocusedRegions ? this->focusedMemoryRegions : std::vector<FocusedMemoryRegion>(),
                 this->excludedMemoryRegions,
                 captureDirectlyFromTarget ? std::nullopt : this->data
-            ),
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             captureTask.get(),
@@ -298,7 +301,6 @@ namespace Widgets
         );
 
         emit this->insightWorkerTaskCreated(captureTask);
-
         InsightWorker::queueTask(captureTask);
     }
 
@@ -306,7 +308,7 @@ namespace Widgets
         const auto snapshotIt = this->snapshotsById.insert(snapshotTmp.id, std::move(snapshotTmp));
         const auto& snapshot = *snapshotIt;
 
-        const auto snapshotItemIt = this->snapshotItemsById.insert(snapshot.id, new MemorySnapshotItem(snapshot));
+        const auto snapshotItemIt = this->snapshotItemsById.insert(snapshot.id, new MemorySnapshotItem{snapshot});
         auto& snapshotItem = *snapshotItemIt;
 
         this->snapshotListScene->addListItem(snapshotItem);
@@ -337,7 +339,13 @@ namespace Widgets
 
             snapshotViewerIt = this->snapshotViewersById.insert(
                 snapshotId,
-                new SnapshotViewer(snapshotIt.value(), this->memoryDescriptor, this)
+                new SnapshotViewer{
+                    snapshotIt.value(),
+                    this->addressSpaceDescriptor,
+                    this->memorySegmentDescriptor,
+                    this->targetState,
+                    this
+                }
             );
         }
 
@@ -360,13 +368,14 @@ namespace Widgets
 
             snapshotDiffIt = this->snapshotDiffs.insert(
                 diffKey,
-                new SnapshotDiff(
+                new SnapshotDiff{
                     snapshotItA.value(),
                     snapshotItB.value(),
-                    this->memoryDescriptor,
+                    this->addressSpaceDescriptor,
+                    this->memorySegmentDescriptor,
                     this->targetState,
                     this
-                )
+                }
             );
         }
 
@@ -405,16 +414,17 @@ namespace Widgets
 
         snapshotDiffIt = this->snapshotCurrentDiffsBySnapshotAId.insert(
             snapshotIdA,
-            new SnapshotDiff(
+            new SnapshotDiff{
                 snapshotItA.value(),
                 *(this->data),
                 this->focusedMemoryRegions,
                 this->excludedMemoryRegions,
                 this->stackPointer.value_or(0),
-                this->memoryDescriptor,
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
                 this->targetState,
                 this
-            )
+            }
         );
 
         auto* snapshotDiff = snapshotDiffIt.value();
@@ -432,13 +442,13 @@ namespace Widgets
         const auto& snapshot = snapshotIt.value();
 
         if (confirmationPromptEnabled) {
-            auto* confirmationDialog = new ConfirmationDialog(
+            auto* confirmationDialog = new ConfirmationDialog{
                 "Delete snapshot " + snapshot.id,
                 "This operation will permanently delete the selected snapshot.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this
-            );
+            };
 
             QObject::connect(
                 confirmationDialog,
@@ -453,10 +463,10 @@ namespace Widgets
             return;
         }
 
-        const auto deleteSnapshotTask = QSharedPointer<DeleteMemorySnapshot>(
-            new DeleteMemorySnapshot(snapshot.id, snapshot.memoryType),
+        const auto deleteSnapshotTask = QSharedPointer<DeleteMemorySnapshot>{
+            new DeleteMemorySnapshot{snapshot.id},
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             deleteSnapshotTask.get(),
@@ -508,15 +518,15 @@ namespace Widgets
         const auto& snapshot = snapshotIt.value();
 
         if (confirmationPromptEnabled) {
-            auto* confirmationDialog = new ConfirmationDialog(
+            auto* confirmationDialog = new ConfirmationDialog{
                 "Restore snapshot",
-                "This operation will overwrite the entire address range of the target's "
-                    + EnumToStringMappings::targetMemoryTypes.at(this->memoryDescriptor.type).toUpper()
-                    + " with the contents of the selected snapshot.<br/><br/>Are you sure you want to proceed?",
+                "This operation will overwrite the entire address range of the target's \""
+                    + QString::fromStdString(this->memorySegmentDescriptor.name)
+                    + "\" segment, with the contents of the selected snapshot.<br/><br/>Are you sure you want to proceed?",
                 "Proceed",
                 std::nullopt,
                 this
-            );
+            };
 
             QObject::connect(
                 confirmationDialog,
@@ -535,52 +545,58 @@ namespace Widgets
          * We don't restore any excluded regions from the snapshot, so we split the write operation into blocks of
          * contiguous data, leaving out any address range that is part of an excluded region.
          */
-        auto writeBlocks = std::vector<WriteTargetMemory::Block>();
+        auto writeBlocks = std::vector<WriteTargetMemory::Block>{};
 
-        auto sortedExcludedRegions = std::map<Targets::TargetMemoryAddress, const ExcludedMemoryRegion*>();
+        auto sortedExcludedRegions = std::map<Targets::TargetMemoryAddress, const ExcludedMemoryRegion*>{};
         std::transform(
             snapshot.excludedRegions.begin(),
             snapshot.excludedRegions.end(),
             std::inserter(sortedExcludedRegions, sortedExcludedRegions.end()),
             [] (const ExcludedMemoryRegion& excludedMemoryRegion) {
-                return std::pair(excludedMemoryRegion.addressRange.startAddress, &excludedMemoryRegion);
+                return std::pair{excludedMemoryRegion.addressRange.startAddress, &excludedMemoryRegion};
             }
         );
 
-        auto blockStartAddress = this->memoryDescriptor.addressRange.startAddress;
+        auto blockStartAddress = this->memorySegmentDescriptor.addressRange.startAddress;
 
         for (const auto& [excludedRegionStartAddress, excludedRegion] : sortedExcludedRegions) {
-            assert(excludedRegionStartAddress >= this->memoryDescriptor.addressRange.startAddress);
-            assert(excludedRegion->addressRange.endAddress <= this->memoryDescriptor.addressRange.endAddress);
+            assert(excludedRegionStartAddress >= this->memorySegmentDescriptor.addressRange.startAddress);
+            assert(excludedRegion->addressRange.endAddress <= this->memorySegmentDescriptor.addressRange.endAddress);
 
-            const auto dataBeginOffset = blockStartAddress - this->memoryDescriptor.addressRange.startAddress;
-            const auto dataEndOffset = excludedRegionStartAddress - this->memoryDescriptor.addressRange.startAddress;
+            const auto dataBeginOffset = blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+            const auto dataEndOffset = excludedRegionStartAddress
+                - this->memorySegmentDescriptor.addressRange.startAddress;
 
             writeBlocks.emplace_back(
                 blockStartAddress,
-                Targets::TargetMemoryBuffer(
+                Targets::TargetMemoryBuffer{
                     snapshot.data.begin() + dataBeginOffset,
                     snapshot.data.begin() + dataEndOffset
-                )
+                }
             );
 
             blockStartAddress = excludedRegion->addressRange.endAddress + 1;
         }
 
-        if (blockStartAddress < this->memoryDescriptor.addressRange.endAddress) {
+        if (blockStartAddress < this->memorySegmentDescriptor.addressRange.endAddress) {
             writeBlocks.emplace_back(
                 blockStartAddress,
-                Targets::TargetMemoryBuffer(
-                    snapshot.data.begin() + (blockStartAddress - this->memoryDescriptor.addressRange.startAddress),
+                Targets::TargetMemoryBuffer{
+                    snapshot.data.begin()
+                        + (blockStartAddress - this->memorySegmentDescriptor.addressRange.startAddress),
                     snapshot.data.end()
-                )
+                }
             );
         }
 
-        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>(
-            new WriteTargetMemory(this->memoryDescriptor, std::move(writeBlocks)),
+        const auto writeMemoryTask = QSharedPointer<WriteTargetMemory>{
+            new WriteTargetMemory{
+                this->addressSpaceDescriptor,
+                this->memorySegmentDescriptor,
+                std::move(writeBlocks)
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             writeMemoryTask.get(),
@@ -606,7 +622,7 @@ namespace Widgets
             return;
         }
 
-        auto* menu = new QMenu(this);
+        auto* menu = new QMenu{this};
 
         menu->addAction(this->openSnapshotViewerAction);
         menu->addAction(this->deleteSnapshotAction);
@@ -627,15 +643,11 @@ namespace Widgets
             && this->data.has_value()
         );
         this->restoreSnapshotAction->setEnabled(
-            this->memoryDescriptor.access.writeableDuringDebugSession
+            this->memorySegmentDescriptor.debugModeAccess.writeable
             && this->selectedSnapshotItems.size() == 1
-            && this->targetState == Targets::TargetState::STOPPED
+            && this->targetState.executionState == Targets::TargetExecutionState::STOPPED
         );
 
         menu->exec(sourcePosition);
-    }
-
-    void SnapshotManager::onTargetStateChanged(Targets::TargetState newState) {
-        this->targetState = newState;
     }
 }

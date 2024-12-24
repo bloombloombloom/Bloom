@@ -32,7 +32,7 @@ namespace Widgets
 
         void refreshValues();
 
-        void adjustItemPositions(const int maximumWidth) {
+        void adjustItemPositions(int maximumWidth) {
             GroupItem::adjustItemPositions(maximumWidth, &(this->hexViewerState));
         }
 

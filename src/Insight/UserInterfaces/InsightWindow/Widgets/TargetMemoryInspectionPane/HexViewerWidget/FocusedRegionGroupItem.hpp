@@ -30,6 +30,6 @@ namespace Widgets
         void refreshValue(const HexViewerSharedState& hexViewerState);
 
     protected:
-        QMargins groupMargins(const HexViewerSharedState* hexViewerState, const int maximumWidth) const override;
+        QMargins groupMargins(const HexViewerSharedState* hexViewerState, int maximumWidth) const override;
     };
 }

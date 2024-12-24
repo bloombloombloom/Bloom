@@ -93,6 +93,10 @@ InsightConfig::InsightConfig(const YAML::Node& insightNode) {
     if (insightNode["shutdown_on_close"]) {
         this->shutdownOnClose = insightNode["shutdown_on_close"].as<bool>(this->shutdownOnClose);
     }
+
+    if (insightNode["default_variant_key"]) {
+        this->defaultVariantKey = insightNode["default_variant_key"].as<std::string>();
+    }
 }
 
 EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environmentNode)
@@ -191,7 +195,10 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
     this->physicalInterface = physicalInterfaceIt->second;
 
     if (targetNode["variantName"]) {
-        this->variantName = StringService::asciiToLower(targetNode["variantName"].as<std::string>());
+        Logger::warning(
+            "The 'variantName' target configuration parameter was removed in v2.0.0. Please use the "
+                "'default_variant_key' insight configuration parameter."
+        );
     }
 
     if (targetNode["hardware_breakpoints"]) {

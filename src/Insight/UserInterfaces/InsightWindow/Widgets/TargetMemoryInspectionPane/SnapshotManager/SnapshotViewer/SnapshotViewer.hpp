@@ -13,6 +13,9 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TaskProgressIndicator/TaskProgressIndicator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
+#include "src/Targets/TargetState.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemorySnapshot.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/HexViewerWidget/HexViewerWidget.hpp"
@@ -28,7 +31,9 @@ namespace Widgets
     public:
         SnapshotViewer(
             MemorySnapshot& snapshot,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const Targets::TargetState& targetState,
             QWidget* parent = nullptr
         );
 
@@ -38,7 +43,8 @@ namespace Widgets
 
     private:
         MemorySnapshot& snapshot;
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
 
         QWidget* container = nullptr;
 
@@ -52,7 +58,7 @@ namespace Widgets
 
         std::optional<Targets::TargetMemoryBuffer> hexViewerData;
         HexViewerWidget* hexViewerWidget = nullptr;
-        HexViewerWidgetSettings hexViewerWidgetSettings = HexViewerWidgetSettings();
+        HexViewerWidgetSettings hexViewerWidgetSettings = {};
 
         ContextMenuAction* restoreBytesAction = nullptr;
 

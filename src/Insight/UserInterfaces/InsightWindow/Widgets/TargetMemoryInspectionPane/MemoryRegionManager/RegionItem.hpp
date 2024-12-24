@@ -12,7 +12,9 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TextInput.hpp"
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
+
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace Widgets
 {
@@ -34,7 +36,7 @@ namespace Widgets
     public:
         RegionItem(
             const MemoryRegion& region,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             QWidget *parent
         );
         void setSelected(bool selected);
@@ -56,7 +58,7 @@ namespace Widgets
     protected:
         static constexpr int NAME_LABEL_MAX_LENGTH = 34;
 
-        const Targets::TargetMemoryDescriptor& memoryDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor;
 
         QWidget* formWidget = nullptr;
         TextInput* nameInput = nullptr;
@@ -86,8 +88,8 @@ namespace Widgets
         static const inline std::map<QString, AddressRangeTypeOption> addressRangeTypeOptionsByName = std::map<
             QString, AddressRangeTypeOption
         >({
-            {"absolute", AddressRangeTypeOption("Absolute", AddressType::ABSOLUTE)},
-            {"relative", AddressRangeTypeOption("Relative", AddressType::RELATIVE)},
+            {"absolute", AddressRangeTypeOption{"Absolute", AddressType::ABSOLUTE}},
+            {"relative", AddressRangeTypeOption{"Relative", AddressType::RELATIVE}},
         });
 
         void onAddressRangeInputChange();

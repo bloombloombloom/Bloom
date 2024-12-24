@@ -11,7 +11,7 @@ namespace Widgets
     public:
         Targets::TargetMemoryAddressRange addressRange;
 
-        ChangeListItem(const Targets::TargetMemoryAddressRange& addressRange);
+        explicit ChangeListItem(const Targets::TargetMemoryAddressRange& addressRange);
 
         bool operator < (const ListItem& rhs) const override {
             const auto& rhsSnapshotItem = dynamic_cast<const ChangeListItem&>(rhs);

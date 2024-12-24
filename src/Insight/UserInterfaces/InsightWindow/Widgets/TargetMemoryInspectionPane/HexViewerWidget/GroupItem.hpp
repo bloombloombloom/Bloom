@@ -22,29 +22,29 @@ namespace Widgets
 
         ~GroupItem();
 
-        QSize size() const override {
+        [[nodiscard]] QSize size() const override {
             return this->groupSize;
         }
 
-        virtual void adjustItemPositions(const int maximumWidth, const HexViewerSharedState* hexViewerState);
+        virtual void adjustItemPositions(int maximumWidth, const HexViewerSharedState* hexViewerState);
 
         [[nodiscard]] std::vector<HexViewerItem*> flattenedItems() const;
 
     protected:
-        GroupItem(
+        explicit GroupItem(
             Targets::TargetMemoryAddress startAddress,
             HexViewerItem* parent = nullptr
         );
 
-        virtual QMargins groupMargins(const HexViewerSharedState* hexViewerState, const int maximumWidth) const {
-            return QMargins(0, 0, 0, 0);
+        virtual QMargins groupMargins(const HexViewerSharedState* hexViewerState, int maximumWidth) const {
+            return {0, 0, 0, 0};
         }
 
         virtual bool positionOnNewLine(const int maximumWidth) {
             return this->multiLine;
         }
 
-        ByteItem* firstByteItem() const;
+        [[nodiscard]] ByteItem* firstByteItem() const;
 
         void sortItems();
     };

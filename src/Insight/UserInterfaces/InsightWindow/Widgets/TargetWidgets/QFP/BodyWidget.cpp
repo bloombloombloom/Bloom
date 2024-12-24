@@ -5,7 +5,7 @@
 namespace Widgets::InsightTargetWidgets::Qfp
 {
     void BodyWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 
@@ -16,7 +16,7 @@ namespace Widgets::InsightTargetWidgets::Qfp
         );
 
         auto targetBodyColor = this->getBodyColor();
-        auto backgroundColor = QColor("#373835");
+        auto backgroundColor = QColor{"#373835"};
 
         if (!this->isEnabled()) {
             targetBodyColor.setAlpha(this->getDisableAlphaLevel());

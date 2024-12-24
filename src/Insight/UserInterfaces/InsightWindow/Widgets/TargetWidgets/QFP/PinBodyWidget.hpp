@@ -18,7 +18,12 @@ namespace Widgets::InsightTargetWidgets::Qfp
         static const int WIDTH = 17;
         static const int HEIGHT = 26;
 
-        PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor, bool isVertical);
+        PinBodyWidget(
+            const Targets::TargetPinDescriptor& pinDescriptor,
+            std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+            bool isVertical,
+            QWidget* parent
+        );
 
     protected:
         void paintEvent(QPaintEvent* event) override;

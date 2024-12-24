@@ -12,6 +12,8 @@
 #include "PinWidget.hpp"
 #include "BodyWidget.hpp"
 
+#include "src/Targets/TargetDescriptor.hpp"
+
 namespace Widgets::InsightTargetWidgets::Dip
 {
     /**
@@ -23,7 +25,10 @@ namespace Widgets::InsightTargetWidgets::Dip
 
     public:
         DualInlinePackageWidget(
-            const Targets::TargetVariant& targetVariant,
+            const Targets::TargetVariantDescriptor& variantDescriptor,
+            const Targets::TargetPinoutDescriptor& pinoutDescriptor,
+            const Targets::TargetDescriptor& targetDescriptor,
+            const Targets::TargetState& targetState,
             QWidget* parent
         );
 

@@ -6,13 +6,22 @@ namespace Widgets::InsightTargetWidgets::Dip
 {
     using namespace Targets;
 
-    PinBodyWidget::PinBodyWidget(QWidget* parent, Targets::TargetPinDescriptor pinDescriptor)
-    : TargetPinBodyWidget(parent, std::move(pinDescriptor)) {
+    PinBodyWidget::PinBodyWidget(
+        const Targets::TargetPinDescriptor& pinDescriptor,
+        std::optional<std::reference_wrapper<const Targets::TargetPadDescriptor>> padDescriptor,
+        QWidget* parent
+    )
+        : TargetPinBodyWidget(
+            pinDescriptor,
+            padDescriptor,
+            parent
+        )
+    {
         this->setFixedSize(PinBodyWidget::WIDTH, PinBodyWidget::HEIGHT);
     }
 
     void PinBodyWidget::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         this->drawWidget(painter);
     }
 

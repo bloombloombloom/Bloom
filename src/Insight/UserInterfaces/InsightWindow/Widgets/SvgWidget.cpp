@@ -6,12 +6,12 @@
 namespace Widgets
 {
     SvgWidget::SvgWidget(QWidget* parent): QFrame(parent) {
-        this->renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
+        this->renderer->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
     }
 
     void SvgWidget::startSpin() {
         if (this->spinningAnimation == nullptr) {
-            this->spinningAnimation = new QPropertyAnimation(this, "angle", this);
+            this->spinningAnimation = new QPropertyAnimation{this, "angle", this};
             this->spinningAnimation->setDuration(2000);
             this->spinningAnimation->setStartValue(0);
             this->spinningAnimation->setEndValue(360);
@@ -33,7 +33,7 @@ namespace Widgets
 
     void SvgWidget::paintEvent(QPaintEvent* paintEvent) {
         auto painter = QPainter(this);
-        auto svgSize = this->renderer.defaultSize();
+        auto svgSize = this->renderer->defaultSize();
         auto margins = this->contentsMargins();
         const auto containerSize = this->frameSize();
 
@@ -51,7 +51,7 @@ namespace Widgets
             );
         }
 
-        this->renderer.render(&painter, QRectF(
+        this->renderer->render(&painter, QRectF(
             std::ceil(
                 static_cast<float>(containerSize.width() - svgSize.width()) / 2 + static_cast<float>(margins.left())
             ),
@@ -66,10 +66,10 @@ namespace Widgets
     void SvgWidget::changeEvent(QEvent* event) {
         if (event->type() == QEvent::EnabledChange && !this->disabledSvgFilePath.isEmpty()) {
             if (!this->isEnabled()) {
-                this->renderer.load(this->disabledSvgFilePath);
+                this->renderer->load(this->disabledSvgFilePath);
 
             } else {
-                this->renderer.load(this->svgFilePath);
+                this->renderer->load(this->svgFilePath);
             }
 
             this->repaint();

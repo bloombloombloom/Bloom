@@ -10,7 +10,7 @@ namespace Widgets
         static constexpr int leftMargin = 10;
 
         const auto addressItemCount = this->addressItems.size();
-        decltype(this->addressItems)::size_type rowIndex = 0;
+        auto rowIndex = decltype(this->addressItems)::size_type{0};
 
         for (const auto& byteItem : firstByteItemByLine) {
             auto addressItem = addressItemCount > 0 && rowIndex <= addressItemCount - 1
@@ -49,8 +49,8 @@ namespace Widgets
     }
 
     void ByteAddressContainer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        static const auto backgroundColor = QColor(0x35, 0x36, 0x33);
-        static const auto borderColor = QColor(0x41, 0x42, 0x3F);
+        static const auto backgroundColor = QColor{0x35, 0x36, 0x33};
+        static const auto borderColor = QColor{0x41, 0x42, 0x3F};
 
         painter->setPen(Qt::PenStyle::NoPen);
         painter->setBrush(backgroundColor);

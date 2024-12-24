@@ -18,14 +18,7 @@ public:
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
         const Widgets::HexViewerSharedState& hexViewerState
     );
-
-    QString brief() const override {
-        return "Preparing hex viewer";
-    }
-
-    TaskGroups taskGroups() const override {
-        return TaskGroups();
-    };
+    QString brief() const override;
 
 signals:
     void topLevelGroupItem(Widgets::TopLevelGroupItem* item);

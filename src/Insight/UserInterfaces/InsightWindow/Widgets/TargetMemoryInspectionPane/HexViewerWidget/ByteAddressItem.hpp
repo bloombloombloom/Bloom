@@ -3,6 +3,8 @@
 #include <QGraphicsItem>
 #include <QPainter>
 
+#include "src/Targets/TargetMemory.hpp"
+
 #include "ByteItem.hpp"
 #include "HexViewerSharedState.hpp"
 
@@ -19,12 +21,7 @@ namespace Widgets
         explicit ByteAddressItem(const HexViewerSharedState& hexViewerState, QGraphicsItem* parent);
 
         [[nodiscard]] QRectF boundingRect() const override {
-            return {
-                0,
-                0,
-                ByteAddressItem::WIDTH,
-                ByteAddressItem::HEIGHT
-            };
+            return {0, 0, ByteAddressItem::WIDTH, ByteAddressItem::HEIGHT};
         }
 
         void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

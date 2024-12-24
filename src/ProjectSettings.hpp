@@ -6,6 +6,7 @@
 #include <optional>
 #include <QSize>
 #include <QJsonObject>
+#include <functional>
 
 #include "src/Targets/TargetMemory.hpp"
 
@@ -25,27 +26,31 @@ public:
     std::optional<Widgets::PanelState> leftPanelState;
     std::optional<Widgets::PanelState> bottomPanelState;
     std::optional<Widgets::PaneState> registersPaneState;
-    std::optional<Widgets::PaneState> ramInspectionPaneState;
-    std::optional<Widgets::PaneState> eepromInspectionPaneState;
-    std::optional<Widgets::PaneState> flashInspectionPaneState;
 
-    std::map<
-        Targets::TargetMemoryType,
-        Widgets::TargetMemoryInspectionPaneSettings
-    > memoryInspectionPaneSettingsByMemoryType;
+    /**
+     * The key of the previously selected variant
+     */
+    std::optional<std::string> selectedVariantKey;
+
+    std::map<QString, Widgets::PaneState> memoryInspectionPaneStatesByKey;
+    std::map<QString, Widgets::TargetMemoryInspectionPaneSettings> memoryInspectionSettingsByKey;
 
     InsightProjectSettings() = default;
     explicit InsightProjectSettings(const QJsonObject& jsonObject);
 
     [[nodiscard]] QJsonObject toJson() const;
 
-private:
-    static const inline BiMap<Targets::TargetMemoryType, QString> memoryTypesByName = {
-        {Targets::TargetMemoryType::RAM, "ram"},
-        {Targets::TargetMemoryType::EEPROM, "eeprom"},
-        {Targets::TargetMemoryType::FLASH, "flash"},
-    };
+    Widgets::TargetMemoryInspectionPaneSettings& findOrCreateMemoryInspectionPaneSettings(
+        const QString& addressSpaceKey,
+        const QString& memorySegmentKey
+    );
 
+    Widgets::PaneState& findOrCreateMemoryInspectionPaneState(
+        const QString& addressSpaceKey,
+        const QString& memorySegmentKey
+    );
+
+private:
     static const inline BiMap<AddressType, QString> addressTypesByName = {
         {AddressType::ABSOLUTE, "absolute"},
         {AddressType::RELATIVE, "relative"},

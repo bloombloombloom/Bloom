@@ -12,7 +12,7 @@ namespace Widgets
     public:
         ExcludedRegionItem(
             const ExcludedMemoryRegion& region,
-            const Targets::TargetMemoryDescriptor& memoryDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
             QWidget *parent
         );
 

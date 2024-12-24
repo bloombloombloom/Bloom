@@ -2,6 +2,8 @@
 
 #include <unordered_set>
 
+#include "src/Targets/TargetMemory.hpp"
+
 namespace Widgets
 {
     struct DifferentialHexViewerSharedState

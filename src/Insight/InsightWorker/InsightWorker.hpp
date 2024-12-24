@@ -37,7 +37,7 @@ private:
     static inline Synchronised<std::map<InsightWorkerTask::IdType, QSharedPointer<InsightWorkerTask>>> queuedTasksById = {};
     static inline Synchronised<TaskGroups> taskGroupsInExecution = {};
 
-    Services::TargetControllerService targetControllerService = Services::TargetControllerService();
+    Services::TargetControllerService targetControllerService = {};
 
     void executeTasks();
 };

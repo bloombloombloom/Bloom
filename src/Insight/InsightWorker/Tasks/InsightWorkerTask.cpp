@@ -8,6 +8,10 @@ InsightWorkerTask::InsightWorkerTask()
     : QObject(nullptr)
 {}
 
+TaskGroups InsightWorkerTask::taskGroups() const {
+    return {};
+}
+
 void InsightWorkerTask::execute(TargetControllerService& targetControllerService) {
     try {
         this->state = InsightWorkerTaskState::STARTED;
@@ -19,7 +23,7 @@ void InsightWorkerTask::execute(TargetControllerService& targetControllerService
         this->setProgressPercentage(100);
         emit this->completed();
 
-    } catch (std::exception& exception) {
+    } catch (const std::exception& exception) {
         this->state = InsightWorkerTaskState::FAILED;
         Logger::debug("InsightWorker task failed - " + std::string(exception.what()));
         emit this->failed(QString::fromStdString(exception.what()));

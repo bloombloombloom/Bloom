@@ -16,7 +16,7 @@ namespace Widgets
         , hexViewerState(hexViewerState)
     {
         const auto startAddress = this->startAddress;
-        const auto endAddress = this->hexViewerState.memoryDescriptor.addressRange.endAddress;
+        const auto endAddress = this->hexViewerState.memorySegmentDescriptor.addressRange.endAddress;
 
         // Sanity check
         assert(byteItemsByAddress.contains(startAddress) && byteItemsByAddress.contains(endAddress));
@@ -74,10 +74,7 @@ namespace Widgets
         updateChildItems(this->items, updateChildItems);
     }
 
-    void StackMemoryGroupItem::adjustItemPositions(
-        const int maximumWidth,
-        const HexViewerSharedState* hexViewerState
-    ) {
+    void StackMemoryGroupItem::adjustItemPositions(int maximumWidth, const HexViewerSharedState* hexViewerState) {
         GroupItem::adjustItemPositions(maximumWidth, hexViewerState);
         this->groupSize.setWidth(maximumWidth);
     }
@@ -88,10 +85,7 @@ namespace Widgets
         }
     }
 
-    QMargins StackMemoryGroupItem::groupMargins(
-        const HexViewerSharedState* hexViewerState,
-        const int maximumWidth
-    ) const {
-        return QMargins(0, 100, 0, 20);
+    QMargins StackMemoryGroupItem::groupMargins(const HexViewerSharedState* hexViewerState, int maximumWidth) const {
+        return {0, 100, 0, 20};
     }
 }

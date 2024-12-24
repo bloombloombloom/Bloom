@@ -17,35 +17,40 @@ namespace Widgets
     using Exceptions::Exception;
 
     CreateSnapshotWindow::CreateSnapshotWindow(
-        Targets::TargetMemoryType memoryType,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const bool& staleData,
         QWidget* parent
     )
         : QWidget(parent)
+        , addressSpaceDescriptor(addressSpaceDescriptor)
+        , memorySegmentDescriptor(memorySegmentDescriptor)
+        , targetState(targetState)
         , data(data)
         , staleData(staleData)
     {
         this->setWindowFlag(Qt::Window);
         this->setObjectName("create-snapshot-window");
         this->setWindowTitle(
-            "New Snapshot - " + EnumToStringMappings::targetMemoryTypes.at(memoryType).toUpper()
+            "New Snapshot - " + QString::fromStdString(this->memorySegmentDescriptor.name)
         );
 
-        auto windowUiFile = QFile(
+        auto windowUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane"
                 + "/SnapshotManager/CreateSnapshotWindow/UiFiles/CreateSnapshotWindow.ui"
             )
-        );
+        };
 
         if (!windowUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open CreateSnapshotWindow UI file");
+            throw Exception{"Failed to open CreateSnapshotWindow UI file"};
         }
 
-        this->setFixedSize(QSize(500, 300));
+        this->setFixedSize(QSize{500, 300});
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&windowUiFile, this);
 
         this->container->setFixedSize(this->size());
@@ -74,14 +79,11 @@ namespace Widgets
         QObject::connect(this->captureButton, &QPushButton::clicked, this, &CreateSnapshotWindow::issueCaptureRequest);
         QObject::connect(this->closeButton, &QPushButton::clicked, this, &QWidget::close);
 
-        auto* insightSignals = InsightSignals::instance();
-
         QObject::connect(
-            insightSignals,
+            InsightSignals::instance(),
             &InsightSignals::targetStateUpdated,
             this,
-            [this] (Targets::TargetState newState) {
-                this->targetState = newState;
+            [this] () {
                 this->refreshForm();
             }
         );
@@ -119,7 +121,7 @@ namespace Widgets
     }
 
     bool CreateSnapshotWindow::captureEnabled() {
-        if (this->targetState != Targets::TargetState::STOPPED) {
+        if (this->targetState.executionState != Targets::TargetExecutionState::STOPPED) {
             return false;
         }
 

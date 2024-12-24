@@ -8,8 +8,8 @@ namespace Widgets
     {}
 
     void ByteAddressItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
-        static auto fontColor = QColor(0x8F, 0x91, 0x92);
-        static auto font = QFont("'Ubuntu', sans-serif");
+        static auto fontColor = QColor{0x8F, 0x91, 0x92};
+        static auto font = QFont{"'Ubuntu', sans-serif"};
         font.setPixelSize(12);
 
         painter->setRenderHints(
@@ -28,7 +28,7 @@ namespace Widgets
             Qt::AlignLeft,
             this->hexViewerState.settings.addressLabelType == AddressType::RELATIVE
                 ? "0x" + QString::number(
-                    this->address - this->hexViewerState.memoryDescriptor.addressRange.startAddress,
+                    this->address - this->hexViewerState.memorySegmentDescriptor.addressRange.startAddress,
                     16
                 ).rightJustified(8, '0').toUpper()
                 : "0x" + QString::number(this->address, 16).rightJustified(8, '0').toUpper()

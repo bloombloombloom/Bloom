@@ -27,31 +27,33 @@ namespace Widgets
 
     TargetRegistersPaneWidget::TargetRegistersPaneWidget(
         const TargetDescriptor& targetDescriptor,
+        const Targets::TargetState& targetState,
         PaneState& paneState,
         PanelWidget* parent
     )
         : PaneWidget(paneState, parent)
         , targetDescriptor(targetDescriptor)
+        , targetState(targetState)
     {
         this->setObjectName("target-registers-side-pane");
 
-        auto targetRegistersPaneUiFile = QFile(
+        auto targetRegistersPaneUiFile = QFile{
             QString::fromStdString(Services::PathService::compiledResourcesPath()
                 + "/src/Insight/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/"
-                  "TargetRegistersSidePane.ui"
+                    "TargetRegistersSidePane.ui"
             )
-        );
+        };
 
         if (!targetRegistersPaneUiFile.open(QFile::ReadOnly)) {
-            throw Exception("Failed to open TargetRegistersSidePane UI file");
+            throw Exception{"Failed to open TargetRegistersSidePane UI file"};
         }
 
-        auto uiLoader = UiLoader(this);
+        auto uiLoader = UiLoader{this};
         this->container = uiLoader.load(&targetRegistersPaneUiFile, this);
         this->container->setFixedSize(parent->width(), parent->maximumHeight());
         auto* containerLayout = this->container->findChild<QVBoxLayout*>();
 
-        auto* layout = new QVBoxLayout(this);
+        auto* layout = new QVBoxLayout{this};
         layout->setContentsMargins(0, 0, 0, 0);
         layout->addWidget(this->container);
 
@@ -60,6 +62,18 @@ namespace Widgets
         this->expandAllButton = this->toolBar->findChild<SvgToolButton*>("expand-all-btn");
         this->toolBar->layout()->setContentsMargins(5, 0, 5, 0);
         this->searchInput = this->container->findChild<QLineEdit*>("search-input");
+
+        this->contextMenu->addAction(this->openInspectionWindowAction);
+        this->contextMenu->addAction(this->refreshValueAction);
+        this->contextMenu->addSeparator();
+
+        this->copyMenu->addAction(this->copyNameAction);
+        this->copyMenu->addSeparator();
+        this->copyMenu->addAction(this->copyValueDecimalAction);
+        this->copyMenu->addAction(this->copyValueHexAction);
+        this->copyMenu->addAction(this->copyValueBinaryAction);
+
+        this->contextMenu->addMenu(this->copyMenu);
 
         QObject::connect(this->expandAllButton, &QToolButton::clicked, [this] {
             this->expandAllRegisterGroups();
@@ -73,42 +87,20 @@ namespace Widgets
             this->filterRegisters(this->searchInput->text());
         });
 
-        const auto& registerDescriptors = targetDescriptor.registerDescriptorsById;
-
-        auto registerDescriptorsByGroupName = std::map<QString, std::set<TargetRegisterDescriptor>>();
-
-        for (const auto& [descriptorId, descriptor] : registerDescriptors) {
-            if (
-                descriptor.type != TargetRegisterType::GENERAL_PURPOSE_REGISTER
-                && descriptor.type != TargetRegisterType::PORT_REGISTER
-                && descriptor.type != TargetRegisterType::OTHER
-            ) {
-                continue;
-            }
-
-            const auto groupName = descriptor.type == TargetRegisterType::GENERAL_PURPOSE_REGISTER
-                ? "CPU General Purpose"
-                : QString::fromStdString(descriptor.groupName.value_or("other")).toUpper();
-
-            registerDescriptorsByGroupName[groupName].insert(descriptor);
-            this->registerDescriptors.insert(descriptor);
-
-        }
-
-        for (const auto& [groupName, registerDescriptors] : registerDescriptorsByGroupName) {
-            this->registerGroupItems.emplace_back(
-                new RegisterGroupItem(
-                    groupName,
-                    registerDescriptors,
-                    this->registerItemsByDescriptorId
-                )
+        for (const auto& [peripheralKey, peripheralDescriptor] : this->targetDescriptor.peripheralDescriptorsByKey) {
+            this->peripheralItems.emplace_back(
+                new PeripheralItem{
+                    peripheralDescriptor,
+                    this->flattenedRegisterItemsByRegisterId,
+                    this->flattenedRegisterDescriptors
+                }
             );
         }
 
-        this->registerListView = new ListView(
-            ListScene::ListItemSetType(this->registerGroupItems.begin(), this->registerGroupItems.end()),
+        this->registerListView = new ListView{
+            ListItem::ListItemSetType{this->peripheralItems.begin(), this->peripheralItems.end()},
             this
-        );
+        };
 
         this->registerListScene = this->registerListView->listScene();
         this->registerListScene->setKeyNavigationEnabled(false);
@@ -146,7 +138,7 @@ namespace Widgets
             this,
             [this] {
                 if (this->contextMenuRegisterItem != nullptr) {
-                    this->refreshRegisterValues(this->contextMenuRegisterItem->registerDescriptor.id, std::nullopt);
+                    this->refreshRegisterValues(this->contextMenuRegisterItem->registerDescriptor, std::nullopt);
                 }
             }
         );
@@ -224,70 +216,45 @@ namespace Widgets
     }
 
     void TargetRegistersPaneWidget::filterRegisters(const QString& keyword) {
-        for (const auto& groupItem : this->registerGroupItems) {
-            auto visibleItems = std::uint32_t{0};
-            auto displayEntireGroup = keyword.isEmpty() || groupItem->groupName.contains(keyword, Qt::CaseInsensitive);
-
-            for (auto& registerItem : groupItem->registerItems) {
-                registerItem->excluded = !displayEntireGroup
-                    && !registerItem->searchKeywords.contains(keyword, Qt::CaseInsensitive);
-
-                if (!registerItem->excluded) {
-                    ++visibleItems;
-                }
-            }
-
-            groupItem->setVisible(visibleItems > 0 || keyword.isEmpty());
-            groupItem->setExpanded(visibleItems > 0 && !keyword.isEmpty());
+        for (auto* peripheralItem : this->peripheralItems) {
+            peripheralItem->applyFilter(keyword);
         }
 
         this->registerListScene->refreshGeometry();
     }
 
     void TargetRegistersPaneWidget::collapseAllRegisterGroups() {
-        for (auto& registerGroupItem : this->registerGroupItems) {
-            registerGroupItem->setExpanded(false);
+        for (auto& registerGroupItem : this->peripheralItems) {
+            registerGroupItem->setAllExpanded(false);
         }
 
         this->registerListScene->refreshGeometry();
     }
 
     void TargetRegistersPaneWidget::expandAllRegisterGroups() {
-        for (auto& registerGroupItem : this->registerGroupItems) {
-            registerGroupItem->setExpanded(true);
+        for (auto& registerGroupItem : this->peripheralItems) {
+            registerGroupItem->setAllExpanded(true);
         }
 
         this->registerListScene->refreshGeometry();
     }
 
     void TargetRegistersPaneWidget::refreshRegisterValues(
-        std::optional<Targets::TargetRegisterDescriptorId> registerDescriptorId,
+        std::optional<std::reference_wrapper<const Targets::TargetRegisterDescriptor>> registerDescriptor,
         std::optional<std::function<void(void)>> callback
     ) {
-        if (!registerDescriptorId.has_value() && this->registerDescriptors.empty()) {
+        if (!registerDescriptor.has_value() && this->flattenedRegisterDescriptors.empty()) {
             return;
         }
 
-        auto descriptorIds = Targets::TargetRegisterDescriptorIds();
-
-        if (registerDescriptorId.has_value()) {
-            descriptorIds.insert(*registerDescriptorId);
-
-        } else {
-            std::transform(
-                this->registerDescriptors.begin(),
-                this->registerDescriptors.end(),
-                std::inserter(descriptorIds, descriptorIds.end()),
-                [] (const Targets::TargetRegisterDescriptor& descriptor) {
-                    return descriptor.id;
-                }
-            );
-        }
-
-        const auto readRegisterTask = QSharedPointer<ReadTargetRegisters>(
-            new ReadTargetRegisters(descriptorIds),
+        const auto readRegisterTask = QSharedPointer<ReadTargetRegisters>{
+            new ReadTargetRegisters{
+                registerDescriptor.has_value()
+                    ? Targets::TargetRegisterDescriptors{&(registerDescriptor->get())}
+                    : this->flattenedRegisterDescriptors
+            },
             &QObject::deleteLater
-        );
+        };
 
         QObject::connect(
             readRegisterTask.get(),
@@ -324,11 +291,20 @@ namespace Widgets
     }
 
     void TargetRegistersPaneWidget::onItemDoubleClicked(ListItem* clickedItem) {
+        auto* peripheralItem = dynamic_cast<PeripheralItem*>(clickedItem);
+
+        if (peripheralItem != nullptr) {
+            peripheralItem->setExpanded(!peripheralItem->isExpanded());
+            this->registerListScene->refreshGeometry();
+            return;
+        }
+
         auto* registerGroupItem = dynamic_cast<RegisterGroupItem*>(clickedItem);
 
         if (registerGroupItem != nullptr) {
             registerGroupItem->setExpanded(!registerGroupItem->isExpanded());
             this->registerListScene->refreshGeometry();
+            return;
         }
 
         auto* registerItem = dynamic_cast<RegisterItem*>(clickedItem);
@@ -347,70 +323,59 @@ namespace Widgets
 
         this->contextMenuRegisterItem = registerItem;
 
-        auto* menu = new QMenu(this);
-        menu->addAction(this->openInspectionWindowAction);
-        menu->addAction(this->refreshValueAction);
-        menu->addSeparator();
-
-        auto* copyMenu = new QMenu("Copy", this);
-        copyMenu->addAction(this->copyNameAction);
-        copyMenu->addSeparator();
-        copyMenu->addAction(this->copyValueDecimalAction);
-        copyMenu->addAction(this->copyValueHexAction);
-        copyMenu->addAction(this->copyValueBinaryAction);
-
-        menu->addMenu(copyMenu);
-
         this->openInspectionWindowAction->setEnabled(
             TargetRegisterInspectorWindow::registerSupported(this->contextMenuRegisterItem->registerDescriptor)
         );
 
-        const auto targetStopped = this->targetState == Targets::TargetState::STOPPED;
-        const auto targetStoppedAndValuePresent = targetStopped
-            && this->currentRegisterValuesByDescriptorId.contains(this->contextMenuRegisterItem->registerDescriptor.id);
+        const auto targetStopped = this->targetState.executionState == Targets::TargetExecutionState::STOPPED;
+        const auto valuePresent = this->currentRegisterValuesByRegisterId.contains(
+            this->contextMenuRegisterItem->registerDescriptor.id
+        );
 
         this->refreshValueAction->setEnabled(targetStopped);
-        this->copyValueDecimalAction->setEnabled(targetStoppedAndValuePresent);
-        this->copyValueHexAction->setEnabled(targetStoppedAndValuePresent);
-        this->copyValueBinaryAction->setEnabled(targetStoppedAndValuePresent);
+        this->copyValueDecimalAction->setEnabled(targetStopped && valuePresent);
+        this->copyValueHexAction->setEnabled(targetStopped && valuePresent);
+        this->copyValueBinaryAction->setEnabled(targetStopped && valuePresent);
 
-        menu->exec(sourcePosition);
+        this->contextMenu->exec(sourcePosition);
     }
 
-    void TargetRegistersPaneWidget::onTargetStateChanged(Targets::TargetState newState) {
-        if (this->targetState == newState) {
+    void TargetRegistersPaneWidget::onTargetStateChanged(
+        const Targets::TargetState& newState,
+        const Targets::TargetState& previousState
+    ) {
+        if (previousState.executionState == newState.executionState) {
             return;
         }
 
-        this->targetState = newState;
-
-        if (this->targetState != Targets::TargetState::STOPPED) {
+        if (this->targetState.executionState != Targets::TargetExecutionState ::STOPPED) {
             this->clearInlineRegisterValues();
         }
     }
 
-    void TargetRegistersPaneWidget::onRegistersRead(const Targets::TargetRegisters& registers) {
-        for (const auto& targetRegister : registers) {
-            const auto& previousValueIt = this->currentRegisterValuesByDescriptorId.find(targetRegister.descriptorId);
-            const auto& registerItemIt = this->registerItemsByDescriptorId.find(targetRegister.descriptorId);
+    void TargetRegistersPaneWidget::onRegistersRead(
+        const Targets::TargetRegisterDescriptorAndValuePairs& registerPairs
+    ) {
+        for (const auto& [descriptor, value] : registerPairs) {
+            const auto& previousValueIt = this->currentRegisterValuesByRegisterId.find(descriptor.id);
+            const auto& registerItemIt = this->flattenedRegisterItemsByRegisterId.find(descriptor.id);
 
-            if (registerItemIt != this->registerItemsByDescriptorId.end()) {
+            if (registerItemIt != this->flattenedRegisterItemsByRegisterId.end()) {
                 auto& registerItem = registerItemIt->second;
 
-                registerItem->setValue(targetRegister.value);
-                registerItem->valueChanged = previousValueIt != this->currentRegisterValuesByDescriptorId.end()
-                    ? previousValueIt->second != targetRegister.value
-                    : false;
+                registerItem->setValue(value);
+                registerItem->valueChanged = previousValueIt != this->currentRegisterValuesByRegisterId.end()
+                    && previousValueIt->second != value;
             }
 
-            this->currentRegisterValuesByDescriptorId[targetRegister.descriptorId] = targetRegister.value;
+            this->currentRegisterValuesByRegisterId[descriptor.id] = value;
         }
 
         this->registerListScene->update();
     }
 
     void TargetRegistersPaneWidget::clearInlineRegisterValues() {
-        for (auto& [registerDescriptorId, registerItem] : this->registerItemsByDescriptorId) {
+        for (auto& [registerDescriptorId, registerItem] : this->flattenedRegisterItemsByRegisterId) {
             registerItem->clearValue();
         }
 
@@ -424,26 +389,22 @@ namespace Widgets
 
         TargetRegisterInspectorWindow* inspectionWindow = nullptr;
 
-        const auto& currentValueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
-        const auto& inspectionWindowIt = this->inspectionWindowsByDescriptorId.find(registerDescriptor.id);
-
-        if (inspectionWindowIt != this->inspectionWindowsByDescriptorId.end()) {
+        const auto& inspectionWindowIt = this->inspectionWindowsByRegisterId.find(registerDescriptor.id);
+        if (inspectionWindowIt != this->inspectionWindowsByRegisterId.end()) {
             inspectionWindow = inspectionWindowIt->second;
 
         } else {
-            inspectionWindow = new TargetRegisterInspectorWindow(
+            inspectionWindow = new TargetRegisterInspectorWindow{
                 registerDescriptor,
                 this->targetState,
                 this
-            );
+            };
 
-            this->inspectionWindowsByDescriptorId.insert(std::pair(
-                registerDescriptor.id,
-                inspectionWindow
-            ));
+            this->inspectionWindowsByRegisterId.emplace(registerDescriptor.id, inspectionWindow);
         }
 
-        if (currentValueIt != this->currentRegisterValuesByDescriptorId.end()) {
+        const auto& currentValueIt = this->currentRegisterValuesByRegisterId.find(registerDescriptor.id);
+        if (currentValueIt != this->currentRegisterValuesByRegisterId.end()) {
             inspectionWindow->setValue(currentValueIt->second);
         }
 
@@ -452,53 +413,50 @@ namespace Widgets
     }
 
     void TargetRegistersPaneWidget::copyRegisterName(const TargetRegisterDescriptor& registerDescriptor) {
-        QApplication::clipboard()->setText(QString::fromStdString(registerDescriptor.name.value_or("")).toUpper());
+        QApplication::clipboard()->setText(QString::fromStdString(registerDescriptor.name).toUpper());
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueHex(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
-
-        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
+        const auto& valueIt = this->currentRegisterValuesByRegisterId.find(registerDescriptor.id);
+        if (valueIt == this->currentRegisterValuesByRegisterId.end()) {
             return;
         }
 
         const auto& value = valueIt->second;
-        const auto valueByteArray = QByteArray(
-            reinterpret_cast<const char*>(value.data()),
+        const auto valueByteArray = QByteArray{
+            reinterpret_cast<const char *>(value.data()),
             static_cast<qsizetype>(value.size())
-        ).toHex();
+        }.toHex();
 
-        QApplication::clipboard()->setText(QString(valueByteArray).toUpper());
+        QApplication::clipboard()->setText(QString{valueByteArray}.toUpper());
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueDecimal(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
-
-        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
+        const auto& valueIt = this->currentRegisterValuesByRegisterId.find(registerDescriptor.id);
+        if (valueIt == this->currentRegisterValuesByRegisterId.end()) {
             return;
         }
 
         const auto& value = valueIt->second;
-        const auto valueByteArray = QByteArray(
-            reinterpret_cast<const char*>(value.data()),
+        const auto valueByteArray = QByteArray{
+            reinterpret_cast<const char *>(value.data()),
             static_cast<qsizetype>(value.size())
-        ).toHex();
+        }.toHex();
 
         QApplication::clipboard()->setText(QString::number(valueByteArray.toUInt(nullptr, 16)));
     }
 
     void TargetRegistersPaneWidget::copyRegisterValueBinary(const TargetRegisterDescriptor& registerDescriptor) {
-        const auto& valueIt = this->currentRegisterValuesByDescriptorId.find(registerDescriptor.id);
-
-        if (valueIt == this->currentRegisterValuesByDescriptorId.end()) {
+        const auto& valueIt = this->currentRegisterValuesByRegisterId.find(registerDescriptor.id);
+        if (valueIt == this->currentRegisterValuesByRegisterId.end()) {
             return;
         }
 
         const auto& value = valueIt->second;
-        const auto valueByteArray = QByteArray(
-            reinterpret_cast<const char*>(value.data()),
+        const auto valueByteArray = QByteArray{
+            reinterpret_cast<const char *>(value.data()),
             static_cast<qsizetype>(value.size())
-        ).toHex();
+        }.toHex();
 
         auto bitString = QString::number(valueByteArray.toUInt(nullptr, 16), 2);
 

@@ -8,15 +8,12 @@
 
 namespace Widgets
 {
-    ListScene::ListScene(
-        ListScene::ListItemSetType&& items,
-        QGraphicsView* parent
-    )
+    ListScene::ListScene(const ListItem::ListItemSetType& items, QGraphicsView* parent)
         : QGraphicsScene(parent)
         , parent(parent)
     {
         this->setItemIndexMethod(QGraphicsScene::NoIndex);
-        this->setItems(std::move(items));
+        this->setItems(items);
     }
 
     void ListScene::setSelectionLimit(std::uint8_t selectionLimit) {
@@ -32,7 +29,7 @@ namespace Widgets
         auto startYPosition = this->margins.top();
 
         for (auto& listItem : this->listItems) {
-            if (!listItem->isVisible()) {
+            if (listItem->excluded || !listItem->isVisible()) {
                 continue;
             }
 
@@ -54,7 +51,7 @@ namespace Widgets
         this->update();
     }
 
-    void ListScene::setItems(const ListScene::ListItemSetType& items) {
+    void ListScene::setItems(const ListItem::ListItemSetType& items) {
         this->clearListItems();
 
         this->listItems = items;

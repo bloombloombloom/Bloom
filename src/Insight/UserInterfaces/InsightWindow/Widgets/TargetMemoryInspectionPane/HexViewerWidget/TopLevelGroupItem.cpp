@@ -12,8 +12,8 @@ namespace Widgets
         , excludedMemoryRegions(excludedMemoryRegions)
         , hexViewerState(hexViewerState)
     {
-        const auto memorySize = this->hexViewerState.memoryDescriptor.size();
-        const auto startAddress = this->hexViewerState.memoryDescriptor.addressRange.startAddress;
+        const auto memorySize = this->hexViewerState.memorySegmentDescriptor.size();
+        const auto startAddress = this->hexViewerState.memorySegmentDescriptor.addressRange.startAddress;
 
         for (Targets::TargetMemorySize i = 0; i < memorySize; i++) {
             const auto address = startAddress + i;
@@ -29,8 +29,8 @@ namespace Widgets
         const auto& currentStackPointer = this->hexViewerState.currentStackPointer;
         const auto stackGroupingRequired = currentStackPointer.has_value()
             && this->hexViewerState.settings.groupStackMemory
-            && *currentStackPointer >= this->hexViewerState.memoryDescriptor.addressRange.startAddress
-            && (*currentStackPointer + 1) <= this->hexViewerState.memoryDescriptor.addressRange.endAddress;
+            && *currentStackPointer >= this->hexViewerState.memorySegmentDescriptor.addressRange.startAddress
+            && (*currentStackPointer + 1) <= this->hexViewerState.memorySegmentDescriptor.addressRange.endAddress;
 
         for (const auto& focusedRegion : this->focusedMemoryRegions) {
             if (
@@ -48,7 +48,7 @@ namespace Widgets
             }
 
             this->focusedRegionGroupItems.emplace_back(focusedRegion, this->byteItemsByAddress, this);
-            items.emplace_back(&(this->focusedRegionGroupItems.back()));
+            this->items.emplace_back(&(this->focusedRegionGroupItems.back()));
         }
 
         if (stackGroupingRequired) {

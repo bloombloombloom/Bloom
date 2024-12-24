@@ -22,12 +22,10 @@ public:
 
     FocusedMemoryRegion(
         const QString& name,
-        Targets::TargetMemoryType memoryType,
         const Targets::TargetMemoryAddressRange& addressRange
     );
 
-    FocusedMemoryRegion(const QJsonObject& jsonObject);
-
+    explicit FocusedMemoryRegion(const QJsonObject& jsonObject);
     QJsonObject toJson() const override;
 
 private:

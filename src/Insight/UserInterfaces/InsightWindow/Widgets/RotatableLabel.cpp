@@ -5,7 +5,7 @@
 namespace Widgets
 {
     void RotatableLabel::paintEvent(QPaintEvent* event) {
-        auto painter = QPainter(this);
+        auto painter = QPainter{this};
         const auto containerSize = this->getContainerSize();
         const auto textSize = QLabel::minimumSizeHint();
         const auto margins = this->contentsMargins();
@@ -13,7 +13,7 @@ namespace Widgets
         painter.setClipRect(0, 0, containerSize.width(), containerSize.height());
         painter.save();
         painter.setPen(Qt::PenStyle::SolidLine);
-        painter.setPen(QColor(this->isEnabled() ? "#999a9d" : "#808484"));
+        painter.setPen(QColor{this->isEnabled() ? "#999a9d" : "#808484"});
         painter.translate(std::ceil(containerSize.width() / 2), std::ceil(containerSize.height() / 2));
         painter.rotate(this->angle);
         painter.drawText(
@@ -29,7 +29,7 @@ namespace Widgets
     }
 
     QSize RotatableLabel::getContainerSize() const {
-        auto size = QSize();
+        auto size = QSize{};
         auto textSize = QLabel::sizeHint();
 
         if (this->angle % 360 == 0 || this->angle % 180 == 0) {
@@ -52,11 +52,11 @@ namespace Widgets
 
             size.setWidth(static_cast<int>(
                 std::cos(angleRadians) * textSize.width()
-                + std::ceil(std::sin(angleRadians) * textSize.height())
+                    + std::ceil(std::sin(angleRadians) * textSize.height())
             ));
             size.setHeight(static_cast<int>(
                 std::sin(angleRadians) * textSize.width()
-                + std::ceil(std::cos(angleRadians) * textSize.height())
+                    + std::ceil(std::cos(angleRadians) * textSize.height())
             ));
         }
 

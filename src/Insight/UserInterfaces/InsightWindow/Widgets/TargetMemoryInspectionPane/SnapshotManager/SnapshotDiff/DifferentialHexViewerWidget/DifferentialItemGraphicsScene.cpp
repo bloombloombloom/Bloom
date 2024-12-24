@@ -8,7 +8,9 @@ namespace Widgets
         DifferentialHexViewerWidgetType differentialHexViewerWidgetType,
         DifferentialHexViewerSharedState& state,
         const SnapshotDiffSettings& snapshotDiffSettings,
-        const Targets::TargetMemoryDescriptor& targetMemoryDescriptor,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const Targets::TargetState& targetState,
         const std::optional<Targets::TargetMemoryBuffer>& data,
         const std::vector<FocusedMemoryRegion>& focusedMemoryRegions,
         const std::vector<ExcludedMemoryRegion>& excludedMemoryRegions,
@@ -16,7 +18,9 @@ namespace Widgets
         QGraphicsView* parent
     )
         : ItemGraphicsScene(
-            targetMemoryDescriptor,
+            addressSpaceDescriptor,
+            memorySegmentDescriptor,
+            targetState,
             data,
             focusedMemoryRegions,
             excludedMemoryRegions,

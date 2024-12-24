@@ -9,9 +9,7 @@
 #include <optional>
 
 #include "src/Targets/TargetRegisterDescriptor.hpp"
-#include "src/Targets/TargetRegister.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/TargetState.hpp"
 
 #include "Item.hpp"
 #include "CurrentItem.hpp"
@@ -47,19 +45,20 @@ namespace Widgets
         void resizeEvent(QResizeEvent* event) override;
 
     private:
-        Targets::TargetRegisterDescriptor registerDescriptor;
+        const Targets::TargetRegisterDescriptor& registerDescriptor;
 
         QWidget* container = nullptr;
         QWidget* itemContainer = nullptr;
         QVBoxLayout* itemContainerLayout = nullptr;
 
-        Targets::TargetState targetState = Targets::TargetState::UNKNOWN;
         CurrentItem* currentItem = nullptr;
         Item* selectedItemWidget = nullptr;
 
     private slots:
-        void onTargetStateChanged(Targets::TargetState newState);
         void onItemSelectionChange(Item* newlySelectedWidget);
-        void onRegistersWritten(Targets::TargetRegisters targetRegisters, const QDateTime& changeDate);
+        void onRegistersWritten(
+            const Targets::TargetRegisterDescriptorAndValuePairs& targetRegisters,
+            const QDateTime& changeDate
+        );
     };
 }
