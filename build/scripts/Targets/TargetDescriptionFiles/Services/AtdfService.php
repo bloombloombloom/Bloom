@@ -397,13 +397,13 @@ class AtdfService
                         new Property(
                             'start_address',
                             '0x' . str_pad(
-                                strtoupper(dechex($segment->startAddress)),
+                                strtoupper(dechex($segment->addressRange->startAddress)),
                                 8,
                                 '0',
                                 STR_PAD_LEFT
                             )
                         ),
-                        new Property('size', $segment->size),
+                        new Property('size', $segment->size()),
                         new Property('page_size', $segment->pageSize),
                     ]
                 );
@@ -491,8 +491,9 @@ class AtdfService
                     $section = new MemorySegmentSection(
                         $otherSegment->key,
                         $otherSegment->name,
-                        $otherSegment->startAddress,
-                        $otherSegment->size,
+                        $otherSegment->addressRange->startAddress,
+                        $otherSegment->size(),
+                        null,
                         []
                     );
 
@@ -501,11 +502,9 @@ class AtdfService
                      * the segment.
                      */
                     if (
-                        $otherSegment->startAddress !== null
-                        && $otherSegment->size !== null
+                        $otherSegment->addressRange !== null
                         && ($parentSection = $segment->getInnermostSectionContainingAddressRange(
-                            $otherSegment->startAddress,
-                            ($otherSegment->startAddress + $otherSegment->size - 1)
+                            $otherSegment->addressRange
                         )) !== null
                     ) {
                         $parentSection->subSections[] = $section;
@@ -542,22 +541,25 @@ class AtdfService
                     'internal_program_memory',
                     'Internal FLASH',
                     MemorySegmentType::FLASH,
-                    $appSectionSegment->startAddress,
-                    $appSectionSegment->size + $bootSectionSegment->size,
+                    $appSectionSegment->addressRange->startAddress,
+                    $appSectionSegment->size() + $bootSectionSegment->size(),
+                    null,
                     $appSectionSegment->pageSize,
                     $appSectionSegment->access,
                     [
                         new MemorySegmentSection(
                             'app_section',
                             'Application Section',
-                            $appSectionSegment->startAddress,
-                            $appSectionSegment->size,
+                            $appSectionSegment->addressRange->startAddress,
+                            $appSectionSegment->size(),
+                            null,
                             [
                                 new MemorySegmentSection(
                                     'app_table_section',
                                     'Application Table Section',
-                                    $appTableSection->startAddress,
-                                    $appTableSection->size,
+                                    $appTableSection->addressRange->startAddress,
+                                    $appTableSection->size(),
+                                    null,
                                     []
                                 )
                             ]
@@ -565,8 +567,9 @@ class AtdfService
                         new MemorySegmentSection(
                             'boot_section',
                             'Boot Loader Section',
-                            $bootSectionSegment->startAddress,
-                            $bootSectionSegment->size,
+                            $bootSectionSegment->addressRange->startAddress,
+                            $bootSectionSegment->size(),
+                            null,
                             []
                         )
                     ],
@@ -591,6 +594,7 @@ class AtdfService
             ),
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
+            null,
             $this->stringService->tryStringToInt($attributes['pagesize'] ?? null),
             $attributes['rw'] ?? null,
             [],

@@ -1,12 +1,14 @@
 <?php
 namespace Targets\TargetDescriptionFiles;
 
+require_once __DIR__ . "/AddressRange.php";
+
 class MemorySegmentSection
 {
     public ?string $key = null;
     public ?string $name = null;
-    public ?int $startAddress = null;
-    public ?int $size = null;
+    public ?AddressRange $addressRange = null;
+    public ?int $addressSpaceUnitSize = null;
 
     /** @var MemorySegmentSection[] */
     public array $subSections = [];
@@ -16,76 +18,59 @@ class MemorySegmentSection
         ?string $name,
         ?int $startAddress,
         ?int $size,
+        ?int $addressSpaceUnitSize,
         array $subSections
     ) {
         $this->key = $key;
         $this->name = $name;
-        $this->startAddress = $startAddress;
-        $this->size = $size;
+        $this->addressRange = is_numeric($startAddress) && is_numeric($size)
+            ? new AddressRange(
+                $startAddress,
+                $startAddress + ($size / ($addressSpaceUnitSize ?? 1)) - 1
+            )
+            : null;
+        $this->addressSpaceUnitSize = $addressSpaceUnitSize;
         $this->subSections = $subSections;
     }
 
-    public function getInnermostSubSectionContainingAddressRange(int $startAddress, int $endAddress)
+    public function size(): ?int
+    {
+        return $this->addressRange instanceof AddressRange
+            ? $this->addressRange->size() * ($this->addressSpaceUnitSize ?? 1)
+            : null;
+    }
+
+    public function getInnermostSubSectionContainingAddressRange(AddressRange $range)
     : ?MemorySegmentSection {
-        if ($this->containsAddressRange($startAddress, $endAddress)) {
+        if (!$this->containsAddressRange($range)) {
             return null;
         }
 
         foreach ($this->subSections as $section) {
-            if ($section->containsAddressRange($startAddress, $endAddress)) {
-                return $section->getInnermostSubSectionContainingAddressRange($startAddress, $endAddress);
+            if ($section->containsAddressRange($range)) {
+                return $section->getInnermostSubSectionContainingAddressRange($range);
             }
         }
 
         return $this;
     }
 
-    public function contains(MemorySegment $other): bool
+    public function contains(MemorySegmentSection $other): bool
     {
-        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
-            ? ($this->startAddress + $this->size - 1) : null;
-        $otherEndAddress = !is_null($other->startAddress) && !is_null($other->size)
-            ? ($other->startAddress + $other->size - 1) : null;
-
-        return
-            $this->startAddress !== null
-            && $endAddress !== null
-            && $other->startAddress !== null
-            && $otherEndAddress !== null
-            && $this->startAddress <= $other->startAddress
-            && $endAddress >= $otherEndAddress
-        ;
+        return $this->addressRange instanceof AddressRange && $this->addressRange->contains($other->addressRange);
     }
 
-    public function containsAddressRange(int $subjectStartAddress, int $subjectEndAddress): bool
+    public function containsAddressRange(AddressRange $range): bool
     {
-        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
-            ? ($this->startAddress + $this->size - 1) : null;
-
-        return
-            $this->startAddress !== null
-            && $endAddress !== null
-            && $this->startAddress <= $subjectStartAddress
-            && $endAddress >= $subjectEndAddress
-        ;
+        return $this->addressRange instanceof AddressRange && $this->addressRange->contains($range);
     }
 
     public function intersectsWith(MemorySegmentSection $other): bool
     {
-        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
-            ? ($this->startAddress + $this->size - 1) : null;
-        $otherEndAddress = !is_null($other->startAddress) && !is_null($other->size)
-            ? ($other->startAddress + $other->size - 1) : null;
-
         return
-            $this->startAddress !== null
-            && $endAddress !== null
-            && $other->startAddress !== null
-            && $otherEndAddress !== null
-            && (
-                ($other->startAddress <= $this->startAddress && $otherEndAddress >= $this->startAddress)
-                || ($other->startAddress >= $this->startAddress && $other->startAddress <= $endAddress)
-            )
+            $this->addressRange instanceof AddressRange
+            && $other->addressRange instanceof AddressRange
+            && $this->addressRange->intersectsWith($other->addressRange)
         ;
     }
 }

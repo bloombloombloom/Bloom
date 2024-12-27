@@ -5,6 +5,7 @@ enum MemorySegmentType: string
 {
     case ALIASED = 'aliased';
     case GENERAL_PURPOSE_REGISTERS = 'gp_registers';
+    case REGISTERS = 'registers';
     case EEPROM = 'eeprom';
     case FLASH = 'flash';
     case FUSES = 'fuses';

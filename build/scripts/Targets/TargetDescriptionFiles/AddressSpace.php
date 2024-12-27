@@ -1,13 +1,13 @@
 <?php
 namespace Targets\TargetDescriptionFiles;
 
+require_once __DIR__ . "/AddressRange.php";
 require_once __DIR__ . "/MemorySegment.php";
 
 class AddressSpace
 {
     public ?string $key = null;
-    public ?int $startAddress = null;
-    public ?int $size = null;
+    public ?AddressRange $addressRange = null;
     public ?int $unitSize = null;
     public ?string $endianness = null;
 
@@ -17,10 +17,21 @@ class AddressSpace
     public function __construct(?string $key, ?int $startAddress, ?int $size, ?int $unitSize, ?string $endianness)
     {
         $this->key = $key;
-        $this->startAddress = $startAddress;
-        $this->size = $size;
+        $this->addressRange = is_numeric($startAddress) && is_numeric($size)
+            ? new AddressRange(
+                $startAddress,
+                $startAddress + ($size / ($unitSize ?? 1)) - 1
+            )
+            : null;
         $this->unitSize = $unitSize;
         $this->endianness = $endianness;
+    }
+
+    public function size(): ?int
+    {
+        return $this->addressRange instanceof AddressRange
+            ? $this->addressRange->size() * ($this->unitSize ?? 1)
+            : null;
     }
 
     public function getMemorySegment(string $key): ?MemorySegment
@@ -38,27 +49,7 @@ class AddressSpace
     {
         return array_sum(
             array_map(
-                fn (MemorySegment $segment): int => (int) $segment->size,
-                $this->memorySegments
-            )
-        );
-    }
-
-    public function segmentStartAddress(): int
-    {
-        return min(
-            array_map(
-                fn (MemorySegment $segment): int => (int) $segment->startAddress,
-                $this->memorySegments
-            )
-        );
-    }
-
-    public function segmentEndAddress(): int
-    {
-        return max(
-            array_map(
-                fn (MemorySegment $segment): int => (int) $segment->startAddress + $segment->size - 1,
+                fn (MemorySegment $segment): int => (int) $segment->size(),
                 $this->memorySegments
             )
         );
@@ -77,9 +68,9 @@ class AddressSpace
         return array_filter(
             $this->memorySegments,
             function (MemorySegment $segment) use ($startAddress, $endAddress) : bool {
-                $segmentEndAddress = $segment->startAddress + $segment->size - 1;
-                return ($startAddress <= $segment->startAddress && $endAddress >= $segment->startAddress)
-                    || ($startAddress >= $segment->startAddress && $startAddress <= $segmentEndAddress);
+                $segmentEndAddress = $segment->addressRange->startAddress + $segment->size() - 1;
+                return ($startAddress <= $segment->addressRange->startAddress && $endAddress >= $segment->addressRange->startAddress)
+                    || ($startAddress >= $segment->addressRange->startAddress && $startAddress <= $segmentEndAddress);
             }
         );
     }

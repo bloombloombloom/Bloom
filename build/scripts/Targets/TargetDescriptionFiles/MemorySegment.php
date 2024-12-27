@@ -1,6 +1,7 @@
 <?php
 namespace Targets\TargetDescriptionFiles;
 
+require_once __DIR__ . "/AddressRange.php";
 require_once __DIR__ . "/MemorySegmentType.php";
 require_once __DIR__ . "/MemorySegmentSection.php";
 
@@ -9,8 +10,8 @@ class MemorySegment
     public ?string $key = null;
     public ?string $name = null;
     public ?MemorySegmentType $type = null;
-    public ?int $startAddress = null;
-    public ?int $size = null;
+    public ?AddressRange $addressRange = null;
+    public ?int $addressSpaceUnitSize = null;
     public ?int $pageSize = null;
     public ?string $access = null;
     public ?bool $executable = null;
@@ -24,6 +25,7 @@ class MemorySegment
         ?MemorySegmentType $type,
         ?int $startAddress,
         ?int $size,
+        ?int $addressSpaceUnitSize,
         ?int $pageSize,
         ?string $access,
         array $sections,
@@ -32,12 +34,24 @@ class MemorySegment
         $this->key = $key;
         $this->name = $name;
         $this->type = $type;
-        $this->startAddress = $startAddress;
-        $this->size = $size;
+        $this->addressRange = is_numeric($startAddress) && is_numeric($size)
+            ? new AddressRange(
+                $startAddress,
+                $startAddress + ($size / ($addressSpaceUnitSize ?? 1)) - 1
+            )
+            : null;
+        $this->addressSpaceUnitSize = $addressSpaceUnitSize;
         $this->pageSize = $pageSize;
         $this->access = $access;
         $this->sections = $sections;
         $this->executable = $executable;
+    }
+
+    public function size(): ?int
+    {
+        return $this->addressRange instanceof AddressRange
+            ? $this->addressRange->size() * ($this->addressSpaceUnitSize ?? 1)
+            : null;
     }
 
     public function getSection(string $sectionId): ?MemorySegmentSection
@@ -53,11 +67,11 @@ class MemorySegment
         return null;
     }
 
-    public function getInnermostSectionContainingAddressRange(int $startAddress, int $endAddress)
+    public function getInnermostSectionContainingAddressRange(AddressRange $range)
     : ?MemorySegmentSection {
         foreach ($this->sections as $section) {
-            if ($section->containsAddressRange($startAddress, $endAddress)) {
-                return $section->getInnermostSubSectionContainingAddressRange($startAddress, $endAddress);
+            if ($section->containsAddressRange($range)) {
+                return $section->getInnermostSubSectionContainingAddressRange($range);
             }
         }
 
@@ -66,34 +80,15 @@ class MemorySegment
 
     public function contains(MemorySegment $other): bool
     {
-        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
-            ? ($this->startAddress + $this->size - 1) : null;
-        $otherEndAddress = !is_null($other->startAddress) && !is_null($other->size)
-            ? ($other->startAddress + $other->size - 1) : null;
-
-        return
-            $this->startAddress !== null
-            && $endAddress !== null
-            && $other->startAddress !== null
-            && $otherEndAddress !== null
-            && $this->startAddress <= $other->startAddress
-            && $endAddress >= $otherEndAddress
-        ;
+        return $this->addressRange instanceof AddressRange && $this->addressRange->contains($other->addressRange);
     }
 
     public function intersectsWith(MemorySegment $other): bool
     {
-        $endAddress = !is_null($this->startAddress) && !is_null($this->size)
-            ? ($this->startAddress + $this->size - 1) : null;
-        $otherEndAddress = !is_null($other->startAddress) && !is_null($other->size)
-            ? ($other->startAddress + $other->size - 1) : null;
-
         return
-            $this->startAddress !== null
-            && $endAddress !== null
-            && $other->startAddress !== null
-            && $otherEndAddress !== null
-            && $this->startAddress <= $otherEndAddress && $other->startAddress <= $endAddress
+            $this->addressRange instanceof AddressRange
+            && $other->addressRange instanceof AddressRange
+            && $this->addressRange->intersectsWith($other->addressRange)
         ;
     }
 
@@ -101,7 +96,7 @@ class MemorySegment
     {
         return array_sum(
             array_map(
-                fn (MemorySegmentSection $section): int => (int) $section->size,
+                fn (MemorySegmentSection $section): int => (int) $section->size(),
                 $this->sections
             )
         );

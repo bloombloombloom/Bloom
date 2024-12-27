@@ -127,14 +127,14 @@ class FromXmlService
             }
 
             if ($childNode->nodeName === 'memory-segment') {
-                $output->memorySegments[] = $this->memorySegmentFromElement($childNode);
+                $output->memorySegments[] = $this->memorySegmentFromElement($childNode, $output->unitSize);
             }
         }
 
         return $output;
     }
 
-    public function memorySegmentFromElement(DOMElement $element): MemorySegment
+    public function memorySegmentFromElement(DOMElement $element, ?int $addressSpaceUnitSize): MemorySegment
     {
         $attributes = $this->getNodeAttributesByName($element);
 
@@ -144,6 +144,7 @@ class FromXmlService
             MemorySegmentType::tryFrom($attributes['type'] ?? null),
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
+            $addressSpaceUnitSize,
             $this->stringService->tryStringToInt($attributes['page-size'] ?? null),
             $attributes['access'] ?? null,
             [],
@@ -156,14 +157,14 @@ class FromXmlService
             }
 
             if ($childNode->nodeName === 'section') {
-                $output->sections[] = $this->memorySegmentSectionFromElement($childNode);
+                $output->sections[] = $this->memorySegmentSectionFromElement($childNode, $addressSpaceUnitSize);
             }
         }
 
         return $output;
     }
 
-    public function memorySegmentSectionFromElement(DOMElement $element): MemorySegmentSection
+    public function memorySegmentSectionFromElement(DOMElement $element, ?int $addressSpaceUnitSize): MemorySegmentSection
     {
         $attributes = $this->getNodeAttributesByName($element);
 
@@ -172,6 +173,7 @@ class FromXmlService
             $attributes['name'] ?? null,
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
+            $addressSpaceUnitSize,
             []
         );
 
@@ -181,7 +183,7 @@ class FromXmlService
             }
 
             if ($childNode->nodeName === 'section') {
-                $output->subSections[] = $this->memorySegmentSectionFromElement($childNode);
+                $output->subSections[] = $this->memorySegmentSectionFromElement($childNode, $addressSpaceUnitSize);
             }
         }
 

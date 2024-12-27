@@ -27,7 +27,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         if ($progAddressSpace === null) {
             $failures[] = 'Missing program memory address space';
 
-        } elseif ($progAddressSpace->size > 1000000) {
+        } elseif ($progAddressSpace->size() > 1000000) {
             /*
              * For program memory cache, Bloom currently allocates a buffer equal to the size of the program memory
              * address space. This can become a problem if the address space is huge.
@@ -53,7 +53,7 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing "internal_ram" memory segment';
 
         } else {
-            $sramEndAddress = $sramSegment->startAddress + $sramSegment->size - 1;
+            $sramEndAddress = $sramSegment->addressRange->startAddress + $sramSegment->size() - 1;
 
             /*
              * The GPR and IO segments must not come after the SRAM segment in the data address space.
@@ -61,11 +61,11 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
              * There are some places in Bloom's codebase where we have made this assumption, which is why we confirm
              * it here as part of TDF validation.
              */
-            if ($gprSegment !== null && $gprSegment->startAddress > $sramEndAddress) {
+            if ($gprSegment !== null && $gprSegment->addressRange->startAddress > $sramEndAddress) {
                 $failures[] = 'The GPR memory segment comes after the SRAM segment';
             }
 
-            if ($ioSegment !== null && $ioSegment->startAddress > $sramEndAddress) {
+            if ($ioSegment !== null && $ioSegment->addressRange->startAddress > $sramEndAddress) {
                 $failures[] = 'The IO memory segment comes after the SRAM segment';
             }
         }
@@ -390,23 +390,23 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
          * we assume that the offset has already been applied to the params. We confirm this here.
          */
         if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
-            if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->osccalAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'OSCCAL address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eearAddressLow < $ioMemorySegment->startAddress) {
+            if ($parameters->eearAddressLow < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEARL address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eearAddressHigh < $ioMemorySegment->startAddress) {
+            if ($parameters->eearAddressHigh < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEARH address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eecrAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->eecrAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EECR address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eedrAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->eedrAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEDR address does not have IO memory segment offset applied';
             }
 
@@ -580,23 +580,23 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
          * we assume that the offset has already been applied to the params. We confirm this here.
          */
         if (($ioMemorySegment = $tdf->getIoMemorySegment()) instanceof MemorySegment) {
-            if ($parameters->osccalAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->osccalAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'OSCCAL address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eearAddressLow < $ioMemorySegment->startAddress) {
+            if ($parameters->eearAddressLow < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEARL address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eearAddressHigh < $ioMemorySegment->startAddress) {
+            if ($parameters->eearAddressHigh < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEARH address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eecrAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->eecrAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EECR address does not have IO memory segment offset applied';
             }
 
-            if ($parameters->eedrAddress < $ioMemorySegment->startAddress) {
+            if ($parameters->eedrAddress < $ioMemorySegment->addressRange->startAddress) {
                 $failures[] = 'EEDR address does not have IO memory segment offset applied';
             }
 

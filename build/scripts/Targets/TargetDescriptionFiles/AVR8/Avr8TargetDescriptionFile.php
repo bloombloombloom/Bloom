@@ -72,21 +72,21 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         $programMemorySegment = $this->getProgramMemorySegment();
         if ($programMemorySegment instanceof MemorySegment) {
-            $output->flashStartAddress = $programMemorySegment->startAddress;
-            $output->flashSize = $programMemorySegment->size;
+            $output->flashStartAddress = $programMemorySegment->addressRange->startAddress;
+            $output->flashSize = $programMemorySegment->size();
             $output->flashPageSize = $programMemorySegment->pageSize;
         }
 
         $ramMemorySegment = $this->getRamSegment();
         if ($ramMemorySegment instanceof MemorySegment) {
-            $output->ramStartAddress = $ramMemorySegment->startAddress;
+            $output->ramStartAddress = $ramMemorySegment->addressRange->startAddress;
         }
 
         $output->bootSectionOptions = $this->getBootSectionOptions();
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
-            $output->eepromSize = $eepromMemorySegment->size;
+            $output->eepromSize = $eepromMemorySegment->size();
             $output->eepromPageSize = $eepromMemorySegment->pageSize;
         }
 
@@ -218,21 +218,21 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         $programMemorySegment = $this->getProgramMemorySegment();
         if ($programMemorySegment instanceof MemorySegment) {
-            $output->flashStartAddress = $programMemorySegment->startAddress;
-            $output->flashSize = $programMemorySegment->size;
+            $output->flashStartAddress = $programMemorySegment->addressRange->startAddress;
+            $output->flashSize = $programMemorySegment->size();
             $output->flashPageSize = $programMemorySegment->pageSize;
         }
 
         $ramMemorySegment = $this->getRamSegment();
         if ($ramMemorySegment instanceof MemorySegment) {
-            $output->ramStartAddress = $ramMemorySegment->startAddress;
+            $output->ramStartAddress = $ramMemorySegment->addressRange->startAddress;
         }
 
         $output->bootSectionOptions = $this->getBootSectionOptions();
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
-            $output->eepromSize = $eepromMemorySegment->size;
+            $output->eepromSize = $eepromMemorySegment->size();
             $output->eepromPageSize = $eepromMemorySegment->pageSize;
         }
 
@@ -344,18 +344,18 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
             $appSection = $programMemorySegment->getSection('app_section');
             if ($appSection instanceof MemorySegmentSection) {
-                $output->appSectionSize = $appSection->size;
+                $output->appSectionSize = $appSection->size();
             }
 
             $bootSection = $programMemorySegment->getSection('boot_section');
             if ($bootSection instanceof MemorySegmentSection) {
-                $output->bootSectionSize = $bootSection->size;
+                $output->bootSectionSize = $bootSection->size();
             }
         }
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
-            $output->eepromSize = $eepromMemorySegment->size;
+            $output->eepromSize = $eepromMemorySegment->size();
             $output->eepromPageSize = $eepromMemorySegment->pageSize;
         }
 
@@ -381,14 +381,14 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
 
         $programMemorySegment = $this->getProgramMemorySegment();
         if ($programMemorySegment instanceof MemorySegment) {
-            $output->flashSize = $programMemorySegment->size;
+            $output->flashSize = $programMemorySegment->size();
             $output->flashPageSize = $programMemorySegment->pageSize;
         }
 
         $eepromMemorySegment = $this->getEepromSegment();
         if ($eepromMemorySegment instanceof MemorySegment) {
-            $output->eepromStartAddress = $eepromMemorySegment->startAddress;
-            $output->eepromSize = $eepromMemorySegment->size;
+            $output->eepromStartAddress = $eepromMemorySegment->addressRange->startAddress;
+            $output->eepromSize = $eepromMemorySegment->size();
             $output->eepromPageSize = $eepromMemorySegment->pageSize;
         }
 
@@ -410,7 +410,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         );
 
         if ($signatureMemorySegment instanceof MemorySegment) {
-            $output->signatureSegmentStartAddress = $signatureMemorySegment->startAddress;
+            $output->signatureSegmentStartAddress = $signatureMemorySegment->addressRange->startAddress;
         }
 
         $fuseMemorySegment = $this->getMemorySegment(
@@ -422,8 +422,8 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         );
 
         if ($fuseMemorySegment instanceof MemorySegment) {
-            $output->fuseSegmentSize = $fuseMemorySegment->size;
-            $output->fuseSegmentStartAddress = $fuseMemorySegment->startAddress;
+            $output->fuseSegmentSize = $fuseMemorySegment->size();
+            $output->fuseSegmentStartAddress = $fuseMemorySegment->addressRange->startAddress;
         }
 
         $lockbitsMemorySegment = $this->getMemorySegment(
@@ -435,7 +435,7 @@ class Avr8TargetDescriptionFile extends TargetDescriptionFile
         );
 
         if ($lockbitsMemorySegment instanceof MemorySegment) {
-            $output->lockbitsSegmentStartAddress = $lockbitsMemorySegment->startAddress;
+            $output->lockbitsSegmentStartAddress = $lockbitsMemorySegment->addressRange->startAddress;
         }
 
         return $output;

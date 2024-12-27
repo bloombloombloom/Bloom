@@ -68,8 +68,11 @@ class ToXmlService
     {
         $element = $document->createElement('address-space');
         $element->setAttribute('key', strtolower($addressSpace->key));
-        $element->setAttribute('start', $this->stringService->tryIntToHex($addressSpace->startAddress, 8));
-        $element->setAttribute('size', $addressSpace->size);
+        $element->setAttribute(
+            'start',
+            $this->stringService->tryIntToHex($addressSpace->addressRange->startAddress, 8)
+        );
+        $element->setAttribute('size', $addressSpace->size());
 
         if (!empty($addressSpace->unitSize)) {
             $element->setAttribute('unit-size', $addressSpace->unitSize);
@@ -92,8 +95,11 @@ class ToXmlService
         $element->setAttribute('key', strtolower($memorySegment->key));
         $element->setAttribute('name', $memorySegment->name);
         $element->setAttribute('type', $memorySegment->type->value ?? '');
-        $element->setAttribute('start', $this->stringService->tryIntToHex($memorySegment->startAddress, 8));
-        $element->setAttribute('size', $memorySegment->size);
+        $element->setAttribute(
+            'start',
+            $this->stringService->tryIntToHex($memorySegment->addressRange->startAddress, 8)
+        );
+        $element->setAttribute('size', $memorySegment->size());
 
         if (!empty($memorySegment->pageSize)) {
             $element->setAttribute('page-size', $memorySegment->pageSize);
@@ -117,8 +123,8 @@ class ToXmlService
         $element = $document->createElement('section');
         $element->setAttribute('key', strtolower($section->key));
         $element->setAttribute('name', $section->name);
-        $element->setAttribute('start', $this->stringService->tryIntToHex($section->startAddress, 8));
-        $element->setAttribute('size', $section->size);
+        $element->setAttribute('start', $this->stringService->tryIntToHex($section->addressRange->startAddress, 8));
+        $element->setAttribute('size', $section->size());
 
         foreach ($section->subSections as $section) {
             $element->append($this->memorySegmentSectionToXml($section, $document));

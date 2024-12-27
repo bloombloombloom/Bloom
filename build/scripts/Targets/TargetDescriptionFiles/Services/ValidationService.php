@@ -266,21 +266,21 @@ class ValidationService
             $failures = array_merge($failures, $this->validateKey($addressSpace->key));
         }
 
-        if ($addressSpace->startAddress === null) {
-            $failures[] = 'Missing start address';
+        if ($addressSpace->addressRange === null) {
+            $failures[] = 'Missing address range';
 
-        } elseif ($addressSpace->startAddress > 0xFFFFFFFF) {
+        } elseif ($addressSpace->addressRange->startAddress > 0xFFFFFFFF) {
             $failures[] = 'Start address exceeds 32-bit unsigned integer';
         }
 
-        if ($addressSpace->size === null) {
+        if ($addressSpace->size() === null) {
             $failures[] = 'Missing size';
 
-        } elseif ($addressSpace->size > 0xFFFFFFFF) {
+        } elseif ($addressSpace->size() > 0xFFFFFFFF) {
             $failures[] = 'Size exceeds 32-bit unsigned integer';
 
-        } elseif ($addressSpace->size < 1) {
-            $failures[] = 'Invalid size (' . $addressSpace->size . ')';
+        } elseif ($addressSpace->size() < 1) {
+            $failures[] = 'Invalid size (' . $addressSpace->size() . ')';
         }
 
         if (empty($addressSpace->memorySegments)) {
@@ -309,9 +309,9 @@ class ValidationService
         }
 
         $totalSegmentSize = $addressSpace->totalSegmentSize();
-        if ($totalSegmentSize > $addressSpace->size) {
+        if ($totalSegmentSize > $addressSpace->size()) {
             $failures[] = 'Total size of all contained segments (' . $totalSegmentSize . ' bytes) exceeds the total'
-                . ' size of the address space (' . $addressSpace->size . ' bytes)';
+                . ' size of the address space (' . $addressSpace->size() . ' bytes)';
         }
 
         return array_map(
@@ -340,21 +340,21 @@ class ValidationService
             $failures[] = 'Missing/invalid type';
         }
 
-        if ($segment->startAddress === null) {
-            $failures[] = 'Missing start address';
+        if ($segment->addressRange === null) {
+            $failures[] = 'Missing address range';
 
-        } elseif ($segment->startAddress > 0xFFFFFFFF) {
+        } elseif ($segment->addressRange->startAddress > 0xFFFFFFFF) {
             $failures[] = 'Start address exceeds 32-bit unsigned integer';
         }
 
-        if ($segment->size === null) {
+        if ($segment->size() === null) {
             $failures[] = 'Missing size';
 
-        } elseif ($segment->size > 0xFFFFFFFF) {
+        } elseif ($segment->size() > 0xFFFFFFFF) {
             $failures[] = 'Size exceeds 32-bit unsigned integer';
 
-        } elseif ($segment->size < 1) {
-            $failures[] = 'Invalid size (' . $segment->size . ')';
+        } elseif ($segment->size() < 1) {
+            $failures[] = 'Invalid size (' . $segment->size() . ')';
         }
 
         if ($segment->executable === null) {
@@ -383,9 +383,9 @@ class ValidationService
         }
 
         $totalSectionSize = $segment->totalSectionSize();
-        if ($totalSectionSize > $segment->size) {
+        if ($totalSectionSize > $segment->size()) {
             $failures[] = 'Total size of all contained sections (' . $totalSectionSize . ' bytes) exceeds the total'
-                . ' size of the memory segment (' . $segment->size . ' bytes)';
+                . ' size of the memory segment (' . $segment->size() . ' bytes)';
         }
 
         return array_map(
@@ -410,15 +410,15 @@ class ValidationService
             $failures[] = 'Missing name';
         }
 
-        if ($section->startAddress === null) {
-            $failures[] = 'Missing start address';
+        if ($section->addressRange === null) {
+            $failures[] = 'Missing address range';
         }
 
-        if ($section->size === null) {
+        if ($section->size() === null) {
             $failures[] = 'Missing size';
 
-        } elseif ($section->size < 1) {
-            $failures[] = 'Invalid size (' . $section->size . ')';
+        } elseif ($section->size() < 1) {
+            $failures[] = 'Invalid size (' . $section->size() . ')';
         }
 
         $processedSectionKeys = [];
