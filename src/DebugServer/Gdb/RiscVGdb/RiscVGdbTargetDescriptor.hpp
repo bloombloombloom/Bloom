@@ -13,8 +13,8 @@ namespace DebugServer::Gdb::RiscVGdb
     class RiscVGdbTargetDescriptor: public DebugServer::Gdb::TargetDescriptor
     {
     public:
+        const Targets::TargetAddressSpaceDescriptor& gprAddressSpaceDescriptor;
         const Targets::TargetAddressSpaceDescriptor& systemAddressSpaceDescriptor;
-        const Targets::TargetAddressSpaceDescriptor& cpuAddressSpaceDescriptor;
 
         const Targets::TargetMemorySegmentDescriptor& programMemorySegmentDescriptor;
         const Targets::TargetMemorySegmentDescriptor& gpRegistersMemorySegmentDescriptor;

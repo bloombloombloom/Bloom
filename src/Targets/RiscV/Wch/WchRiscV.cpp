@@ -129,12 +129,6 @@ namespace Targets::RiscV::Wch
             descriptor.breakpointResources.reservedHardwareBreakpoints = 1;
         }
 
-        // Copy the RISC-V CPU register address space and peripheral descriptor
-        descriptor.addressSpaceDescriptorsByKey.emplace(
-            this->cpuRegisterAddressSpaceDescriptor.key,
-            this->cpuRegisterAddressSpaceDescriptor.clone()
-        );
-
         descriptor.peripheralDescriptorsByKey.emplace(
             this->cpuPeripheralDescriptor.key,
             this->cpuPeripheralDescriptor.clone()
@@ -457,7 +451,7 @@ namespace Targets::RiscV::Wch
                 )
             );
 
-            this->writeRegister(gpioPadDescriptor.configRegisterDescriptor, configRegisterValue.data());
+            this->writeRegister(configRegisterValue);
         }
 
         if (state.direction == TargetGpioPadState::DataDirection::OUTPUT) {
@@ -468,7 +462,7 @@ namespace Targets::RiscV::Wch
                     ? 0x01
                     : 0x00
             );
-            this->writeRegister(gpioPadDescriptor.outputDataRegisterDescriptor, outDataRegisterValue.data());
+            this->writeRegister(outDataRegisterValue);
         }
     }
 
@@ -663,7 +657,7 @@ namespace Targets::RiscV::Wch
         }
 
         statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, true);
-        this->writeRegister(this->flashStatusRegisterDescriptor, statusRegister.data());
+        this->writeRegister(statusRegister);
 
         this->reset();
     }
@@ -679,7 +673,7 @@ namespace Targets::RiscV::Wch
         }
 
         statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, false);
-        this->writeRegister(this->flashStatusRegisterDescriptor, statusRegister.data());
+        this->writeRegister(statusRegister);
 
         this->reset();
     }

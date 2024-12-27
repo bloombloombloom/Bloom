@@ -88,23 +88,9 @@ namespace Targets::RiscV
 
         DebugToolDrivers::TargetInterfaces::RiscV::RiscVDebugInterface* riscVDebugInterface = nullptr;
 
-        /*
-         * On RISC-V targets, CPU registers are typically only accessible via the debug module (we can't access them
-         * via the system address space). So we use abstract commands to access these registers. This means we have to
-         * address these registers via their register numbers, as defined in the RISC-V debug spec.
-         *
-         * We effectively treat register numbers as a separate address space, with an addressable unit size of 4 bytes.
-         * The `cpuRegisterAddressSpaceDescriptor` member holds the descriptor for this address space.
-         *
-         * TODO: review this. This address space is specific to the RISC-V debug spec, but some debug tools may
-         *       implement their own debug translator in firmware, and then provide a higher-level API to access the
-         *       same registers. In that case, this address space may not be relevant. This may need to be moved.
-         *       ATM all RISC-V debug tools supported by Bloom provide a DTM interface, so we use our own debug
-         *       translator driver and this address space is, in fact, relevant. I will deal with this when it
-         *       becomes a problem.
-         */
-        TargetAddressSpaceDescriptor cpuRegisterAddressSpaceDescriptor;
+        TargetAddressSpaceDescriptor csrAddressSpaceDescriptor;
         const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor;
+        TargetAddressSpaceDescriptor gprAddressSpaceDescriptor;
         const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor;
 
         TargetPeripheralDescriptor cpuPeripheralDescriptor;
@@ -122,6 +108,7 @@ namespace Targets::RiscV
 
         TargetMemoryBuffer readRegister(const TargetRegisterDescriptor& descriptor);
         DynamicRegisterValue readRegisterDynamicValue(const TargetRegisterDescriptor& descriptor);
+        void writeRegister(const DynamicRegisterValue& dynamicRegister);
         void writeRegister(const TargetRegisterDescriptor& descriptor, TargetMemoryBufferSpan value);
         void writeRegister(const TargetRegisterDescriptor& descriptor, std::uint64_t value);
 
@@ -139,10 +126,10 @@ namespace Targets::RiscV
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor
         );
 
-        static TargetAddressSpaceDescriptor generateCpuRegisterAddressSpaceDescriptor();
         static TargetPeripheralDescriptor generateCpuPeripheralDescriptor(
             const IsaDescriptor& isaDescriptor,
-            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetAddressSpaceDescriptor& csrAddressSpaceDescriptor,
+            const TargetAddressSpaceDescriptor& gprAddressSpaceDescriptor,
             const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
             const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
         );

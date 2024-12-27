@@ -6,8 +6,24 @@ namespace Targets::RiscV
         : Targets::TargetDescription::TargetDescriptionFile(xmlFilePath)
     {}
 
+    const TargetDescription::AddressSpace& TargetDescriptionFile::getCsrAddressSpace() const {
+        return this->getAddressSpace("csr");
+    }
+
+    const TargetDescription::AddressSpace& TargetDescriptionFile::getGprAddressSpace() const {
+        return this->getAddressSpace("gpr");
+    }
+
     const TargetDescription::AddressSpace& TargetDescriptionFile::getSystemAddressSpace() const {
         return this->getAddressSpace("system");
+    }
+
+    TargetAddressSpaceDescriptor TargetDescriptionFile::getCsrAddressSpaceDescriptor() const {
+        return this->targetAddressSpaceDescriptorFromAddressSpace(this->getCsrAddressSpace());
+    }
+
+    TargetAddressSpaceDescriptor TargetDescriptionFile::getGprAddressSpaceDescriptor() const {
+        return this->targetAddressSpaceDescriptorFromAddressSpace(this->getGprAddressSpace());
     }
 
     TargetAddressSpaceDescriptor TargetDescriptionFile::getSystemAddressSpaceDescriptor() const {

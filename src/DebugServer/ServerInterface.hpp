@@ -4,9 +4,6 @@
 
 namespace DebugServer
 {
-    /**
-     * Every debug server must implement this interface.
-     */
     class ServerInterface
     {
     public:

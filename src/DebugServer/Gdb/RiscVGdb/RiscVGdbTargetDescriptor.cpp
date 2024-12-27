@@ -10,10 +10,10 @@ namespace DebugServer::Gdb::RiscVGdb
     using Exceptions::Exception;
 
     RiscVGdbTargetDescriptor::RiscVGdbTargetDescriptor(const Targets::TargetDescriptor& targetDescriptor)
-        : systemAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("system"))
-        , cpuAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("csr"))
+        : gprAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("gpr"))
+        , systemAddressSpaceDescriptor(targetDescriptor.getAddressSpaceDescriptor("system"))
         , programMemorySegmentDescriptor(this->systemAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
-        , gpRegistersMemorySegmentDescriptor(this->cpuAddressSpaceDescriptor.getMemorySegmentDescriptor("gp_registers"))
+        , gpRegistersMemorySegmentDescriptor(this->gprAddressSpaceDescriptor.getMemorySegmentDescriptor("gpr"))
         , cpuGpPeripheralDescriptor(targetDescriptor.getPeripheralDescriptor("cpu"))
         , cpuGpRegisterGroupDescriptor(this->cpuGpPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))
         , programCounterGdbRegisterId(static_cast<GdbRegisterId>(this->cpuGpRegisterGroupDescriptor.registerDescriptorsByKey.size()))

@@ -625,6 +625,7 @@ namespace Targets::TargetDescription
     MemorySegment TargetDescriptionFile::memorySegmentFromXml(const QDomElement& xmlElement) {
         static const auto typesByName = BiMap<std::string, TargetMemorySegmentType>{
             {"gp_registers", TargetMemorySegmentType::GENERAL_PURPOSE_REGISTERS},
+            {"registers", TargetMemorySegmentType::REGISTERS},
             {"aliased", TargetMemorySegmentType::ALIASED},
             {"eeprom", TargetMemorySegmentType::EEPROM},
             {"flash", TargetMemorySegmentType::FLASH},
