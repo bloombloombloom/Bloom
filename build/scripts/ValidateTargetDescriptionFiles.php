@@ -2,7 +2,6 @@
 
 use Targets\TargetDescriptionFiles\Services\DiscoveryService;
 use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
-use Targets\TargetDescriptionFiles\Services\ValidationService;
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 
 define('TDF_PATH', $argv[1] ?? null);
@@ -21,11 +20,12 @@ require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryServic
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/ValidationService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Services/ValidationService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/RiscV/Services/ValidationService.php';
 
 $xmlService = new XmlService();
 
-$validationService = new ValidationService();
 $avrValidationService = new \Targets\TargetDescriptionFiles\AVR8\Services\ValidationService();
+$rvValidationService = new \Targets\TargetDescriptionFiles\RiscV\Services\ValidationService();
 
 $xmlFiles = [];
 
@@ -53,7 +53,7 @@ foreach ($xmlFiles as $xmlFile) {
 
     $validationFailures = $targetDescriptionFile instanceof Avr8TargetDescriptionFile
         ? $avrValidationService->validateAvr8Tdf($targetDescriptionFile)
-        : $validationService->validateTdf($targetDescriptionFile);
+        : $rvValidationService->validateRiscVTdf($targetDescriptionFile);
 
     if (in_array($targetDescriptionFile->getConfigurationValue(), $processedTargetConfigValues)) {
         $validationFailures[] = 'Duplicate target configuration value ("'
