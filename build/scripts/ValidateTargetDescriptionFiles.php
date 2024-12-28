@@ -19,12 +19,12 @@ if (!file_exists(TDF_PATH)) {
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/ValidationService.php';
-require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Services/ValidationService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Avr8/Services/ValidationService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/RiscV/Services/ValidationService.php';
 
 $xmlService = new XmlService();
 
-$avrValidationService = new \Targets\TargetDescriptionFiles\AVR8\Services\ValidationService();
+$avrValidationService = new \Targets\TargetDescriptionFiles\Avr8\Services\ValidationService();
 $rvValidationService = new \Targets\TargetDescriptionFiles\RiscV\Services\ValidationService();
 
 $xmlFiles = [];

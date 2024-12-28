@@ -6,7 +6,7 @@ use DOMNode;
 use DOMElement;
 use DOMNodeList;
 use RuntimeException;
-use Targets\TargetDescriptionFiles\AVR8\Services\ValidationService;
+use Targets\TargetDescriptionFiles\Avr8\Services\ValidationService;
 use Targets\TargetDescriptionFiles\Pad;
 use Targets\TargetDescriptionFiles\Services\StringService;
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
@@ -34,7 +34,7 @@ use Targets\TargetDescriptionFiles\Variant;
 use Targets\TargetPhysicalInterface;
 
 require_once __DIR__ . '/StringService.php';
-require_once __DIR__ . '/../AVR8/Avr8TargetDescriptionFile.php';
+require_once __DIR__ . '/../Avr8/Avr8TargetDescriptionFile.php';
 
 /**
  * This AtdfService provides ATDF -> TDF conversion.

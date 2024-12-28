@@ -11,7 +11,7 @@ use Targets\TargetDescriptionFiles\TargetFamily;
 require_once __DIR__ . '/FromXmlService.php';
 require_once __DIR__ . '/ToXmlService.php';
 require_once __DIR__ . '/../../TargetDescriptionFile.php';
-require_once __DIR__ . '/../../AVR8/Avr8TargetDescriptionFile.php';
+require_once __DIR__ . '/../../Avr8/Avr8TargetDescriptionFile.php';
 
 require_once __DIR__ . '/Exceptions/XmlParsingException.php';
 

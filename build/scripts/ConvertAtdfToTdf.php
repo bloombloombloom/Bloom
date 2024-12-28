@@ -1,7 +1,7 @@
 <?php
 
 use Targets\TargetDescriptionFiles\Services\Xml\AtdfService;
-use Targets\TargetDescriptionFiles\AVR8\Services\ValidationService;
+use Targets\TargetDescriptionFiles\Avr8\Services\ValidationService;
 use Targets\TargetDescriptionFiles\Services\Xml\XmlService;
 
 /*
@@ -32,7 +32,7 @@ if (empty(ATDF_PATH)) {
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/AtdfService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/ValidationService.php';
-require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Services/ValidationService.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Avr8/Services/ValidationService.php';
 
 $atdfService = new AtdfService();
 $avrValidationService = new ValidationService();

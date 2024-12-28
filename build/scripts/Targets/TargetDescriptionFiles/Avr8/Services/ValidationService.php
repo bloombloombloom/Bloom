@@ -1,5 +1,5 @@
 <?php
-namespace Targets\TargetDescriptionFiles\AVR8\Services;
+namespace Targets\TargetDescriptionFiles\Avr8\Services;
 
 use Targets\TargetDescriptionFiles\Avr8\Avr8TargetDescriptionFile;
 use Targets\TargetDescriptionFiles\Avr8\AvrFamily;

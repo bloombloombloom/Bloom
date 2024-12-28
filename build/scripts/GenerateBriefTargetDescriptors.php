@@ -36,7 +36,7 @@ require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/DiscoveryServic
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/Services/Xml/XmlService.php';
 require_once __DIR__ . '/Targets/TargetDescriptionFiles/TargetFamily.php';
 
-require_once __DIR__ . '/Targets/TargetDescriptionFiles/AVR8/Avr8TargetDescriptionFile.php';
+require_once __DIR__ . '/Targets/TargetDescriptionFiles/Avr8/Avr8TargetDescriptionFile.php';
 
 $discoveryService = new DiscoveryService();
 $xmlService = new XmlService();
