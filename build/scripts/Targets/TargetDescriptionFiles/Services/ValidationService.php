@@ -736,12 +736,16 @@ class ValidationService
         }
 
         if ($enumValue === TargetPhysicalInterface::SDI) {
-            if (!$containsSignal('SWDIO')) {
-                $failures[] = 'Missing SWDIO signal';
-            }
+            $singleWireVariant = $containsSignal('SWIO');
 
-            if (!$containsSignal('SWCLK')) {
-                $failures[] = 'Missing SWCLK signal';
+            if (!$singleWireVariant) {
+                if (!$containsSignal('SWDIO')) {
+                    $failures[] = 'Missing SWDIO signal';
+                }
+
+                if (!$containsSignal('SWCLK')) {
+                    $failures[] = 'Missing SWCLK signal';
+                }
             }
         }
 
