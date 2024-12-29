@@ -69,6 +69,7 @@ namespace Usb
         virtual void setConfiguration(std::uint8_t configurationIndex);
 
         static std::optional<UsbDevice> tryDevice(std::uint16_t vendorId, std::uint16_t productId);
+        static bool devicePresent(std::uint16_t vendorId, std::uint16_t productId);
         static bool waitForDevice(std::uint16_t vendorId, std::uint16_t productId, std::chrono::milliseconds timeout);
 
     protected:

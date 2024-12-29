@@ -4,7 +4,6 @@
 
 #include "Protocols/WchLink/WchLinkInterface.hpp"
 
-#include "src/TargetController/Exceptions/DeviceNotFound.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -31,36 +30,23 @@ namespace DebugToolDrivers::Wch
     {}
 
     void WchLinkBase::init() {
-        using Exceptions::DeviceNotFound;
-
-        try {
-            UsbDevice::init();
-
-        } catch (const DeviceNotFound& exception) {
+        if (this->toolConfig.exitIapMode && !UsbDevice::devicePresent(this->vendorId, this->productId)) {
             auto iapDevice = Usb::UsbDevice::tryDevice(this->iapVendorId, this->iapProductId);
 
-            if (!iapDevice.has_value()) {
-                throw exception;
+            if (iapDevice.has_value()) {
+                Logger::warning("Found device in IAP mode - attempting exit operation");
+                this->exitIapMode(*iapDevice);
+
+                Logger::info("Waiting for device to re-enumerate...");
+                if (!Usb::UsbDevice::waitForDevice(this->vendorId, this->productId, std::chrono::seconds{8})) {
+                    throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+                }
+
+                Logger::info("Re-enumerated device found - IAP exit operation was successful");
             }
-
-            if (!this->toolConfig.exitIapMode) {
-                throw DeviceInitializationFailure{
-                    "Device found in IAP mode - Bloom can have the device exit this mode - see the 'exit_iap_mode' "
-                        "tool config parameter, for more"
-                };
-            }
-
-            Logger::warning("Found device in IAP mode - attempting exit operation");
-            this->exitIapMode(*iapDevice);
-
-            Logger::info("Waiting for device to re-enumerate...");
-            if (!Usb::UsbDevice::waitForDevice(this->vendorId, this->productId, std::chrono::seconds{8})) {
-                throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
-            }
-
-            Logger::info("Re-enumerated device found - IAP exit operation was successful");
-            UsbDevice::init();
         }
+
+        UsbDevice::init();
 
         this->detachKernelDriverFromInterface(this->wchLinkUsbInterfaceNumber);
 

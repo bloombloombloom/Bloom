@@ -49,7 +49,6 @@ namespace Usb
             };
         }
 
-        // For now, just use the first device found.
         this->libusbDevice.swap(devices.front());
         ::libusb_device_handle* deviceHandle = nullptr;
 
@@ -118,6 +117,10 @@ namespace Usb
         }
 
         return device;
+    }
+
+    bool UsbDevice::devicePresent(std::uint16_t vendorId, std::uint16_t productId) {
+        return !UsbDevice::findMatchingDevices(vendorId, productId).empty();
     }
 
     bool UsbDevice::waitForDevice(std::uint16_t vendorId, std::uint16_t productId, std::chrono::milliseconds timeout) {
