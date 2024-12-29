@@ -222,6 +222,10 @@
                 <signal name="CH7" pad-key="pa7"/>
                 <signal name="CH8" pad-key="pb0"/>
                 <signal name="CH9" pad-key="pb1"/>
+                <signal name="CH10" pad-key="pc0"/>
+                <signal name="CH11" pad-key="pc1"/>
+                <signal name="CH12" pad-key="pc2"/>
+                <signal name="CH13" pad-key="pc3"/>
             </signals>
         </peripheral>
         <peripheral key="tkey1" name="TKEY1" module-key="tkey">
@@ -430,8 +434,8 @@
                     <bit-field key="pdds" name="PDDS" description="Power-Down Deep Sleep Mode" mask="0x00000002" access="RW"/>
                 </register>
                 <register key="csr" name="CSR" description="Power Control/Status" offset="0x04" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="flash_ack" name="FLASH_ACK" description="FLASH Status" mask="0x00000200" access="RW"/>
-                    <bit-field key="pvd0" name="PVD0" description="PVD Output Status" mask="0x00000004" access="RW"/>
+                    <bit-field key="flash_ack" name="FLASH_ACK" description="FLASH Status" mask="0x00000200" access="R"/>
+                    <bit-field key="pvd0" name="PVD0" description="PVD Output Status" mask="0x00000004" access="R"/>
                 </register>
             </register-group>
         </module>
@@ -444,7 +448,7 @@
                     <bit-field key="hsion" name="HSION" description="Internal High-Speed Clock Enable" mask="0x00000001" access="RW"/>
                 </register>
                 <register key="cfgr0" name="CFGR0" description="Clock Configuration 0" offset="0x04" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="mco" name="MCO" description="MCO Pin Clock Output Control" mask="0x03000000" access="RW"/>
+                    <bit-field key="mco" name="MCO" description="MCO Pin Clock Output Control" mask="0x07000000" access="RW"/>
                     <bit-field key="hpre" name="HPRE" description="HB Clock Prescale Control" mask="0x000000F0" access="RW"/>
                 </register>
                 <register key="apb2prstr" name="APB2PRSTR" description="PB2 Peripheral Reset" offset="0x0C" size="4" initial-value="0x00000000" access="RW">
@@ -2127,7 +2131,7 @@
                 </register>
             </register-group>
             <register-group key="afio" name="AFIO">
-                <register key="pcfr1" name="PCFR1" description="Port Remap 1" offset="0x04" size="4" initial-value="0x00000000" access="RW">
+                <register key="pcfr1" name="PCFR1" description="Remap 1" offset="0x04" size="4" initial-value="0x00000000" access="RW">
                     <bit-field key="sw_cfg" name="SW_CFG" description="SWD (SDI) Debug Interface Enable" mask="0x07000000" access="RW"/>
                     <bit-field key="pioc_rm" name="PIOC_RM" description="PIOC Remap" mask="0x00800000" access="RW"/>
                     <bit-field key="tim3_rm" name="TIM3_RM" description="TIM3 Remap" mask="0x00600000" access="RW"/>
@@ -2360,34 +2364,34 @@
                     <bit-field key="lt" name="LT" description="Threshold Value" mask="0x00000FFF" access="RW"/>
                 </register>
                 <register key="rsqr1" name="RSQR1" description="Regular Sequence 1" offset="0x2C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="l" name="L" mask="0x000F0000" access="RW"/>
-                    <bit-field key="sq16" name="SQ16" mask="0x0000F000" access="RW"/>
-                    <bit-field key="sq15" name="SQ15" mask="0x00000F00" access="RW"/>
-                    <bit-field key="sq14" name="SQ14" mask="0x000000F0" access="RW"/>
-                    <bit-field key="sq13" name="SQ13" mask="0x0000000F" access="RW"/>
+                    <bit-field key="l" name="L" mask="0x00F00000" access="RW"/>
+                    <bit-field key="sq16" name="SQ16" mask="0x000F8000" access="RW"/>
+                    <bit-field key="sq15" name="SQ15" mask="0x00007C00" access="RW"/>
+                    <bit-field key="sq14" name="SQ14" mask="0x000003E0" access="RW"/>
+                    <bit-field key="sq13" name="SQ13" mask="0x0000001F" access="RW"/>
                 </register>
                 <register key="rsqr2" name="RSQR2" description="Regular Sequence 2" offset="0x30" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="sq12" name="SQ12" mask="0x00F00000" access="RW"/>
-                    <bit-field key="sq11" name="SQ11" mask="0x000F0000" access="RW"/>
-                    <bit-field key="sq10" name="SQ10" mask="0x0000F000" access="RW"/>
-                    <bit-field key="sq9" name="SQ9" mask="0x00000F00" access="RW"/>
-                    <bit-field key="sq8" name="SQ8" mask="0x000000F0" access="RW"/>
-                    <bit-field key="sq7" name="SQ7" mask="0x0000000F" access="RW"/>
+                    <bit-field key="sq12" name="SQ12" mask="0x3E000000" access="RW"/>
+                    <bit-field key="sq11" name="SQ11" mask="0x01F00000" access="RW"/>
+                    <bit-field key="sq10" name="SQ10" mask="0x000F8000" access="RW"/>
+                    <bit-field key="sq9" name="SQ9" mask="0x00007C00" access="RW"/>
+                    <bit-field key="sq8" name="SQ8" mask="0x000003E0" access="RW"/>
+                    <bit-field key="sq7" name="SQ7" mask="0x0000001F" access="RW"/>
                 </register>
                 <register key="rsqr3" name="RSQR3" description="Regular Sequence 3" offset="0x34" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="sq6" name="SQ6" mask="0x00F00000" access="RW"/>
-                    <bit-field key="sq5" name="SQ5" mask="0x000F0000" access="RW"/>
-                    <bit-field key="sq4" name="SQ4" mask="0x0000F000" access="RW"/>
-                    <bit-field key="sq3" name="SQ3" mask="0x00000F00" access="RW"/>
-                    <bit-field key="sq2" name="SQ2" mask="0x000000F0" access="RW"/>
-                    <bit-field key="sq1" name="SQ1" mask="0x0000000F" access="RW"/>
+                    <bit-field key="sq6" name="SQ6" mask="0x3E000000" access="RW"/>
+                    <bit-field key="sq5" name="SQ5" mask="0x01F00000" access="RW"/>
+                    <bit-field key="sq4" name="SQ4" mask="0x000F8000" access="RW"/>
+                    <bit-field key="sq3" name="SQ3" mask="0x00007C00" access="RW"/>
+                    <bit-field key="sq2" name="SQ2" mask="0x000003E0" access="RW"/>
+                    <bit-field key="sq1" name="SQ1" mask="0x0000001F" access="RW"/>
                 </register>
                 <register key="isqr" name="ISQR" description="Injected Sequence" offset="0x38" size="4" initial-value="0x00000000" access="RW">
                     <bit-field key="jl" name="JL" mask="0x00300000" access="RW"/>
-                    <bit-field key="jsq4" name="JSQ4" mask="0x0000F000" access="RW"/>
-                    <bit-field key="jsq3" name="JSQ3" mask="0x00000F00" access="RW"/>
-                    <bit-field key="jsq2" name="JSQ2" mask="0x000000F0" access="RW"/>
-                    <bit-field key="jsq1" name="JSQ1" mask="0x0000000F" access="RW"/>
+                    <bit-field key="jsq4" name="JSQ4" mask="0x000F8000" access="RW"/>
+                    <bit-field key="jsq3" name="JSQ3" mask="0x00007C00" access="RW"/>
+                    <bit-field key="jsq2" name="JSQ2" mask="0x000003E0" access="RW"/>
+                    <bit-field key="jsq1" name="JSQ1" mask="0x0000001F" access="RW"/>
                 </register>
                 <register key="idatar1" name="IDATAR1" description="Injected Data 1" offset="0x3C" size="4" initial-value="0x00000000" access="R">
                     <bit-field key="jdata" name="JDATA" mask="0x0000FFFF" access="R"/>
