@@ -52,6 +52,12 @@ namespace Targets::RiscV::Wch
             )
         )
     {
+        if (this->targetConfig.physicalInterface != TargetPhysicalInterface::SDI) {
+            throw Exceptions::InvalidConfig{
+                "Invalid physical interface selection - WCH RISC-V targets only support the SDI interface"
+            };
+        }
+
         if (
             this->targetConfig.programSegmentKey.has_value()
             && *(this->targetConfig.programSegmentKey) != this->bootProgramSegmentDescriptor.key
@@ -507,7 +513,7 @@ namespace Targets::RiscV::Wch
 
         try {
             if (arguments[0] == "program_mode") {
-                const auto &actualAliasedSegment = this->resolveAliasedMemorySegment();
+                const auto& actualAliasedSegment = this->resolveAliasedMemorySegment();
 
                 if (arguments.size() == 1) {
                     response.output = "Program mode: \"" + StringService::applyTerminalColor(

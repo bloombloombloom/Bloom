@@ -264,6 +264,8 @@ list(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/ATMEGA3290PA.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/ATMEGA328PB.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/ATMEGA809.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/RISC-V/WCH/CH32X035.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/RISC-V/WCH/CH32V003.xml
 )
 
 # Because the TDF_FILES_LIST is only used to specify dependencies for some custom commands, there is nothing enforcing

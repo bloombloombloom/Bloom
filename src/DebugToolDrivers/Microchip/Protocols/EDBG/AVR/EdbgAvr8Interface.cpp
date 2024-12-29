@@ -96,7 +96,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         const Targets::Microchip::Avr8::Avr8TargetConfig& targetConfig
     )
         : edbgInterface(edbgInterface)
-        , session(EdbgAvr8Session(targetDescriptionFile, targetConfig))
+        , session(EdbgAvr8Session{targetDescriptionFile, targetConfig})
     {}
 
     void EdbgAvr8Interface::init() {

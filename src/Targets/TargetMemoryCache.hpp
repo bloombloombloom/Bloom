@@ -16,6 +16,8 @@ namespace Targets
         /**
          * Fetches data from the cache.
          *
+         * TODO: Change return type to TargetMemoryBufferSpan
+         *
          * @param startAddress
          * @param bytes
          *
