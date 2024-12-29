@@ -12,6 +12,8 @@
 #include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetAddressSpaceDescriptor.hpp"
+#include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/ProgramBreakpointRegistry.hpp"
 
 #include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
@@ -89,6 +91,7 @@ namespace DebugToolDrivers::Wch
         Protocols::WchLink::WchLinkInterface& wchLinkInterface;
         DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator riscVTranslator;
 
+        const Targets::TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
         const Targets::TargetMemorySegmentDescriptor& mainProgramSegmentDescriptor;
 
         /**

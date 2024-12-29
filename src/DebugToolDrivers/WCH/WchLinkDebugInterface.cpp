@@ -57,9 +57,8 @@ namespace DebugToolDrivers::Wch
                 this->targetConfig
             }
         )
-        , mainProgramSegmentDescriptor(
-            this->targetDescriptionFile.getSystemAddressSpaceDescriptor().getMemorySegmentDescriptor("main_program")
-        )
+        , sysAddressSpaceDescriptor(this->targetDescriptionFile.getSystemAddressSpaceDescriptor())
+        , mainProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
         , flashProgramOpcodes(
             WchLinkDebugInterface::getFlashProgramOpcodes(
                 this->targetDescriptionFile.getProperty("wch_link_interface", "programming_opcode_key").value
