@@ -403,7 +403,7 @@ namespace TargetController
                 }
             },
             {
-                "wch_link_e",
+                "wch_linke",
                 [this] {
                     return std::make_unique<WchLinkE>(this->environmentConfig.debugToolConfig);
                 }
