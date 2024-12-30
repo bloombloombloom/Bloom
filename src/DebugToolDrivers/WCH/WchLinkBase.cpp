@@ -1,6 +1,7 @@
 #include "WchLinkBase.hpp"
 
 #include <chrono>
+#include <array>
 
 #include "Protocols/WchLink/WchLinkInterface.hpp"
 

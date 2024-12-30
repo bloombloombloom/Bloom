@@ -74,15 +74,6 @@
 
 namespace DebugServer::Gdb
 {
-    /**
-     * The GdbRspDebugServer is an implementation of the GDB Remote Serial Protocol.
-     *
-     * This server employs TCP/IP sockets to interface with GDB clients. The listening address and port can be
-     * configured in the user's project config file.
-     *
-     * See https://sourceware.org/gdb/onlinedocs/gdb/Remote-Protocol.html for more info on the GDB Remote Serial
-     * Protocol.
-     */
     template<
         typename GdbTargetDescriptorType,
         typename DebugSessionType,
@@ -288,10 +279,10 @@ namespace DebugServer::Gdb
                 Logger::debug("GDB RSP interrupted");
                 return;
 
-            } catch (const ::Exceptions::FatalErrorException& exception) {
+            } catch (const ::Exceptions::FatalErrorException&) {
                 Logger::error("Fatal error occurred - closing connection");
                 this->endDebugSession();
-                throw exception;
+                throw;
             }
         }
 
@@ -567,9 +558,9 @@ namespace DebugServer::Gdb
                 Logger::debug("GDB RSP interrupted");
                 return;
 
-            } catch (const ::Exceptions::FatalErrorException& exception) {
+            } catch (const ::Exceptions::FatalErrorException&) {
                 this->endDebugSession();
-                throw exception;
+                throw;
 
             } catch (const ::Exceptions::Exception& exception) {
                 Logger::error("Failed to handle target execution state changed event - " + exception.getMessage());

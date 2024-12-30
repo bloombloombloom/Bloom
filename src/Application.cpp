@@ -37,14 +37,12 @@ int Application::run() {
             const auto commandHandlerIt = commandHandlersByCommandName.find(firstArg);
 
             if (commandHandlerIt != commandHandlersByCommandName.end()) {
-                // User has passed an argument that maps to a command callback - invoke the callback and shutdown
                 const auto returnValue = commandHandlerIt->second();
 
                 this->shutdown();
                 return returnValue;
             }
 
-            // If the first argument didn't map to a command, we assume it's an environment name
             this->selectedEnvironmentName = std::move(firstArg);
         }
 
