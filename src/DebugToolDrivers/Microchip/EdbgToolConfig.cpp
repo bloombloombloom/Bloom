@@ -10,6 +10,14 @@ namespace DebugToolDrivers::Microchip
     {
         const auto& toolNode = toolConfig.toolNode;
 
+        if (toolNode["exit_bootloader_mode"]) {
+            this->exitBootloaderMode = toolNode["exit_bootloader_mode"].as<bool>(this->exitBootloaderMode);
+        }
+
+        if (toolNode["enable_edbg_mode"]) {
+            this->enableEdbgMode = toolNode["enable_edbg_mode"].as<bool>(this->enableEdbgMode);
+        }
+
         const auto edbgDriverNode = toolNode["edbg_driver"];
         if (edbgDriverNode) {
             if (edbgDriverNode["cmsis_command_delay"]) {

@@ -1,7 +1,8 @@
 #include "MplabPickit4.hpp"
 
-#include "src/TargetController/Exceptions/DeviceNotFound.hpp"
-#include "src/Services/PathService.hpp"
+#include "src/Logger/Logger.hpp"
+
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 namespace DebugToolDrivers::Microchip
 {
@@ -15,30 +16,59 @@ namespace DebugToolDrivers::Microchip
     {}
 
     void MplabPickit4::init() {
-        using Exceptions::DeviceNotFound;
+        using Exceptions::DeviceInitializationFailure;
 
-        try {
-            EdbgDevice::init();
-
-        } catch (const DeviceNotFound& exception) {
-            /*
-             * The MPLAB PICkit 4 could be connected but not in AVR mode - if this is the case, inform the user and
-             * direct them to the AVR mode article.
-             */
-            const auto nonEdbgDevices = this->findMatchingDevices(
-                MplabPickit4::NON_EDBG_USB_VENDOR_ID,
-                MplabPickit4::NON_EDBG_USB_PRODUCT_ID
+        if (!UsbDevice::devicePresent(this->vendorId, this->productId)) {
+            auto blDevice = Usb::UsbDevice::tryDevice(
+                MplabPickit4::PIC_MODE_USB_VENDOR_ID,
+                MplabPickit4::BL_MODE_USB_PRODUCT_ID
             );
 
-            if (!nonEdbgDevices.empty()) {
-                throw DeviceNotFound{
-                    "The connected MPLAB PICkit 4 device is not in \"AVR mode\". Please follow the instructions at "
-                        + Services::PathService::homeDomainName() + "/docs/avr-mode"
-                };
+            if (blDevice.has_value()) {
+                if (!this->toolConfig.exitBootloaderMode) {
+                    throw DeviceInitializationFailure{"Device is currently in bootloader mode"};
+                }
+
+                Logger::warning("Found device in bootloader mode - attempting exit operation");
+                this->exitBootloaderMode(*blDevice);
+
+                Logger::info("Waiting for device to re-enumerate...");
+                if (
+                    !Usb::UsbDevice::waitForDevice(
+                        MplabPickit4::PIC_MODE_USB_VENDOR_ID,
+                        MplabPickit4::PIC_MODE_USB_PRODUCT_ID,
+                        std::chrono::seconds{8}
+                    )
+                ) {
+                    throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+                }
+
+                Logger::info("Re-enumerated device found - exit operation was successful");
             }
 
-            throw exception;
+            auto picDevice = Usb::UsbDevice::tryDevice(
+                MplabPickit4::PIC_MODE_USB_VENDOR_ID,
+                MplabPickit4::PIC_MODE_USB_PRODUCT_ID
+            );
+
+            if (picDevice.has_value()) {
+                if (!this->toolConfig.enableEdbgMode) {
+                    throw DeviceInitializationFailure{"Device is currently in PIC mode"};
+                }
+
+                Logger::warning("Found device in PIC mode - attempting to switch to EDBG (AVR) mode");
+                this->enableEdbgMode(*picDevice);
+
+                Logger::info("Waiting for device to re-enumerate...");
+                if (!Usb::UsbDevice::waitForDevice(this->vendorId, this->productId, std::chrono::seconds{8})) {
+                    throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+                }
+
+                Logger::info("Re-enumerated device found - mode switch operation was successful");
+            }
         }
+
+        EdbgDevice::init();
     }
 
     void MplabPickit4::configureAvr8Interface() {

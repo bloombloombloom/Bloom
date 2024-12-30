@@ -1,8 +1,13 @@
 #include "EdbgDevice.hpp"
 
+#include <array>
+#include <thread>
+#include <chrono>
+
 #include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
 #include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
 #include "src/DebugToolDrivers/Microchip/Protocols/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/USB/UsbInterface.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
@@ -193,5 +198,32 @@ namespace DebugToolDrivers::Microchip
         }
 
         this->sessionStarted = false;
+    }
+
+    void EdbgDevice::exitBootloaderMode(UsbDevice& device) const {
+        static constexpr auto INTERFACE_NUMBER = std::uint8_t{0};
+        static constexpr auto COMMAND_ENDPOINT_ADDRESS = std::uint8_t{0x02};
+
+        auto interface = Usb::UsbInterface{INTERFACE_NUMBER, device.libusbDeviceHandle.get()};
+        interface.init();
+
+        static constexpr auto EXIT_BL_MODE_COMMAND = std::to_array<unsigned char>({0xE6});
+
+        interface.writeBulk(COMMAND_ENDPOINT_ADDRESS, EXIT_BL_MODE_COMMAND, 64);
+    }
+
+    void EdbgDevice::enableEdbgMode(UsbDevice& device) const {
+        static constexpr auto INTERFACE_NUMBER = std::uint8_t{0};
+        static constexpr auto COMMAND_ENDPOINT_ADDRESS = std::uint8_t{0x02};
+
+        auto interface = Usb::UsbInterface{INTERFACE_NUMBER, device.libusbDeviceHandle.get()};
+        interface.init();
+
+        static constexpr auto AVR_MODE_COMMAND = std::to_array<unsigned char>({0xF0, 0x01});
+        static constexpr auto RESET_COMMAND = std::to_array<unsigned char>({0xED});
+
+        interface.writeBulk(COMMAND_ENDPOINT_ADDRESS, AVR_MODE_COMMAND, 64);
+        std::this_thread::sleep_for(std::chrono::milliseconds{250});
+        interface.writeBulk(COMMAND_ENDPOINT_ADDRESS, RESET_COMMAND, 64);
     }
 }

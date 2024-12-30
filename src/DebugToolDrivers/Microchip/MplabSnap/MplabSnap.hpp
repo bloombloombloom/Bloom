@@ -28,9 +28,9 @@ namespace DebugToolDrivers::Microchip
         static const inline std::uint16_t USB_PRODUCT_ID = 0x2180;
         static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
-        static const inline std::uint16_t NON_EDBG_USB_VENDOR_ID = 0x04d8;
-        static const inline std::uint16_t NON_EDBG_USB_PRODUCT_ID = 0x9018;
-        static const inline std::uint16_t NON_EDBG_USB_PRODUCT_ID_ALTERNATIVE = 0x9017;
+        static const inline std::uint16_t PIC_MODE_USB_VENDOR_ID = 0x04d8;
+        static const inline std::uint16_t PIC_MODE_USB_PRODUCT_ID = 0x9018;
+        static const inline std::uint16_t BL_MODE_USB_PRODUCT_ID = 0x9019;
 
         MplabSnap(const DebugToolConfig& debugToolConfig);
 

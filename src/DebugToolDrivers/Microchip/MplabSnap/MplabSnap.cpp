@@ -1,7 +1,8 @@
 #include "MplabSnap.hpp"
 
-#include "src/TargetController/Exceptions/DeviceNotFound.hpp"
-#include "src/Services/PathService.hpp"
+#include "src/Logger/Logger.hpp"
+
+#include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
 namespace DebugToolDrivers::Microchip
 {
@@ -15,38 +16,59 @@ namespace DebugToolDrivers::Microchip
     {}
 
     void MplabSnap::init() {
-        using Exceptions::DeviceNotFound;
+        using Exceptions::DeviceInitializationFailure;
 
-        try {
-            EdbgDevice::init();
-
-        } catch (const DeviceNotFound& exception) {
-            /*
-             * The MPLAB Snap could be connected but not in AVR mode - if this is the case, inform the user and direct
-             * them to the AVR mode article.
-             */
-            auto nonEdbgDevices = this->findMatchingDevices(
-                MplabSnap::NON_EDBG_USB_VENDOR_ID,
-                MplabSnap::NON_EDBG_USB_PRODUCT_ID
+        if (!UsbDevice::devicePresent(this->vendorId, this->productId)) {
+            auto blDevice = Usb::UsbDevice::tryDevice(
+                MplabSnap::PIC_MODE_USB_VENDOR_ID,
+                MplabSnap::BL_MODE_USB_PRODUCT_ID
             );
 
-            if (nonEdbgDevices.empty()) {
-                // The MPLAB Snap sometimes uses another product ID when not in AVR mode.
-                nonEdbgDevices = this->findMatchingDevices(
-                    MplabSnap::NON_EDBG_USB_VENDOR_ID,
-                    MplabSnap::NON_EDBG_USB_PRODUCT_ID_ALTERNATIVE
-                );
+            if (blDevice.has_value()) {
+                if (!this->toolConfig.exitBootloaderMode) {
+                    throw DeviceInitializationFailure{"Device is currently in bootloader mode"};
+                }
+
+                Logger::warning("Found device in bootloader mode - attempting exit operation");
+                this->exitBootloaderMode(*blDevice);
+
+                Logger::info("Waiting for device to re-enumerate...");
+                if (
+                    !Usb::UsbDevice::waitForDevice(
+                        MplabSnap::PIC_MODE_USB_VENDOR_ID,
+                        MplabSnap::PIC_MODE_USB_PRODUCT_ID,
+                        std::chrono::seconds{8}
+                    )
+                ) {
+                    throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+                }
+
+                Logger::info("Re-enumerated device found - exit operation was successful");
             }
 
-            if (!nonEdbgDevices.empty()) {
-                throw DeviceNotFound{
-                    "The connected MPLAB Snap device is not in \"AVR mode\". Please follow the instructions at "
-                        + Services::PathService::homeDomainName() + "/docs/avr-mode"
-                };
-            }
+            auto picDevice = Usb::UsbDevice::tryDevice(
+                MplabSnap::PIC_MODE_USB_VENDOR_ID,
+                MplabSnap::PIC_MODE_USB_PRODUCT_ID
+            );
 
-            throw exception;
+            if (picDevice.has_value()) {
+                if (!this->toolConfig.enableEdbgMode) {
+                    throw DeviceInitializationFailure{"Device is currently in PIC mode"};
+                }
+
+                Logger::warning("Found device in PIC mode - attempting to switch to EDBG (AVR) mode");
+                this->enableEdbgMode(*picDevice);
+
+                Logger::info("Waiting for device to re-enumerate...");
+                if (!Usb::UsbDevice::waitForDevice(this->vendorId, this->productId, std::chrono::seconds{8})) {
+                    throw DeviceInitializationFailure{"Timeout exceeded whilst waiting for device to re-enumerate"};
+                }
+
+                Logger::info("Re-enumerated device found - mode switch operation was successful");
+            }
         }
+
+        EdbgDevice::init();
     }
 
     void MplabSnap::configureAvr8Interface() {

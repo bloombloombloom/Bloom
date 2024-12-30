@@ -158,5 +158,8 @@ namespace DebugToolDrivers::Microchip
         virtual void configureAvr8Interface() {
             return;
         }
+
+        void exitBootloaderMode(Usb::UsbDevice& device) const;
+        void enableEdbgMode(Usb::UsbDevice& device) const;
     };
 }

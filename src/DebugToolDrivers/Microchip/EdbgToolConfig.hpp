@@ -14,6 +14,8 @@ namespace DebugToolDrivers::Microchip
     struct EdbgToolConfig: public DebugToolConfig
     {
     public:
+        bool exitBootloaderMode = true;
+        bool enableEdbgMode = true;
         std::optional<std::chrono::milliseconds> cmsisCommandDelay = std::nullopt;
 
         explicit EdbgToolConfig(const DebugToolConfig& toolConfig);
