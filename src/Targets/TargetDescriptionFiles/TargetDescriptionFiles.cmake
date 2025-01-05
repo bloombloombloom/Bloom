@@ -61,6 +61,9 @@ list(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY25.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY88.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY412.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY3224.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY3226.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/TINY/ATTINY3227.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/XMEGA/ATXMEGA192A3.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/XMEGA/ATXMEGA64B1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/XMEGA/ATXMEGA128C3.xml
