@@ -471,6 +471,14 @@ class ValidationService
             $failures[] = 'Offset exceeds 32-bit unsigned integer';
         }
 
+        if (
+            empty($registerGroup->registers)
+            && empty($registerGroup->subgroups)
+            && empty($registerGroup->subgroupReferences)
+        ) {
+            $failures[] = 'Empty register group';
+        }
+
         $processedChildKeys = [];
 
         foreach ($registerGroup->registers as $register) {
