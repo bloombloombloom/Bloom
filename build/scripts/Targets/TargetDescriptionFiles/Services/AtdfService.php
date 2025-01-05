@@ -268,6 +268,20 @@ class AtdfService
         return $elements;
     }
 
+    private function getImmediateChildElements(DOMElement $element, string $name): array
+    {
+        $output = [];
+        foreach ($element->childNodes as $childNode) {
+            if (!$childNode instanceof DOMElement || $childNode->nodeName !== $name) {
+                continue;
+            }
+
+            $output[] = $childNode;
+        }
+
+        return $output;
+    }
+
     private function getDeviceElementsFromXPath(string $expression, DOMDocument $document): DOMNodeList
     {
         return $this->getElementsFromXPath('devices/device[1]/' . $expression, $document);
@@ -787,8 +801,8 @@ class AtdfService
     {
         $attributes = $this->getNodeAttributesByName($element);
 
-        $modeElements = $element->getElementsByTagName('mode');
-        if ($modeElements->count() > 0) {
+        $modeElements = $this->getImmediateChildElements($element, 'mode');
+        if (!empty($modeElements)) {
             $parentGroup = new RegisterGroup(
                 isset($attributes['name']) ? strtolower($attributes['name']) : null,
                 $attributes['name'] ?? null,
