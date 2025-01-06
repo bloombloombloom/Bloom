@@ -328,8 +328,16 @@ class AtdfService
                 return AvrFamily::DD;
             }
 
+            if ($atdfFamilyName === 'avr du' || substr($atdfTargetName, 5, 2) === 'du') {
+                return AvrFamily::DU;
+            }
+
             if ($atdfFamilyName === 'avr ea' || substr($atdfTargetName, 5, 2) === 'ea') {
                 return AvrFamily::EA;
+            }
+
+            if ($atdfFamilyName === 'avr eb' || substr($atdfTargetName, 5, 2) === 'eb') {
+                return AvrFamily::EB;
             }
         }
 
@@ -1059,7 +1067,7 @@ class AtdfService
 
         return new Variant(
             str_replace(
-                '-',
+                ['-', '/'],
                 '_',
                 strtolower($attributes['ordercode'] ?? $attributes['name'] ?? '')
             ),

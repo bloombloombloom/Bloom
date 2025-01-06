@@ -143,9 +143,33 @@ list(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR128DB28.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR64DD32.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR16DD28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR16DU14.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR16DU20.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR16DU28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR16DU32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR32DU14.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR32DU20.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR32DU28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR32DU32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR64DU28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/D-SERIES/AVR64DU32.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR64EA28.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR64EA48.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR64EA32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EA28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EA32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EA48.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EB14.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EB20.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EB28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR16EB32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EA28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EA32.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EA48.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EB14.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EB20.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EB28.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/E-SERIES/AVR32EB32.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/AT90USB1287.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/ATMEGA406.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Targets/TargetDescriptionFiles/AVR8/MEGA/ATMEGA325P.xml

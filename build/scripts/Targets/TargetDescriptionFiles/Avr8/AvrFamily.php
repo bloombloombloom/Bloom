@@ -9,5 +9,7 @@ enum AvrFamily: string
     case DB = 'DB';
     case DA = 'DA';
     case DD = 'DD';
+    case DU = 'DU';
     case EA = 'EA';
+    case EB = 'EB';
 }

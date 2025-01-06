@@ -85,7 +85,14 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             }
         }
 
-        if (avrFamily == Family::DA || avrFamily == Family::DB || avrFamily == Family::DD || avrFamily == Family::EA) {
+        if (
+            avrFamily == Family::DA
+            || avrFamily == Family::DB
+            || avrFamily == Family::DD
+            || avrFamily == Family::DU
+            || avrFamily == Family::EA
+            || avrFamily == Family::EB
+        ) {
             switch (physicalInterface) {
                 case TargetPhysicalInterface::UPDI: {
                     return Avr8ConfigVariant::UPDI;

@@ -39,7 +39,9 @@ namespace Targets::Microchip::Avr8
             {"DA", Family::DA},
             {"DB", Family::DB},
             {"DD", Family::DD},
+            {"DU", Family::DU},
             {"EA", Family::EA},
+            {"EB", Family::EB},
         };
 
         const auto familyIt = targetFamiliesByName.find(this->getDeviceAttribute("avr-family"));

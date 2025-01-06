@@ -10,6 +10,8 @@ namespace Targets::Microchip::Avr8
         DA,
         DB,
         DD,
+        DU,
         EA,
+        EB,
     };
 }
