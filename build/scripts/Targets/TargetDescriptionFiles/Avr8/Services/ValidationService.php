@@ -156,10 +156,12 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
 
         $fuseRegisterGroup = $tdf->getFuseTargetRegisterGroup();
         if ($fuseRegisterGroup instanceof TargetRegisterGroup) {
-            // All fuse registers should be 1 byte in size
-            foreach ($tdf->getFuseTargetRegisterGroup()->registers as $fuseRegister) {
-                if ($fuseRegister->size != 1) {
-                    $failures[] = 'Fuse register ("' . $fuseRegister->key . '") is not 1 byte in size.';
+            // All fuse registers should be 1 byte in size, except for UPDI targets
+            if (!in_array(TargetPhysicalInterface::UPDI, $debugPhysicalInterfaces)) {
+                foreach ($tdf->getFuseTargetRegisterGroup()->registers as $fuseRegister) {
+                    if ($fuseRegister->size != 1) {
+                        $failures[] = 'Fuse register ("' . $fuseRegister->key . '") is not 1 byte in size.';
+                    }
                 }
             }
 
