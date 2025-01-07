@@ -120,6 +120,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         this->setParameter(
+            Avr8EdbgParameters::RUN_TIMERS_WHILST_STOPPED,
+            static_cast<std::uint8_t>(this->session.targetConfig.stopAllTimers ? 0 : 1)
+        );
+
+        this->setParameter(
             Avr8EdbgParameters::CONFIG_VARIANT,
             static_cast<std::uint8_t>(this->session.configVariant)
         );

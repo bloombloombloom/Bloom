@@ -15,6 +15,8 @@
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
+#include "Exceptions/TargetOperationFailure.hpp"
+
 #include "src/Exceptions/FatalErrorException.hpp"
 #include "src/Exceptions/InvalidConfig.hpp"
 
@@ -584,6 +586,18 @@ namespace TargetController
         } else {
             Logger::warning("Hardware breakpoints have been disabled");
         }
+
+        if (
+            this->targetState->executionState == TargetExecutionState::STOPPED
+            && this->environmentConfig.targetConfig.resumeOnStartup
+        ) {
+            try {
+                this->resumeTarget();
+
+            } catch (const Exceptions::TargetOperationFailure& exception) {
+                Logger::error("Failed to resume target execution on startup - error: " + exception.getMessage());
+            }
+        }
     }
 
     void TargetControllerComponent::releaseHardware() {
@@ -628,11 +642,11 @@ namespace TargetController
         TargetControllerComponent::notifier.notify();
     }
 
-    void TargetControllerComponent::refreshExecutionState(bool forceRefresh) {
+    void TargetControllerComponent::refreshExecutionState(bool forceUpdate) {
         auto newState = *(this->targetState);
         newState.executionState = this->target->getExecutionState();
 
-        if (!forceRefresh && newState.executionState == this->targetState->executionState) {
+        if (!forceUpdate && newState.executionState == this->targetState->executionState) {
             return;
         }
 

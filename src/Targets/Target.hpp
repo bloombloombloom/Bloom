@@ -53,8 +53,8 @@ namespace Targets
         virtual void setDebugTool(DebugTool* debugTool) = 0;
 
         /**
-         * This function should attempt to establish a connection with the target, and put it in a state where
-         * debugging can be performed.
+         * This function should attempt to establish a connection with the target, halt execution, and put it in a
+         * state where debugging can be performed.
          *
          * If an exception is thrown from this function, the TargetController will treat it as a fatal error, and thus
          * will shutdown, along with the rest of Bloom.

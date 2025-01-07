@@ -51,6 +51,8 @@ namespace Targets::RiscV
 
     void RiscV::activate() {
         this->riscVDebugInterface->activate();
+        this->stop();
+        this->reset();
     }
 
     void RiscV::deactivate() {

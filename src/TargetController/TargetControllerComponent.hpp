@@ -272,7 +272,7 @@ namespace TargetController
         void startAtomicSession();
         void endActiveAtomicSession();
 
-        void refreshExecutionState(bool forceRefresh = false);
+        void refreshExecutionState(bool forceUpdate = false);
         void updateTargetState(const Targets::TargetState& newState);
 
         void stopTarget();

@@ -209,20 +209,23 @@ namespace Targets::Microchip::Avr8
 
         this->activated = true;
 
-        /*
-         * Validate the target signature.
-         *
-         * The signature obtained from the device should match what we loaded from the target description file.
-         */
-        const auto targetSignature = this->avr8DebugInterface->getDeviceId();
+        if (this->targetConfig.signatureValidation) {
+            /*
+             * Validate the target signature.
+             *
+             * The signature obtained from the device should match what we loaded from the target description file.
+             */
+            const auto targetSignature = this->avr8DebugInterface->getDeviceId();
 
-        if (targetSignature != this->signature) {
-            throw Exception{
-                "Failed to validate connected target - target signature mismatch.\nThe target signature"
-                    " (\"" + targetSignature.toHex() + "\") does not match the AVR8 target description signature (\""
-                    + this->signature.toHex() + "\"). This will likely be due to an incorrect target name in the "
-                    + "configuration file (bloom.yaml)."
-            };
+            if (targetSignature != this->signature) {
+                throw Exception{
+                    "Failed to validate connected target - target signature mismatch.\nThe target signature"
+                        " (\"" + targetSignature.toHex() +
+                        "\") does not match the AVR8 target description signature (\""
+                        + this->signature.toHex() + "\"). This will likely be due to an incorrect target name in the "
+                        + "configuration file (bloom.yaml)."
+                };
+            }
         }
     }
 

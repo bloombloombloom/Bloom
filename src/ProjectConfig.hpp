@@ -53,6 +53,11 @@ struct TargetConfig
     Targets::TargetPhysicalInterface physicalInterface;
 
     /**
+     * Determines whether Bloom will resume target execution after activation.
+     */
+    bool resumeOnStartup = false;
+
+    /**
      * Determines whether Bloom will make use of the target's hardware breakpoint resources (if available).
      */
     bool hardwareBreakpoints = true;

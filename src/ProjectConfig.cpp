@@ -194,6 +194,10 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
 
     this->physicalInterface = physicalInterfaceIt->second;
 
+    if (targetNode["resume_on_startup"]) {
+        this->resumeOnStartup = targetNode["resume_on_startup"].as<bool>(this->resumeOnStartup);
+    }
+
     if (targetNode["variantName"]) {
         Logger::warning(
             "The 'variantName' target configuration parameter was removed in v2.0.0. Please use the "

@@ -217,7 +217,6 @@ namespace DebugServer::Gdb
                     );
 
                     this->targetControllerService.stopTargetExecution();
-                    this->targetControllerService.resetTarget();
                 }
 
                 const auto commandPacketVariant = this->waitForCommandPacket();
