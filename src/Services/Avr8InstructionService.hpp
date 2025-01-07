@@ -4,8 +4,8 @@
 
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
-#include "src/Targets/Microchip/AVR8/OpcodeDecoder/Instruction.hpp"
-#include "src/Targets/Microchip/AVR8/OpcodeDecoder/Decoder.hpp"
+#include "src/Targets/Microchip/Avr8/OpcodeDecoder/Instruction.hpp"
+#include "src/Targets/Microchip/Avr8/OpcodeDecoder/Decoder.hpp"
 
 namespace Services
 {

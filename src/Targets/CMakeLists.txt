@@ -17,11 +17,11 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetPhysicalInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/DynamicRegisterValue.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetDescription/TargetDescriptionFile.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/Avr8.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/Avr8TargetConfig.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/TargetDescriptionFile.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/OpcodeDecoder/Decoder.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/AVR8/IspParameters.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Avr8/Avr8.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Avr8/Avr8TargetConfig.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Avr8/TargetDescriptionFile.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Avr8/OpcodeDecoder/Decoder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Microchip/Avr8/IspParameters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/RiscV.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/RiscVTargetConfig.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/RiscV/TargetDescriptionFile.cpp

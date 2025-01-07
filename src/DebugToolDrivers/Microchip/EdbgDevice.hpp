@@ -5,15 +5,15 @@
 #include <memory>
 
 #include "src/DebugToolDrivers/DebugTool.hpp"
-#include "src/DebugToolDrivers/USB/UsbDevice.hpp"
+#include "src/DebugToolDrivers/Usb/UsbDevice.hpp"
 
 #include "EdbgToolConfig.hpp"
 #include "src/ProjectConfig.hpp"
 
-#include "Protocols/EDBG/EdbgInterface.hpp"
-#include "Protocols/EDBG/AVR/EdbgAvr8Interface.hpp"
-#include "Protocols/EDBG/AVR/EdbgAvrIspInterface.hpp"
-#include "Protocols/EDBG/EdbgTargetPowerManagementInterface.hpp"
+#include "Protocols/Edbg/EdbgInterface.hpp"
+#include "Protocols/Edbg/Avr/EdbgAvr8Interface.hpp"
+#include "Protocols/Edbg/Avr/EdbgAvrIspInterface.hpp"
+#include "Protocols/Edbg/EdbgTargetPowerManagementInterface.hpp"
 
 namespace DebugToolDrivers::Microchip
 {

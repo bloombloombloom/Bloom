@@ -2,10 +2,10 @@
 
 #include "TargetInterfaces/TargetPowerManagementInterface.hpp"
 
-#include "TargetInterfaces/Microchip/AVR8/Avr8DebugInterface.hpp"
-#include "TargetInterfaces/Microchip/AVR8/AvrIspInterface.hpp"
-#include "src/Targets/Microchip/AVR8/TargetDescriptionFile.hpp"
-#include "src/Targets/Microchip/AVR8/Avr8TargetConfig.hpp"
+#include "TargetInterfaces/Microchip/Avr8/Avr8DebugInterface.hpp"
+#include "TargetInterfaces/Microchip/Avr8/AvrIspInterface.hpp"
+#include "src/Targets/Microchip/Avr8/TargetDescriptionFile.hpp"
+#include "src/Targets/Microchip/Avr8/Avr8TargetConfig.hpp"
 
 #include "TargetInterfaces/RiscV/RiscVDebugInterface.hpp"
 #include "src/Targets/RiscV/TargetDescriptionFile.hpp"

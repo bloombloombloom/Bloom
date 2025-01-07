@@ -4,10 +4,10 @@
 #include <thread>
 #include <chrono>
 
-#include "src/DebugToolDrivers/USB/HID/HidInterface.hpp"
-#include "src/DebugToolDrivers/Protocols/CMSIS-DAP/CmsisDapInterface.hpp"
-#include "src/DebugToolDrivers/Microchip/Protocols/EDBG/AVR/CommandFrames/AvrCommandFrames.hpp"
-#include "src/DebugToolDrivers/USB/UsbInterface.hpp"
+#include "src/DebugToolDrivers/Usb/Hid/HidInterface.hpp"
+#include "src/DebugToolDrivers/Protocols/CmsisDap/CmsisDapInterface.hpp"
+#include "src/DebugToolDrivers/Microchip/Protocols/Edbg/Avr/CommandFrames/AvrCommandFrames.hpp"
+#include "src/DebugToolDrivers/Usb/UsbInterface.hpp"
 
 #include "src/Exceptions/InvalidConfig.hpp"
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"

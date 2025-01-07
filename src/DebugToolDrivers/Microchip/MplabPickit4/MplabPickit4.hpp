@@ -15,7 +15,7 @@ namespace DebugToolDrivers::Microchip
      * USB vendor and product IDs depending on the mode, it is trivial to determine which is which. In fact, Bloom will
      * not even recognise the device if it's not in AVR mode.
      *
-     * USB (when in AVR/EDBG mode):
+     * USB (when in Avr/EDBG mode):
      *  Vendor ID: 0x03eb (1003)
      *  Product ID: 0x2177 (8567)
      */
