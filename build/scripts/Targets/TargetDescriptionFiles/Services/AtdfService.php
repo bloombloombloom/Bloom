@@ -636,10 +636,7 @@ class AtdfService
             return MemorySegmentType::ALIASED;
         }
 
-        if (
-            $atdfTypeName === 'production_signatures'
-            || ($atdfTypeName === 'other' && $atdfSegmentName === 'prod_signatures')
-        ) {
+        if ($atdfTypeName === 'production_signatures' || $atdfSegmentName === 'prod_signatures') {
             return MemorySegmentType::PRODUCTION_SIGNATURES;
         }
 
