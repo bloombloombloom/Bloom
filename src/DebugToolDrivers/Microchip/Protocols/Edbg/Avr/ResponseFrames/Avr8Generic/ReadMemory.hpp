@@ -12,11 +12,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Avr
             : Avr8GenericResponseFrame(avrResponses)
         {}
 
-        Targets::TargetMemoryBuffer getMemoryData() const {
-            /*
-             * AVR8 data payloads are typically in little endian form, but this does not apply to the data returned
-             * from the READ MEMORY commands.
-             */
+        [[nodiscard]] Targets::TargetMemoryBuffer getMemoryData() const {
             return {this->payload.begin() + 2, this->payload.end() - 1};
         }
     };
