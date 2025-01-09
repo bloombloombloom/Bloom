@@ -5,7 +5,6 @@
 void Logger::configure(const ProjectConfig& projectConfig) {
     if (projectConfig.debugLogging) {
         Logger::debugPrintingEnabled = true;
-        Logger::debug("Debug log printing has been enabled");
     }
 }
 

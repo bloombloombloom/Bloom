@@ -51,7 +51,7 @@ int Application::run() {
         }
 
 #ifdef BLOOM_DEBUG_BUILD
-        Logger::warning("This is a debug build - some functions may not work as expected");
+        Logger::warning("Debug build");
 #endif
 
 #ifdef EXCLUDE_INSIGHT
