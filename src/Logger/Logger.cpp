@@ -16,7 +16,7 @@ void Logger::silence() {
     Logger::warningPrintingEnabled = false;
 }
 
-void Logger::log(const std::string& message, LogLevel level) {
+void Logger::log(const std::string& message, LogLevel level, std::optional<std::source_location> sourceLocation) {
     using Services::DateTimeService;
     const auto timestamp = DateTimeService::currentDateTime();
     const auto threadName = Logger::threadName();
@@ -56,6 +56,10 @@ void Logger::log(const std::string& message, LogLevel level) {
             std::cout << "[DEBUG] ";
             break;
         }
+    }
+
+    if (sourceLocation.has_value()) {
+        std::cout << "[" << sourceLocation->file_name() << ":" << sourceLocation->line() << "] ";
     }
 
     std::cout << message << "\033[0m" << std::endl;

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 #include <mutex>
+#include <source_location>
+#include <optional>
 
 #include "src/ProjectConfig.hpp"
 #include "src/Services/DateTimeService.hpp"
@@ -27,25 +29,28 @@ public:
 
     static void info(const std::string& message) {
         if (Logger::infoPrintingEnabled) {
-            Logger::log(message, LogLevel::INFO);
+            Logger::log(message, LogLevel::INFO, std::nullopt);
         }
     }
 
     static void warning(const std::string& message) {
         if (Logger::warningPrintingEnabled) {
-            Logger::log(message, LogLevel::WARNING);
+            Logger::log(message, LogLevel::WARNING, std::nullopt);
         }
     }
 
     static void error(const std::string& message) {
         if (Logger::errorPrintingEnabled) {
-            Logger::log(message, LogLevel::ERROR);
+            Logger::log(message, LogLevel::ERROR, std::nullopt);
         }
     }
 
-    static void debug(const std::string& message) {
+    static void debug(
+        const std::string& message,
+        const std::source_location sourceLocation = std::source_location::current()
+    ) {
         if (Logger::debugPrintingEnabled) {
-            Logger::log(message, LogLevel::DEBUG);
+            Logger::log(message, LogLevel::DEBUG, sourceLocation);
         }
     }
 
@@ -57,6 +62,6 @@ private:
 
     static inline std::mutex printMutex;
 
-    static void log(const std::string& message, LogLevel level);
+    static void log(const std::string& message, LogLevel level, std::optional<std::source_location> sourceLocation);
     static const std::string& threadName();
 };
