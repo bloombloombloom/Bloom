@@ -44,7 +44,7 @@ namespace DebugServer::Gdb::AvrGdb
     {}
 
     std::string AvrGdbRsp::getName() const {
-        return "AVR GDB Remote Serial Protocol Server";
+        return "AVR GDB RSP Server";
     }
 
     std::unique_ptr<CommandPackets::AvrGdbCommandPacketInterface> AvrGdbRsp::rawPacketToCommandPacket(

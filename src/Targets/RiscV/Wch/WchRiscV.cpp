@@ -360,10 +360,9 @@ namespace Targets::RiscV::Wch
                  */
                 const auto deAliasedAddress = this->deAliasMappedAddress(programCounter, actualAliasedSegment);
                 Logger::warning(
-                    "The mapped program memory segment is currently aliasing a foreign segment (`"
-                        + actualAliasedSegment.key + "`) - the program counter (0x"
-                        + StringService::toHex(programCounter) + ") has been de-aliased to 0x"
-                        + StringService::toHex(deAliasedAddress)
+                    "The mapped program memory segment is currently aliasing the `" + actualAliasedSegment.key
+                        + "` segment - the program counter (0x" + StringService::toHex(programCounter)
+                        + ") has been de-aliased to 0x" + StringService::toHex(deAliasedAddress)
                 );
                 return deAliasedAddress;
             }

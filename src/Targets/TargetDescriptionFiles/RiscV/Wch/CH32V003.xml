@@ -656,388 +656,388 @@
                     <bit-field key="iacts32" name="IACTS32" description="Interrupt 32 Execution Status" mask="0x00000001" access="R"/>
                 </register>
                 <register key="iprior0" name="IPRIOR0" description="Interrupt Priority Configuration 0" offset="0x400" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_3" name="IP_3" description="Interrupt 3 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_2" name="IP_2" description="Interrupt 2 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_1" name="IP_1" description="Interrupt 1 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_0" name="IP_0" description="Interrupt 0 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip3" name="IP3" description="Interrupt 3 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip2" name="IP2" description="Interrupt 2 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip1" name="IP1" description="Interrupt 1 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip0" name="IP0" description="Interrupt 0 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior1" name="IPRIOR1" description="Interrupt Priority Configuration 1" offset="0x404" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_7" name="IP_7" description="Interrupt 7 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_6" name="IP_6" description="Interrupt 6 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_5" name="IP_5" description="Interrupt 5 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_4" name="IP_4" description="Interrupt 4 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip7" name="IP7" description="Interrupt 7 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip6" name="IP6" description="Interrupt 6 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip5" name="IP5" description="Interrupt 5 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip4" name="IP4" description="Interrupt 4 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior2" name="IPRIOR2" description="Interrupt Priority Configuration 2" offset="0x408" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_11" name="IP_11" description="Interrupt 11 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_10" name="IP_10" description="Interrupt 10 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_9" name="IP_9" description="Interrupt 9 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_8" name="IP_8" description="Interrupt 8 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip11" name="IP11" description="Interrupt 11 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip10" name="IP10" description="Interrupt 10 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip9" name="IP9" description="Interrupt 9 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip8" name="IP8" description="Interrupt 8 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior3" name="IPRIOR3" description="Interrupt Priority Configuration 3" offset="0x40C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_15" name="IP_15" description="Interrupt 15 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_14" name="IP_14" description="Interrupt 14 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_13" name="IP_13" description="Interrupt 13 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_12" name="IP_12" description="Interrupt 12 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip15" name="IP15" description="Interrupt 15 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip14" name="IP14" description="Interrupt 14 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip13" name="IP13" description="Interrupt 13 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip12" name="IP12" description="Interrupt 12 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior4" name="IPRIOR4" description="Interrupt Priority Configuration 4" offset="0x410" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_19" name="IP_19" description="Interrupt 19 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_18" name="IP_18" description="Interrupt 18 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_17" name="IP_17" description="Interrupt 17 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_16" name="IP_16" description="Interrupt 16 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip19" name="IP19" description="Interrupt 19 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip18" name="IP18" description="Interrupt 18 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip17" name="IP17" description="Interrupt 17 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip16" name="IP16" description="Interrupt 16 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior5" name="IPRIOR5" description="Interrupt Priority Configuration 5" offset="0x414" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_23" name="IP_23" description="Interrupt 23 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_22" name="IP_22" description="Interrupt 22 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_21" name="IP_21" description="Interrupt 21 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_20" name="IP_20" description="Interrupt 20 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip23" name="IP23" description="Interrupt 23 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip22" name="IP22" description="Interrupt 22 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip21" name="IP21" description="Interrupt 21 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip20" name="IP20" description="Interrupt 20 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior6" name="IPRIOR6" description="Interrupt Priority Configuration 6" offset="0x418" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_27" name="IP_27" description="Interrupt 27 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_26" name="IP_26" description="Interrupt 26 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_25" name="IP_25" description="Interrupt 25 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_24" name="IP_24" description="Interrupt 24 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip27" name="IP27" description="Interrupt 27 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip26" name="IP26" description="Interrupt 26 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip25" name="IP25" description="Interrupt 25 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip24" name="IP24" description="Interrupt 24 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior7" name="IPRIOR7" description="Interrupt Priority Configuration 7" offset="0x41C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_31" name="IP_31" description="Interrupt 31 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_30" name="IP_30" description="Interrupt 30 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_29" name="IP_29" description="Interrupt 29 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_28" name="IP_28" description="Interrupt 28 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip31" name="IP31" description="Interrupt 31 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip30" name="IP30" description="Interrupt 30 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip29" name="IP29" description="Interrupt 29 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip28" name="IP28" description="Interrupt 28 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior8" name="IPRIOR8" description="Interrupt Priority Configuration 8" offset="0x420" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_35" name="IP_35" description="Interrupt 35 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_34" name="IP_34" description="Interrupt 34 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_33" name="IP_33" description="Interrupt 33 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_32" name="IP_32" description="Interrupt 32 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip35" name="IP35" description="Interrupt 35 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip34" name="IP34" description="Interrupt 34 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip33" name="IP33" description="Interrupt 33 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip32" name="IP32" description="Interrupt 32 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior9" name="IPRIOR9" description="Interrupt Priority Configuration 9" offset="0x424" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_39" name="IP_39" description="Interrupt 39 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_38" name="IP_38" description="Interrupt 38 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_37" name="IP_37" description="Interrupt 37 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_36" name="IP_36" description="Interrupt 36 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip39" name="IP39" description="Interrupt 39 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip38" name="IP38" description="Interrupt 38 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip37" name="IP37" description="Interrupt 37 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip36" name="IP36" description="Interrupt 36 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior10" name="IPRIOR10" description="Interrupt Priority Configuration 10" offset="0x428" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_43" name="IP_43" description="Interrupt 43 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_42" name="IP_42" description="Interrupt 42 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_41" name="IP_41" description="Interrupt 41 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_40" name="IP_40" description="Interrupt 40 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip43" name="IP43" description="Interrupt 43 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip42" name="IP42" description="Interrupt 42 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip41" name="IP41" description="Interrupt 41 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip40" name="IP40" description="Interrupt 40 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior11" name="IPRIOR11" description="Interrupt Priority Configuration 11" offset="0x42C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_47" name="IP_47" description="Interrupt 47 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_46" name="IP_46" description="Interrupt 46 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_45" name="IP_45" description="Interrupt 45 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_44" name="IP_44" description="Interrupt 44 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip47" name="IP47" description="Interrupt 47 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip46" name="IP46" description="Interrupt 46 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip45" name="IP45" description="Interrupt 45 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip44" name="IP44" description="Interrupt 44 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior12" name="IPRIOR12" description="Interrupt Priority Configuration 12" offset="0x430" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_51" name="IP_51" description="Interrupt 51 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_50" name="IP_50" description="Interrupt 50 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_49" name="IP_49" description="Interrupt 49 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_48" name="IP_48" description="Interrupt 48 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip51" name="IP51" description="Interrupt 51 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip50" name="IP50" description="Interrupt 50 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip49" name="IP49" description="Interrupt 49 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip48" name="IP48" description="Interrupt 48 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior13" name="IPRIOR13" description="Interrupt Priority Configuration 13" offset="0x434" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_55" name="IP_55" description="Interrupt 55 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_54" name="IP_54" description="Interrupt 54 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_53" name="IP_53" description="Interrupt 53 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_52" name="IP_52" description="Interrupt 52 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip55" name="IP55" description="Interrupt 55 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip54" name="IP54" description="Interrupt 54 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip53" name="IP53" description="Interrupt 53 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip52" name="IP52" description="Interrupt 52 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior14" name="IPRIOR14" description="Interrupt Priority Configuration 14" offset="0x438" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_59" name="IP_59" description="Interrupt 59 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_58" name="IP_58" description="Interrupt 58 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_57" name="IP_57" description="Interrupt 57 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_56" name="IP_56" description="Interrupt 56 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip59" name="IP59" description="Interrupt 59 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip58" name="IP58" description="Interrupt 58 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip57" name="IP57" description="Interrupt 57 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip56" name="IP56" description="Interrupt 56 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior15" name="IPRIOR15" description="Interrupt Priority Configuration 15" offset="0x43C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_63" name="IP_63" description="Interrupt 63 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_62" name="IP_62" description="Interrupt 62 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_61" name="IP_61" description="Interrupt 61 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_60" name="IP_60" description="Interrupt 60 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip63" name="IP63" description="Interrupt 63 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip62" name="IP62" description="Interrupt 62 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip61" name="IP61" description="Interrupt 61 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip60" name="IP60" description="Interrupt 60 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior16" name="IPRIOR16" description="Interrupt Priority Configuration 16" offset="0x440" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_67" name="IP_67" description="Interrupt 67 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_66" name="IP_66" description="Interrupt 66 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_65" name="IP_65" description="Interrupt 65 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_64" name="IP_64" description="Interrupt 64 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip67" name="IP67" description="Interrupt 67 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip66" name="IP66" description="Interrupt 66 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip65" name="IP65" description="Interrupt 65 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip64" name="IP64" description="Interrupt 64 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior17" name="IPRIOR17" description="Interrupt Priority Configuration 17" offset="0x444" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_71" name="IP_71" description="Interrupt 71 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_70" name="IP_70" description="Interrupt 70 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_69" name="IP_69" description="Interrupt 69 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_68" name="IP_68" description="Interrupt 68 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip71" name="IP71" description="Interrupt 71 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip70" name="IP70" description="Interrupt 70 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip69" name="IP69" description="Interrupt 69 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip68" name="IP68" description="Interrupt 68 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior18" name="IPRIOR18" description="Interrupt Priority Configuration 18" offset="0x448" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_75" name="IP_75" description="Interrupt 75 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_74" name="IP_74" description="Interrupt 74 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_73" name="IP_73" description="Interrupt 73 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_72" name="IP_72" description="Interrupt 72 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip75" name="IP75" description="Interrupt 75 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip74" name="IP74" description="Interrupt 74 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip73" name="IP73" description="Interrupt 73 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip72" name="IP72" description="Interrupt 72 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior19" name="IPRIOR19" description="Interrupt Priority Configuration 19" offset="0x44C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_79" name="IP_79" description="Interrupt 79 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_78" name="IP_78" description="Interrupt 78 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_77" name="IP_77" description="Interrupt 77 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_76" name="IP_76" description="Interrupt 76 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip79" name="IP79" description="Interrupt 79 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip78" name="IP78" description="Interrupt 78 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip77" name="IP77" description="Interrupt 77 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip76" name="IP76" description="Interrupt 76 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior20" name="IPRIOR20" description="Interrupt Priority Configuration 20" offset="0x450" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_83" name="IP_83" description="Interrupt 83 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_82" name="IP_82" description="Interrupt 82 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_81" name="IP_81" description="Interrupt 81 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_80" name="IP_80" description="Interrupt 80 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip83" name="IP83" description="Interrupt 83 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip82" name="IP82" description="Interrupt 82 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip81" name="IP81" description="Interrupt 81 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip80" name="IP80" description="Interrupt 80 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior21" name="IPRIOR21" description="Interrupt Priority Configuration 21" offset="0x454" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_87" name="IP_87" description="Interrupt 87 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_86" name="IP_86" description="Interrupt 86 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_85" name="IP_85" description="Interrupt 85 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_84" name="IP_84" description="Interrupt 84 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip87" name="IP87" description="Interrupt 87 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip86" name="IP86" description="Interrupt 86 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip85" name="IP85" description="Interrupt 85 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip84" name="IP84" description="Interrupt 84 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior22" name="IPRIOR22" description="Interrupt Priority Configuration 22" offset="0x458" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_91" name="IP_91" description="Interrupt 91 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_90" name="IP_90" description="Interrupt 90 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_89" name="IP_89" description="Interrupt 89 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_88" name="IP_88" description="Interrupt 88 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip91" name="IP91" description="Interrupt 91 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip90" name="IP90" description="Interrupt 90 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip89" name="IP89" description="Interrupt 89 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip88" name="IP88" description="Interrupt 88 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior23" name="IPRIOR23" description="Interrupt Priority Configuration 23" offset="0x45C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_95" name="IP_95" description="Interrupt 95 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_94" name="IP_94" description="Interrupt 94 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_93" name="IP_93" description="Interrupt 93 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_92" name="IP_92" description="Interrupt 92 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip95" name="IP95" description="Interrupt 95 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip94" name="IP94" description="Interrupt 94 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip93" name="IP93" description="Interrupt 93 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip92" name="IP92" description="Interrupt 92 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior24" name="IPRIOR24" description="Interrupt Priority Configuration 24" offset="0x460" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_99" name="IP_99" description="Interrupt 99 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_98" name="IP_98" description="Interrupt 98 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_97" name="IP_97" description="Interrupt 97 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_96" name="IP_96" description="Interrupt 96 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip99" name="IP99" description="Interrupt 99 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip98" name="IP98" description="Interrupt 98 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip97" name="IP97" description="Interrupt 97 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip96" name="IP96" description="Interrupt 96 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior25" name="IPRIOR25" description="Interrupt Priority Configuration 25" offset="0x464" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_103" name="IP_103" description="Interrupt 103 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_102" name="IP_102" description="Interrupt 102 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_101" name="IP_101" description="Interrupt 101 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_100" name="IP_100" description="Interrupt 100 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip103" name="IP103" description="Interrupt 103 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip102" name="IP102" description="Interrupt 102 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip101" name="IP101" description="Interrupt 101 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip100" name="IP100" description="Interrupt 100 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior26" name="IPRIOR26" description="Interrupt Priority Configuration 26" offset="0x468" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_107" name="IP_107" description="Interrupt 107 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_106" name="IP_106" description="Interrupt 106 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_105" name="IP_105" description="Interrupt 105 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_104" name="IP_104" description="Interrupt 104 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip107" name="IP107" description="Interrupt 107 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip106" name="IP106" description="Interrupt 106 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip105" name="IP105" description="Interrupt 105 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip104" name="IP104" description="Interrupt 104 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior27" name="IPRIOR27" description="Interrupt Priority Configuration 27" offset="0x46C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_111" name="IP_111" description="Interrupt 111 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_110" name="IP_110" description="Interrupt 110 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_109" name="IP_109" description="Interrupt 109 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_108" name="IP_108" description="Interrupt 108 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip111" name="IP111" description="Interrupt 111 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip110" name="IP110" description="Interrupt 110 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip109" name="IP109" description="Interrupt 109 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip108" name="IP108" description="Interrupt 108 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior28" name="IPRIOR28" description="Interrupt Priority Configuration 28" offset="0x470" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_115" name="IP_115" description="Interrupt 115 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_114" name="IP_114" description="Interrupt 114 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_113" name="IP_113" description="Interrupt 113 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_112" name="IP_112" description="Interrupt 112 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip115" name="IP115" description="Interrupt 115 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip114" name="IP114" description="Interrupt 114 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip113" name="IP113" description="Interrupt 113 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip112" name="IP112" description="Interrupt 112 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior29" name="IPRIOR29" description="Interrupt Priority Configuration 29" offset="0x474" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_119" name="IP_119" description="Interrupt 119 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_118" name="IP_118" description="Interrupt 118 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_117" name="IP_117" description="Interrupt 117 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_116" name="IP_116" description="Interrupt 116 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip119" name="IP119" description="Interrupt 119 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip118" name="IP118" description="Interrupt 118 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip117" name="IP117" description="Interrupt 117 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip116" name="IP116" description="Interrupt 116 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior30" name="IPRIOR30" description="Interrupt Priority Configuration 30" offset="0x478" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_123" name="IP_123" description="Interrupt 123 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_122" name="IP_122" description="Interrupt 122 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_121" name="IP_121" description="Interrupt 121 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_120" name="IP_120" description="Interrupt 120 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip123" name="IP123" description="Interrupt 123 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip122" name="IP122" description="Interrupt 122 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip121" name="IP121" description="Interrupt 121 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip120" name="IP120" description="Interrupt 120 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior31" name="IPRIOR31" description="Interrupt Priority Configuration 31" offset="0x47C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_127" name="IP_127" description="Interrupt 127 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_126" name="IP_126" description="Interrupt 126 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_125" name="IP_125" description="Interrupt 125 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_124" name="IP_124" description="Interrupt 124 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip127" name="IP127" description="Interrupt 127 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip126" name="IP126" description="Interrupt 126 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip125" name="IP125" description="Interrupt 125 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip124" name="IP124" description="Interrupt 124 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior32" name="IPRIOR32" description="Interrupt Priority Configuration 32" offset="0x480" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_131" name="IP_131" description="Interrupt 131 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_130" name="IP_130" description="Interrupt 130 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_129" name="IP_129" description="Interrupt 129 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_128" name="IP_128" description="Interrupt 128 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip131" name="IP131" description="Interrupt 131 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip130" name="IP130" description="Interrupt 130 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip129" name="IP129" description="Interrupt 129 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip128" name="IP128" description="Interrupt 128 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior33" name="IPRIOR33" description="Interrupt Priority Configuration 33" offset="0x484" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_135" name="IP_135" description="Interrupt 135 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_134" name="IP_134" description="Interrupt 134 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_133" name="IP_133" description="Interrupt 133 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_132" name="IP_132" description="Interrupt 132 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip135" name="IP135" description="Interrupt 135 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip134" name="IP134" description="Interrupt 134 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip133" name="IP133" description="Interrupt 133 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip132" name="IP132" description="Interrupt 132 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior34" name="IPRIOR34" description="Interrupt Priority Configuration 34" offset="0x488" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_139" name="IP_139" description="Interrupt 139 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_138" name="IP_138" description="Interrupt 138 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_137" name="IP_137" description="Interrupt 137 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_136" name="IP_136" description="Interrupt 136 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip139" name="IP139" description="Interrupt 139 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip138" name="IP138" description="Interrupt 138 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip137" name="IP137" description="Interrupt 137 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip136" name="IP136" description="Interrupt 136 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior35" name="IPRIOR35" description="Interrupt Priority Configuration 35" offset="0x48C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_143" name="IP_143" description="Interrupt 143 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_142" name="IP_142" description="Interrupt 142 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_141" name="IP_141" description="Interrupt 141 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_140" name="IP_140" description="Interrupt 140 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip143" name="IP143" description="Interrupt 143 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip142" name="IP142" description="Interrupt 142 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip141" name="IP141" description="Interrupt 141 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip140" name="IP140" description="Interrupt 140 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior36" name="IPRIOR36" description="Interrupt Priority Configuration 36" offset="0x490" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_147" name="IP_147" description="Interrupt 147 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_146" name="IP_146" description="Interrupt 146 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_145" name="IP_145" description="Interrupt 145 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_144" name="IP_144" description="Interrupt 144 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip147" name="IP147" description="Interrupt 147 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip146" name="IP146" description="Interrupt 146 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip145" name="IP145" description="Interrupt 145 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip144" name="IP144" description="Interrupt 144 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior37" name="IPRIOR37" description="Interrupt Priority Configuration 37" offset="0x494" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_151" name="IP_151" description="Interrupt 151 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_150" name="IP_150" description="Interrupt 150 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_149" name="IP_149" description="Interrupt 149 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_148" name="IP_148" description="Interrupt 148 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip151" name="IP151" description="Interrupt 151 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip150" name="IP150" description="Interrupt 150 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip149" name="IP149" description="Interrupt 149 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip148" name="IP148" description="Interrupt 148 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior38" name="IPRIOR38" description="Interrupt Priority Configuration 38" offset="0x498" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_155" name="IP_155" description="Interrupt 155 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_154" name="IP_154" description="Interrupt 154 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_153" name="IP_153" description="Interrupt 153 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_152" name="IP_152" description="Interrupt 152 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip155" name="IP155" description="Interrupt 155 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip154" name="IP154" description="Interrupt 154 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip153" name="IP153" description="Interrupt 153 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip152" name="IP152" description="Interrupt 152 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior39" name="IPRIOR39" description="Interrupt Priority Configuration 39" offset="0x49C" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_159" name="IP_159" description="Interrupt 159 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_158" name="IP_158" description="Interrupt 158 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_157" name="IP_157" description="Interrupt 157 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_156" name="IP_156" description="Interrupt 156 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip159" name="IP159" description="Interrupt 159 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip158" name="IP158" description="Interrupt 158 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip157" name="IP157" description="Interrupt 157 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip156" name="IP156" description="Interrupt 156 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior40" name="IPRIOR40" description="Interrupt Priority Configuration 40" offset="0x4A0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_163" name="IP_163" description="Interrupt 163 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_162" name="IP_162" description="Interrupt 162 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_161" name="IP_161" description="Interrupt 161 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_160" name="IP_160" description="Interrupt 160 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip163" name="IP163" description="Interrupt 163 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip162" name="IP162" description="Interrupt 162 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip161" name="IP161" description="Interrupt 161 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip160" name="IP160" description="Interrupt 160 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior41" name="IPRIOR41" description="Interrupt Priority Configuration 41" offset="0x4A4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_167" name="IP_167" description="Interrupt 167 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_166" name="IP_166" description="Interrupt 166 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_165" name="IP_165" description="Interrupt 165 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_164" name="IP_164" description="Interrupt 164 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip167" name="IP167" description="Interrupt 167 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip166" name="IP166" description="Interrupt 166 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip165" name="IP165" description="Interrupt 165 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip164" name="IP164" description="Interrupt 164 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior42" name="IPRIOR42" description="Interrupt Priority Configuration 42" offset="0x4A8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_171" name="IP_171" description="Interrupt 171 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_170" name="IP_170" description="Interrupt 170 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_169" name="IP_169" description="Interrupt 169 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_168" name="IP_168" description="Interrupt 168 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip171" name="IP171" description="Interrupt 171 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip170" name="IP170" description="Interrupt 170 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip169" name="IP169" description="Interrupt 169 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip168" name="IP168" description="Interrupt 168 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior43" name="IPRIOR43" description="Interrupt Priority Configuration 43" offset="0x4AC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_175" name="IP_175" description="Interrupt 175 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_174" name="IP_174" description="Interrupt 174 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_173" name="IP_173" description="Interrupt 173 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_172" name="IP_172" description="Interrupt 172 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip175" name="IP175" description="Interrupt 175 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip174" name="IP174" description="Interrupt 174 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip173" name="IP173" description="Interrupt 173 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip172" name="IP172" description="Interrupt 172 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior44" name="IPRIOR44" description="Interrupt Priority Configuration 44" offset="0x4B0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_179" name="IP_179" description="Interrupt 179 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_178" name="IP_178" description="Interrupt 178 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_177" name="IP_177" description="Interrupt 177 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_176" name="IP_176" description="Interrupt 176 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip179" name="IP179" description="Interrupt 179 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip178" name="IP178" description="Interrupt 178 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip177" name="IP177" description="Interrupt 177 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip176" name="IP176" description="Interrupt 176 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior45" name="IPRIOR45" description="Interrupt Priority Configuration 45" offset="0x4B4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_183" name="IP_183" description="Interrupt 183 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_182" name="IP_182" description="Interrupt 182 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_181" name="IP_181" description="Interrupt 181 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_180" name="IP_180" description="Interrupt 180 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip183" name="IP183" description="Interrupt 183 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip182" name="IP182" description="Interrupt 182 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip181" name="IP181" description="Interrupt 181 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip180" name="IP180" description="Interrupt 180 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior46" name="IPRIOR46" description="Interrupt Priority Configuration 46" offset="0x4B8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_187" name="IP_187" description="Interrupt 187 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_186" name="IP_186" description="Interrupt 186 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_185" name="IP_185" description="Interrupt 185 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_184" name="IP_184" description="Interrupt 184 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip187" name="IP187" description="Interrupt 187 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip186" name="IP186" description="Interrupt 186 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip185" name="IP185" description="Interrupt 185 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip184" name="IP184" description="Interrupt 184 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior47" name="IPRIOR47" description="Interrupt Priority Configuration 47" offset="0x4BC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_191" name="IP_191" description="Interrupt 191 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_190" name="IP_190" description="Interrupt 190 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_189" name="IP_189" description="Interrupt 189 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_188" name="IP_188" description="Interrupt 188 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip191" name="IP191" description="Interrupt 191 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip190" name="IP190" description="Interrupt 190 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip189" name="IP189" description="Interrupt 189 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip188" name="IP188" description="Interrupt 188 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior48" name="IPRIOR48" description="Interrupt Priority Configuration 48" offset="0x4C0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_195" name="IP_195" description="Interrupt 195 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_194" name="IP_194" description="Interrupt 194 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_193" name="IP_193" description="Interrupt 193 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_192" name="IP_192" description="Interrupt 192 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip195" name="IP195" description="Interrupt 195 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip194" name="IP194" description="Interrupt 194 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip193" name="IP193" description="Interrupt 193 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip192" name="IP192" description="Interrupt 192 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior49" name="IPRIOR49" description="Interrupt Priority Configuration 49" offset="0x4C4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_199" name="IP_199" description="Interrupt 199 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_198" name="IP_198" description="Interrupt 198 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_197" name="IP_197" description="Interrupt 197 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_196" name="IP_196" description="Interrupt 196 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip199" name="IP199" description="Interrupt 199 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip198" name="IP198" description="Interrupt 198 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip197" name="IP197" description="Interrupt 197 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip196" name="IP196" description="Interrupt 196 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior50" name="IPRIOR50" description="Interrupt Priority Configuration 50" offset="0x4C8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_203" name="IP_203" description="Interrupt 203 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_202" name="IP_202" description="Interrupt 202 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_201" name="IP_201" description="Interrupt 201 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_200" name="IP_200" description="Interrupt 200 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip203" name="IP203" description="Interrupt 203 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip202" name="IP202" description="Interrupt 202 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip201" name="IP201" description="Interrupt 201 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip200" name="IP200" description="Interrupt 200 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior51" name="IPRIOR51" description="Interrupt Priority Configuration 51" offset="0x4CC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_207" name="IP_207" description="Interrupt 207 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_206" name="IP_206" description="Interrupt 206 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_205" name="IP_205" description="Interrupt 205 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_204" name="IP_204" description="Interrupt 204 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip207" name="IP207" description="Interrupt 207 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip206" name="IP206" description="Interrupt 206 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip205" name="IP205" description="Interrupt 205 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip204" name="IP204" description="Interrupt 204 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior52" name="IPRIOR52" description="Interrupt Priority Configuration 52" offset="0x4D0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_211" name="IP_211" description="Interrupt 211 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_210" name="IP_210" description="Interrupt 210 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_209" name="IP_209" description="Interrupt 209 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_208" name="IP_208" description="Interrupt 208 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip211" name="IP211" description="Interrupt 211 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip210" name="IP210" description="Interrupt 210 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip209" name="IP209" description="Interrupt 209 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip208" name="IP208" description="Interrupt 208 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior53" name="IPRIOR53" description="Interrupt Priority Configuration 53" offset="0x4D4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_215" name="IP_215" description="Interrupt 215 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_214" name="IP_214" description="Interrupt 214 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_213" name="IP_213" description="Interrupt 213 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_212" name="IP_212" description="Interrupt 212 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip215" name="IP215" description="Interrupt 215 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip214" name="IP214" description="Interrupt 214 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip213" name="IP213" description="Interrupt 213 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip212" name="IP212" description="Interrupt 212 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior54" name="IPRIOR54" description="Interrupt Priority Configuration 54" offset="0x4D8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_219" name="IP_219" description="Interrupt 219 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_218" name="IP_218" description="Interrupt 218 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_217" name="IP_217" description="Interrupt 217 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_216" name="IP_216" description="Interrupt 216 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip219" name="IP219" description="Interrupt 219 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip218" name="IP218" description="Interrupt 218 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip217" name="IP217" description="Interrupt 217 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip216" name="IP216" description="Interrupt 216 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior55" name="IPRIOR55" description="Interrupt Priority Configuration 55" offset="0x4DC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_223" name="IP_223" description="Interrupt 223 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_222" name="IP_222" description="Interrupt 222 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_221" name="IP_221" description="Interrupt 221 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_220" name="IP_220" description="Interrupt 220 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip223" name="IP223" description="Interrupt 223 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip222" name="IP222" description="Interrupt 222 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip221" name="IP221" description="Interrupt 221 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip220" name="IP220" description="Interrupt 220 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior56" name="IPRIOR56" description="Interrupt Priority Configuration 56" offset="0x4E0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_227" name="IP_227" description="Interrupt 227 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_226" name="IP_226" description="Interrupt 226 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_225" name="IP_225" description="Interrupt 225 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_224" name="IP_224" description="Interrupt 224 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip227" name="IP227" description="Interrupt 227 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip226" name="IP226" description="Interrupt 226 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip225" name="IP225" description="Interrupt 225 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip224" name="IP224" description="Interrupt 224 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior57" name="IPRIOR57" description="Interrupt Priority Configuration 57" offset="0x4E4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_231" name="IP_231" description="Interrupt 231 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_230" name="IP_230" description="Interrupt 230 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_229" name="IP_229" description="Interrupt 229 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_228" name="IP_228" description="Interrupt 228 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip231" name="IP231" description="Interrupt 231 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip230" name="IP230" description="Interrupt 230 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip229" name="IP229" description="Interrupt 229 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip228" name="IP228" description="Interrupt 228 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior58" name="IPRIOR58" description="Interrupt Priority Configuration 58" offset="0x4E8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_235" name="IP_235" description="Interrupt 235 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_234" name="IP_234" description="Interrupt 234 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_233" name="IP_233" description="Interrupt 233 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_232" name="IP_232" description="Interrupt 232 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip235" name="IP235" description="Interrupt 235 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip234" name="IP234" description="Interrupt 234 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip233" name="IP233" description="Interrupt 233 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip232" name="IP232" description="Interrupt 232 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior59" name="IPRIOR59" description="Interrupt Priority Configuration 59" offset="0x4EC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_239" name="IP_239" description="Interrupt 239 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_238" name="IP_238" description="Interrupt 238 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_237" name="IP_237" description="Interrupt 237 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_236" name="IP_236" description="Interrupt 236 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip239" name="IP239" description="Interrupt 239 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip238" name="IP238" description="Interrupt 238 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip237" name="IP237" description="Interrupt 237 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip236" name="IP236" description="Interrupt 236 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior60" name="IPRIOR60" description="Interrupt Priority Configuration 60" offset="0x4F0" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_243" name="IP_243" description="Interrupt 243 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_242" name="IP_242" description="Interrupt 242 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_241" name="IP_241" description="Interrupt 241 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_240" name="IP_240" description="Interrupt 240 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip243" name="IP243" description="Interrupt 243 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip242" name="IP242" description="Interrupt 242 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip241" name="IP241" description="Interrupt 241 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip240" name="IP240" description="Interrupt 240 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior61" name="IPRIOR61" description="Interrupt Priority Configuration 61" offset="0x4F4" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_247" name="IP_247" description="Interrupt 247 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_246" name="IP_246" description="Interrupt 246 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_245" name="IP_245" description="Interrupt 245 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_244" name="IP_244" description="Interrupt 244 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip247" name="IP247" description="Interrupt 247 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip246" name="IP246" description="Interrupt 246 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip245" name="IP245" description="Interrupt 245 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip244" name="IP244" description="Interrupt 244 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior62" name="IPRIOR62" description="Interrupt Priority Configuration 62" offset="0x4F8" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_251" name="IP_251" description="Interrupt 251 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_250" name="IP_250" description="Interrupt 250 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_249" name="IP_249" description="Interrupt 249 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_248" name="IP_248" description="Interrupt 248 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip251" name="IP251" description="Interrupt 251 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip250" name="IP250" description="Interrupt 250 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip249" name="IP249" description="Interrupt 249 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip248" name="IP248" description="Interrupt 248 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="iprior63" name="IPRIOR63" description="Interrupt Priority Configuration 63" offset="0x4FC" size="4" initial-value="0x00000000" access="RW">
-                    <bit-field key="ip_255" name="IP_255" description="Interrupt 255 Priority Bits" mask="0xFF000000" access="RW"/>
-                    <bit-field key="ip_254" name="IP_254" description="Interrupt 254 Priority Bits" mask="0x00FF0000" access="RW"/>
-                    <bit-field key="ip_253" name="IP_253" description="Interrupt 253 Priority Bits" mask="0x0000FF00" access="RW"/>
-                    <bit-field key="ip_252" name="IP_252" description="Interrupt 252 Priority Bits" mask="0x000000FF" access="RW"/>
+                    <bit-field key="ip255" name="IP255" description="Interrupt 255 Priority Bits" mask="0xFF000000" access="RW"/>
+                    <bit-field key="ip254" name="IP254" description="Interrupt 254 Priority Bits" mask="0x00FF0000" access="RW"/>
+                    <bit-field key="ip253" name="IP253" description="Interrupt 253 Priority Bits" mask="0x0000FF00" access="RW"/>
+                    <bit-field key="ip252" name="IP252" description="Interrupt 252 Priority Bits" mask="0x000000FF" access="RW"/>
                 </register>
                 <register key="sctrl" name="SCTRL" description="Interrupt Configuration" offset="0xD10" size="4" initial-value="0x00000000" access="W">
                     <bit-field key="sysrst" name="SYSRST" mask="0x80000000" access="W"/>
@@ -2046,7 +2046,6 @@
         </module>
     </modules>
     <pads>
-        <pad key="gnd" name="GND"/>
         <pad key="pa1" name="PA1"/>
         <pad key="pa2" name="PA2"/>
         <pad key="pc0" name="PC0"/>
