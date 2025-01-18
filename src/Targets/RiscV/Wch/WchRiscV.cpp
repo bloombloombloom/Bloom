@@ -135,6 +135,8 @@ namespace Targets::RiscV::Wch
             descriptor.breakpointResources.reservedHardwareBreakpoints = 1;
         }
 
+        // Replace the TDF CPU peripheral descriptor with the mutated copy (see RiscV base class)
+        descriptor.peripheralDescriptorsByKey.erase(this->cpuPeripheralDescriptor.key);
         descriptor.peripheralDescriptorsByKey.emplace(
             this->cpuPeripheralDescriptor.key,
             this->cpuPeripheralDescriptor.clone()

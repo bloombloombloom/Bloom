@@ -196,8 +196,8 @@
         <peripheral key="extend" name="EXTEND" module-key="extend">
             <register-group-instance register-group-key="extend" address-space-key="system" offset="0x40023800"/>
         </peripheral>
-        <peripheral key="debug" name="DEBUG" module-key="debug">
-            <register-group-instance register-group-key="debug" address-space-key="csr" offset="0x000007C0"/>
+        <peripheral key="cpu" name="CPU" module-key="cpu">
+            <register-group-instance register-group-key="csr" address-space-key="csr" offset="0x00000300"/>
         </peripheral>
     </peripherals>
     <modules>
@@ -1985,15 +1985,62 @@
                 </register>
             </register-group>
         </module>
-        <module key="debug" name="DEBUG" description="Debug Support">
-            <register-group key="debug" name="DEBUG">
-                <register key="dbgmcu" name="DBGMCU" description="Debug MCU Configuration" offset="0x00" size="4" initial-value="0x00000000" access="RW">
+        <module key="cpu" name="CPU" description="RISC-V CPU">
+            <register-group key="csr" name="CSR">
+                <register key="mstatus" name="MSTATUS" description="Status" offset="0x00" size="4" initial-value="0x00000000" access="RW">
+                    <bit-field key="mppop" name="MPPOP" mask="0x01000000" access="RW"/>
+                    <bit-field key="mpop" name="MPOP" mask="0x00800000" access="RW"/>
+                    <bit-field key="mpp" name="MPP" mask="0x00001800" access="RW"/>
+                    <bit-field key="mpie" name="MPIE" mask="0x00000080" access="RW"/>
+                    <bit-field key="mie" name="MIE" mask="0x00000008" access="RW"/>
+                </register>
+                <register key="misa" name="MISA" description="ISA" offset="0x01" size="4" access="R">
+                    <bit-field key="mxl" name="MXL" mask="0xC0000000" access="R"/>
+                    <bit-field key="ext" name="EXTENSIONS" mask="0x03FFFFFF" access="R"/>
+                </register>
+                <register key="mtvec" name="MTVEC" description="Trap-handler Base Address" offset="0x05" size="4" access="RW">
+                    <bit-field key="addr" name="ADDR" mask="0xFFFFFFFC" access="RW"/>
+                    <bit-field key="mode" name="MODE" mask="0x00000003" access="RW"/>
+                </register>
+                <register key="mscratch" name="MSCRATCH" description="Scratch" offset="0x40" size="4" access="RW">
+                    <bit-field key="mscratch" name="MSCRATCH" mask="0xFFFFFFFF" access="RW"/>
+                </register>
+                <register key="mepc" name="MEPC" description="Exception Program Counter" offset="0x41" size="4" access="RW">
+                    <bit-field key="pc" name="PC" mask="0xFFFFFFFF" access="RW"/>
+                </register>
+                <register key="mcause" name="MCAUSE" description="Trap Cause" offset="0x42" size="4" access="RW">
+                    <bit-field key="int" name="INTERRUPT" mask="0x80000000" access="RW"/>
+                    <bit-field key="code" name="CODE" mask="0x7FFFFFFF" access="RW"/>
+                </register>
+                <register key="marchid" name="MARCHID" description="Architecture ID" offset="0xC12" size="4" access="R">
+                    <bit-field key="vendor0" name="VENDOR0" mask="0x7C000000" access="R"/>
+                    <bit-field key="vendor1" name="VENDOR1" mask="0x03E00000" access="R"/>
+                    <bit-field key="vendor2" name="VENDOR2" mask="0x001F0000" access="R"/>
+                    <bit-field key="arch_code" name="ARCH_CODE" mask="0x00007C00" access="R"/>
+                    <bit-field key="series_code" name="SERIES_CODE" mask="0x000003E0" access="R"/>
+                    <bit-field key="version_code" name="VERSION_CODE" mask="0x0000001F" access="R"/>
+                </register>
+                <register key="mimpid" name="MIMPID" description="Implementation ID" offset="0xC13" size="4" access="R">
+                    <bit-field key="vendor0" name="VENDOR0" mask="0x7C000000" access="R"/>
+                    <bit-field key="vendor1" name="VENDOR1" mask="0x03E00000" access="R"/>
+                    <bit-field key="vendor2" name="VENDOR2" mask="0x001F0000" access="R"/>
+                </register>
+                <register key="dcsr" name="DCSR" description="Debug Control and Status" offset="0x4B0" size="4" access="RW"/>
+                <register key="dpc" name="DPC" description="Debug Program Counter" offset="0x4B1" size="4" access="RW"/>
+                <register key="dscratch0" name="DSCRATCH0" description="Debug Scratch 0" offset="0x4B2" size="4" access="RW"/>
+                <register key="dscratch1" name="DSCRATCH1" description="Debug Scratch 1" offset="0x4B3" size="4" access="RW"/>
+                <register key="dbgmcu" name="DBGMCU" description="Debug MCU Configuration" offset="0x4C0" size="4" initial-value="0x00000000" access="RW">
                     <bit-field key="tim2_stop" name="TIM2_STOP" mask="0x00002000" access="RW"/>
                     <bit-field key="tim1_stop" name="TIM1_STOP" mask="0x00001000" access="RW"/>
                     <bit-field key="wwdg_stop" name="WWDG_STOP" mask="0x00000200" access="RW"/>
                     <bit-field key="iwdg_stop" name="IWDG_STOP" mask="0x00000100" access="RW"/>
                     <bit-field key="standby" name="STANDBY" mask="0x00000004" access="RW"/>
                     <bit-field key="sleep" name="SLEEP" mask="0x00000001" access="RW"/>
+                </register>
+                <register key="intsyscr" name="INTSYSCR" description="Interrupt System Control" offset="0x504" size="4" initial-value="0x00000000" access="RW">
+                    <bit-field key="eabien" name="EABIEN" mask="0x00000004" access="RW"/>
+                    <bit-field key="inesten" name="INESTEN" mask="0x00000002" access="RW"/>
+                    <bit-field key="hwstken" name="HWSTKEN" mask="0x00000001" access="RW"/>
                 </register>
             </register-group>
         </module>

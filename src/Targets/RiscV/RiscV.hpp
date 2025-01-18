@@ -126,12 +126,11 @@ namespace Targets::RiscV
             const TargetAddressSpaceDescriptor& addressSpaceDescriptor
         );
 
-        static TargetPeripheralDescriptor generateCpuPeripheralDescriptor(
+        static const TargetRegisterGroupDescriptor& generateGeneralPurposeRegisterGroupDescriptor(
             const IsaDescriptor& isaDescriptor,
-            const TargetAddressSpaceDescriptor& csrAddressSpaceDescriptor,
             const TargetAddressSpaceDescriptor& gprAddressSpaceDescriptor,
-            const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
-            const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
+            const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor,
+            TargetPeripheralDescriptor& cpuPeripheralDescriptor
         );
     };
 }

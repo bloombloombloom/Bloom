@@ -25,17 +25,16 @@ namespace Targets::RiscV
         , csrMemorySegmentDescriptor(this->csrAddressSpaceDescriptor.getMemorySegmentDescriptor("csr"))
         , gprAddressSpaceDescriptor(this->targetDescriptionFile.getGprAddressSpaceDescriptor())
         , gprMemorySegmentDescriptor(this->gprAddressSpaceDescriptor.getMemorySegmentDescriptor("gpr"))
-        , cpuPeripheralDescriptor(
-            RiscV::generateCpuPeripheralDescriptor(
+        , cpuPeripheralDescriptor(this->targetDescriptionFile.getTargetPeripheralDescriptor("cpu"))
+        , csrGroupDescriptor(this->cpuPeripheralDescriptor.getRegisterGroupDescriptor("csr"))
+        , gprGroupDescriptor(
+            RiscV::generateGeneralPurposeRegisterGroupDescriptor(
                 this->isaDescriptor,
-                this->csrAddressSpaceDescriptor,
                 this->gprAddressSpaceDescriptor,
-                this->csrMemorySegmentDescriptor,
-                this->gprMemorySegmentDescriptor
+                this->gprMemorySegmentDescriptor,
+                this->cpuPeripheralDescriptor
             )
         )
-        , csrGroupDescriptor(this->cpuPeripheralDescriptor.getRegisterGroupDescriptor("csr"))
-        , gprGroupDescriptor(this->cpuPeripheralDescriptor.getRegisterGroupDescriptor("gpr"))
         , pcRegisterDescriptor(this->csrGroupDescriptor.getRegisterDescriptor("dpc"))
         , spRegisterDescriptor(this->gprGroupDescriptor.getRegisterDescriptor("x2"))
         , sysAddressSpaceDescriptor(this->targetDescriptionFile.getSystemAddressSpaceDescriptor())
@@ -394,21 +393,12 @@ namespace Targets::RiscV
         return *(segmentDescriptors.front());
     }
 
-    TargetPeripheralDescriptor RiscV::generateCpuPeripheralDescriptor(
+    const TargetRegisterGroupDescriptor& RiscV::generateGeneralPurposeRegisterGroupDescriptor(
         const IsaDescriptor& isaDescriptor,
-        const TargetAddressSpaceDescriptor& csrAddressSpaceDescriptor,
         const TargetAddressSpaceDescriptor& gprAddressSpaceDescriptor,
-        const TargetMemorySegmentDescriptor& csrMemorySegmentDescriptor,
-        const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor
+        const TargetMemorySegmentDescriptor& gprMemorySegmentDescriptor,
+        TargetPeripheralDescriptor& cpuPeripheralDescriptor
     ) {
-        auto cpuPeripheralDescriptor = TargetPeripheralDescriptor{
-            "cpu",
-            "CPU",
-            "RISC-V GPRs and CSRs",
-            {},
-            {}
-        };
-
         auto& gprGroup = cpuPeripheralDescriptor.registerGroupDescriptorsByKey.emplace(
             "gpr",
             TargetRegisterGroupDescriptor{
@@ -443,275 +433,6 @@ namespace Targets::RiscV
             );
         }
 
-        auto& csrGroup = cpuPeripheralDescriptor.registerGroupDescriptorsByKey.emplace(
-            "csr",
-            TargetRegisterGroupDescriptor{
-                "csr",
-                "csr",
-                "CSR",
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                std::nullopt,
-                {},
-                {}
-            }
-        ).first->second;
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "marchid",
-            TargetRegisterDescriptor{
-                "marchid",
-                "MARCHID",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0xF12,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, false},
-                "Architecture ID",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mimpid",
-            TargetRegisterDescriptor{
-                "mimpid",
-                "MIMPID",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0xF13,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, false},
-                "Implementation ID",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mstatus",
-            TargetRegisterDescriptor{
-                "mstatus",
-                "MSTATUS",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x300,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine status",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "misa",
-            TargetRegisterDescriptor{
-                "misa",
-                "MISA",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x301,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "ISA and extensions",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mtvec",
-            TargetRegisterDescriptor{
-                "mtvec",
-                "MTVEC",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x305,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine trap-handler base address",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mcounteren",
-            TargetRegisterDescriptor{
-                "mcounteren",
-                "MCOUNTEREN",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x306,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine counter enable",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mscratch",
-            TargetRegisterDescriptor{
-                "mscratch",
-                "MSCRATCH",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x340,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Scratch register for machine trap handlers",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mepc",
-            TargetRegisterDescriptor{
-                "mepc",
-                "MEPC",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x341,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine exception program counter",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mcause",
-            TargetRegisterDescriptor{
-                "mcause",
-                "MCAUSE",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x342,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine trap cause",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mtval",
-            TargetRegisterDescriptor{
-                "mtval",
-                "MTVAL",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x343,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine bad address or instruction",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "mip",
-            TargetRegisterDescriptor{
-                "mip",
-                "MIP",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x344,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Machine interrupt pending",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "dcsr",
-            TargetRegisterDescriptor{
-                "dcsr",
-                "DCSR",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B0,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Debug control and status",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "dpc",
-            TargetRegisterDescriptor{
-                "dpc",
-                "DPC",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B1,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Debug program counter",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "dscratch0",
-            TargetRegisterDescriptor{
-                "dscratch0",
-                "DSCRATCH0",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B2,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Debug scratch 0",
-                {}
-            }
-        );
-
-        csrGroup.registerDescriptorsByKey.emplace(
-            "dscratch1",
-            TargetRegisterDescriptor{
-                "dscratch1",
-                "DSCRATCH1",
-                csrGroup.absoluteKey,
-                cpuPeripheralDescriptor.key,
-                csrAddressSpaceDescriptor.key,
-                csrMemorySegmentDescriptor.addressRange.startAddress + 0x7B3,
-                4,
-                TargetRegisterType::OTHER,
-                TargetRegisterAccess{true, true},
-                "Debug scratch 1",
-                {}
-            }
-        );
-
-        return cpuPeripheralDescriptor;
+        return gprGroup;
     }
 }
