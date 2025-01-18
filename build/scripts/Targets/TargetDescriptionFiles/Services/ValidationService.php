@@ -488,19 +488,6 @@ class ValidationService
                 $failures[] = 'Duplicate register key ("' . $register->key . '") detected';
             }
 
-            if ($register->alternative !== true) {
-                foreach ($registerGroup->registers as $registerOther) {
-                    if ($register->key === $registerOther->key || $registerOther->alternative === true) {
-                        continue;
-                    }
-
-                    if ($register->intersectsWith($registerOther)) {
-                        $failures[] = 'Register "' . $register->key . '" overlaps with register "'
-                            . $registerOther->key . '"';
-                    }
-                }
-            }
-
             $processedChildKeys[] = $register->key;
         }
 
@@ -1118,6 +1105,22 @@ class ValidationService
                         . implode(',', $segmentKeys) . ')';
                     continue;
                 }
+
+                $registerAddressRange = $register->addressRange($addressSpace->unitSize);
+                if ($register->alternative !== true) {
+                    foreach ($registerGroup->registers as $registerOther) {
+                        if ($register->key === $registerOther->key || $registerOther->alternative === true) {
+                            continue;
+                        }
+
+                        $registerOtherAddressRange = $registerOther->addressRange($addressSpace->unitSize);
+                        if ($registerAddressRange->intersectsWith($registerOtherAddressRange)) {
+                            $failures[] = 'Register "' . $register->key . '" overlaps with register "'
+                                . $registerOther->key . '"';
+                        }
+                    }
+                }
+
             }
         }
 
