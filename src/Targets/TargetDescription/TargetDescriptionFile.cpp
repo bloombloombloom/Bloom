@@ -963,10 +963,11 @@ namespace Targets::TargetDescription
             addressSpace.key,
             TargetMemoryAddressRange{
                 addressSpace.startAddress,
-                addressSpace.startAddress + addressSpace.size - 1
+                addressSpace.startAddress + (addressSpace.size / addressSpace.unitSize) - 1
             },
             addressSpace.endianness.value_or(TargetMemoryEndianness::LITTLE),
-            {}
+            {},
+            addressSpace.unitSize
         };
 
         for (const auto& [key, memorySegment] : addressSpace.memorySegmentsByKey) {

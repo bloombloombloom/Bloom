@@ -41,7 +41,7 @@ namespace Targets
             const TargetMemoryAddressRange& addressRange,
             TargetMemoryEndianness endianness,
             std::map<std::string, TargetMemorySegmentDescriptor>&& segmentDescriptorsByKey,
-            std::uint8_t unitSize = 1
+            std::uint8_t unitSize
         );
 
         TargetAddressSpaceDescriptor(const TargetAddressSpaceDescriptor& other) = delete;
