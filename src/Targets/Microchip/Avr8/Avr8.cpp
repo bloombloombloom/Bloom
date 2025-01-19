@@ -367,28 +367,18 @@ namespace Targets::Microchip::Avr8
 
     void Avr8::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         if (breakpoint.addressSpaceDescriptor != this->programAddressSpaceDescriptor) {
-            throw Exception{"Unexpected address space descriptor"};
+            throw Exception{"Unexpected address space"};
         }
 
-        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
-            this->avr8DebugInterface->setHardwareBreakpoint(breakpoint.address);
-
-        } else {
-            this->avr8DebugInterface->setSoftwareBreakpoint(breakpoint.address);
-        }
+        this->avr8DebugInterface->setProgramBreakpoint(breakpoint);
     }
 
     void Avr8::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
         if (breakpoint.addressSpaceDescriptor != this->programAddressSpaceDescriptor) {
-            throw Exception{"Unexpected address space descriptor"};
+            throw Exception{"Unexpected address space"};
         }
 
-        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
-            this->avr8DebugInterface->clearHardwareBreakpoint(breakpoint.address);
-
-        } else {
-            this->avr8DebugInterface->clearSoftwareBreakpoint(breakpoint.address);
-        }
+        this->avr8DebugInterface->removeProgramBreakpoint(breakpoint);
     }
 
     TargetRegisterDescriptorAndValuePairs Avr8::readRegisters(const Targets::TargetRegisterDescriptors& descriptors) {

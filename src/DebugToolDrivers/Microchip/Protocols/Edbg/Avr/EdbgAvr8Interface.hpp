@@ -14,6 +14,7 @@
 
 #include "src/Targets/TargetPhysicalInterface.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/ProgramBreakpointRegistry.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/Microchip/Avr8/TargetDescriptionFile.hpp"
 #include "src/Targets/Microchip/Avr8/Family.hpp"
@@ -65,8 +66,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * memory command that exceeds 256 bytes in the size of the read request, despite the fact that the HID report
          * size is 512 bytes. The debug tool doesn't report any error, it just returns incorrect data.
          *
-         * To address this, debug tool drivers can set a soft limit on the number of bytes this EdbgAvr8Interface instance
-         * will attempt to access in a single request, using the EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest()
+         * To address this, debug tool drivers can set a soft limit on the number of bytes this EdbgAvr8Interface
+         * instance will attempt to access in a single request, using the EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest()
          * member function.
          *
          * This limit will be enforced in all forms of memory access on the AVR8 target, including register access.
@@ -91,51 +92,15 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * See the comments in that class for more info on the expected behaviour of each method.
          */
 
-        /**
-         * Initialises the AVR8 Generic protocol interface by setting the appropriate parameters on the debug tool.
-         */
         void init() override;
 
-        /**
-         * Issues the "stop" command to the debug tool, halting target execution.
-         */
         void stop() override;
-
-        /**
-         * Issues the "run" command to the debug tool, resuming execution on the target.
-         */
         void run() override;
-
-        /**
-         * Issues the "run to" command to the debug tool, resuming execution on the target, up to a specific byte
-         * address. The target will dispatch an AVR BREAK event once it reaches the specified address.
-         *
-         * @param address
-         *  The (byte) address to run to.
-         */
         void runTo(Targets::TargetMemoryAddress address) override;
-
-        /**
-         * Issues the "step" command to the debug tool, stepping the execution on the target. The stepping can be
-         * configured to step in, out or over. But currently we only support stepping in. The target will dispatch
-         * an AVR BREAK event once it reaches the next instruction.
-         */
         void step() override;
-
-        /**
-         * Issues the "reset" command to the debug tool, resetting target execution.
-         */
         void reset() override;
 
-        /**
-         * Activates the physical interface and starts a debug session on the target (via attach()).
-         */
         void activate() override;
-
-        /**
-         * Terminates any active debug session on the target and severs the connection between the debug tool and
-         * the target (by deactivating the physical interface).
-         */
         void deactivate() override;
 
         void applyAccessRestrictions(
@@ -143,92 +108,19 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor
         ) override;
 
-        /**
-         * Issues the "PC Read" command to the debug tool, to extract the current program counter.
-         *
-         * @return
-         */
         Targets::TargetMemoryAddress getProgramCounter() override;
-
-        /**
-         * Issues the "PC Write" command to the debug tool, setting the program counter on the target.
-         *
-         * @param programCounter
-         *  The byte address to set as the program counter.
-         */
         void setProgramCounter(Targets::TargetMemoryAddress programCounter) override;
 
-        /**
-         * Issues the "Get ID" command to the debug tool, to extract the signature from the target.
-         *
-         * @return
-         */
         Targets::Microchip::Avr8::TargetSignature getDeviceId() override;
 
-        /**
-         * Issues the "Software Breakpoint Set" command to the debug tool, setting a software breakpoint at the given
-         * byte address.
-         *
-         * @param address
-         *  The byte address to place the breakpoint.
-         */
-        void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
+        virtual void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
+        virtual void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
 
-        /**
-         * Issues the "Software Breakpoint Clear" command to the debug tool, clearing any software breakpoint at the
-         * given byte address.
-         *
-         * @param address
-         *  The byte address of the breakpoint to clear.
-         */
-        void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) override;
-
-        /**
-         * Issues the "Hardware Breakpoint Set" command to the debug tool, setting a hardware breakpoint at the given
-         * byte address.
-         *
-         * @param address
-         *  The byte address to place the breakpoint.
-         */
-        void setHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-
-        /**
-         * Issues the "Hardware Breakpoint Clear" command to the debug tool, clearing any hardware breakpoint at the
-         * given byte address.
-         *
-         * @param address
-         *  The byte address of the breakpoint to clear.
-         */
-        void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) override;
-
-        /**
-         * Reads registers from the target.
-         *
-         * @param descriptorIds
-         * @return
-         */
         Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
         ) override;
-
-        /**
-         * Writes registers to target.
-         *
-         * @param registers
-         */
         void writeRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) override;
 
-        /**
-         * This is an overloaded method.
-         *
-         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls readMemory().
-         *
-         * @param addressSpaceDescriptor
-         * @param memorySegmentDescriptor
-         * @param startAddress
-         * @param bytes
-         * @return
-         */
         Targets::TargetMemoryBuffer readMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -236,17 +128,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             Targets::TargetMemorySize bytes,
             const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges = {}
         ) override;
-
-        /**
-         * This is an overloaded method.
-         *
-         * Resolves the correct Avr8MemoryType from the given TargetMemoryType and calls writeMemory().
-         *
-         * @param addressSpaceDescriptor
-         * @param memorySegmentDescriptor
-         * @param startAddress
-         * @param buffer
-         */
         void writeMemory(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
@@ -254,86 +135,57 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             Targets::TargetMemoryBufferSpan buffer
         ) override;
 
-        /**
-         * Issues the "Erase" command to erase a particular section of program memory.
-         *
-         * @param section
-         */
         void eraseProgramMemory(
             std::optional<Targets::Microchip::Avr8::ProgramMemorySection> section = std::nullopt
         ) override;
-
-        /**
-         * Issues the "Erase" command to erase the entire chip.
-         */
         void eraseChip() override;
 
-        /**
-         * Returns the current state of the target.
-         *
-         * @return
-         */
         Targets::TargetExecutionState getExecutionState() override;
 
-        /**
-         * Enters programming mode on the EDBG debug tool.
-         */
         void enableProgrammingMode() override;
-
-        /**
-         * Leaves programming mode on the EDBG debug tool.
-         */
         void disableProgrammingMode() override;
 
     private:
-        /**
-         * The AVR8 Generic protocol is a sub-protocol of the EDBG AVR protocol, which is served via CMSIS-DAP vendor
-         * commands.
-         *
-         * Every EDBG based debug tool that utilises this implementation must provide access to its EDBG interface.
-         */
         EdbgInterface* edbgInterface = nullptr;
-
-        /**
-         * The active EDBG AVR8 session.
-         */
         EdbgAvr8Session session;
 
-        /**
-         * See the comment for EdbgAvr8Interface::setAvoidMaskedMemoryRead().
-         */
         bool avoidMaskedMemoryRead = true;
-
-        /**
-         * See the comment for EdbgAvr8Interface::setMaximumMemoryAccessSizePerRequest().
-         */
         std::optional<Targets::TargetMemorySize> maximumMemoryAccessSizePerRequest;
-
         bool reactivateJtagTargetPostProgrammingMode = false;
-
-        /**
-         * We keep record of the current target execution state for caching purposes.
-         *
-         * We'll only refresh the target state if the target is running. If it has already stopped, then we assume it
-         * cannot transition to a running state without an instruction from us.
-         *
-         * @TODO: Review this. Is the above assumption correct? Always? Explore the option of polling the target state.
-         */
         Targets::TargetExecutionState cachedExecutionState = Targets::TargetExecutionState::UNKNOWN;
-
-        /**
-         * Upon configuration, the physical interface must be activated on the debug tool. We keep record of this to
-         * assist in our decision to deactivate the physical interface, when deactivate() is called.
-         */
         bool physicalInterfaceActivated = false;
+        bool targetAttached = false;
+        bool programmingModeEnabled = false;
 
         /**
-         * As with activating the physical interface, we are required to issue the "attach" command to the debug
-         * tool, in order to start a debug session in the target.
+         * The TargetController refreshes the relevant program memory cache after inserting/removing software
+         * breakpoints. So it expects the insertion/removal operation to take place immediately. But, EDBG tools do
+         * not appear to support this. They queue the insertion/removal of software breakpoints until the next
+         * program flow control command.
+         *
+         * To get around this, we keep track of the pending operations and intercept program memory access operations
+         * to inject the relevant instruction opcodes, so that it appears as if the breakpoints have been
+         * inserted/removed. In other words: we fake it - we make it seem as if the breakpoints were inserted/removed
+         * immediately, when in actuality, the operation is still pending.
+         *
+         * It's horrible, but I can't think of a better way. Yes, I have considered loosening the restriction on the
+         * target driver, but I dislike that approach even more, because it would mean making the rest of Bloom
+         * accommodate the "I'll do it when I feel like it" nature of the EDBG tool, which is something I really
+         * don't want to do.
+         *
+         * This also addresses another potential issue, where EDBG tools will filter out software breakpoints when
+         * accessing program memory via some memory types. This is undesired behaviour. We negate it by injecting
+         * BREAK opcodes at the addresses of all active software breakpoints, when accessing program memory via any
+         * memory type.
+         *
+         * For more, see the following member functions:
+         *   - EdbgAvr8Interface::injectActiveBreakpoints()
+         *   - EdbgAvr8Interface::concealPendingBreakpointOperations()
+         *   - EdbgAvr8Interface::commitPendingBreakpointOperations()
          */
-        bool targetAttached = false;
-
-        bool programmingModeEnabled = false;
+        Targets::ProgramBreakpointRegistry pendingSoftwareBreakpointInsertions;
+        Targets::ProgramBreakpointRegistry pendingSoftwareBreakpointDeletions;
+        Targets::ProgramBreakpointRegistry activeSoftwareBreakpoints;
 
         /**
          * Every hardware breakpoint is assigned a "breakpoint number", which we need to keep track of in order to
@@ -341,38 +193,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          */
         std::map<Targets::TargetMemoryAddress, std::uint8_t> hardwareBreakpointNumbersByAddress;
 
-        /**
-         * Sends the necessary target parameters to the debug tool.
-         *
-         * @param config
-         */
         void setTargetParameters();
-
-        /**
-         * Sets an AVR8 parameter on the debug tool. See the Avr8EdbgParameters class and protocol documentation
-         * for more on available parameters.
-         *
-         * @param parameter
-         * @param value
-         */
         void setParameter(const Avr8EdbgParameter& parameter, const std::vector<unsigned char>& value);
-
-        /**
-         * Overload for setting parameters with single byte values.
-         *
-         * @param parameter
-         * @param value
-         */
         void setParameter(const Avr8EdbgParameter& parameter, std::uint8_t value) {
             this->setParameter(parameter, std::vector<unsigned char>(1, value));
         }
-
-        /**
-         * Overload for setting parameters with four byte integer values.
-         *
-         * @param parameter
-         * @param value
-         */
         void setParameter(const Avr8EdbgParameter& parameter, std::uint32_t value) {
             auto paramValue = std::vector<unsigned char>(4);
             paramValue[0] = static_cast<unsigned char>(value);
@@ -382,13 +207,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
             this->setParameter(parameter, paramValue);
         }
-
-        /**
-         * Overload for setting parameters with two byte integer values.
-         *
-         * @param parameter
-         * @param value
-         */
         void setParameter(const Avr8EdbgParameter& parameter, std::uint16_t value) {
             auto paramValue = std::vector<unsigned char>(2);
             paramValue[0] = static_cast<unsigned char>(value);
@@ -397,13 +215,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             this->setParameter(parameter, paramValue);
         }
 
-        /**
-         * Fetches an AV8 parameter from the debug tool.
-         *
-         * @param parameter
-         * @param size
-         * @return
-         */
         std::vector<unsigned char> getParameter(const Avr8EdbgParameter& parameter, std::uint8_t size);
 
         /**
@@ -425,91 +236,55 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         void setPdiParameters();
         void setUpdiParameters();
 
-        /**
-         * Sends the "Activate Physical" command to the debug tool, activating the physical interface and thus enabling
-         * communication between the debug tool and the target.
-         *
-         * @param applyExternalReset
-         */
         void activatePhysical(bool applyExternalReset = false);
-
-        /**
-         * Sends the "Deactivate Physical" command to the debug tool, which will result in the connection between the
-         * debug tool and the target being severed.
-         */
         void deactivatePhysical();
 
-        /**
-         * Sends the "Attach" command to the debug tool, which starts a debug session on the target.
-         */
         void attach();
-
-        /**
-         * Sends the "Detach" command to the debug tool, which terminates any active debug session on the target.
-         */
         void detach();
 
-        /**
-         * Issues the "Software Breakpoint Clear All" command to the debug tool, clearing all software breakpoints
-         * immediately.
-         */
+        void setSoftwareBreakpoint(Targets::TargetMemoryAddress address);
+        void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address);
+        void setHardwareBreakpoint(Targets::TargetMemoryAddress address);
+        void clearHardwareBreakpoint(Targets::TargetMemoryAddress address);
         void clearAllSoftwareBreakpoints();
-
-        /**
-         * Clears all software and hardware breakpoints on the target.
-         *
-         * This function will not clear any untracked hardware breakpoints (breakpoints that were installed in a
-         * previous session).
-         */
         void clearAllBreakpoints();
+        void injectActiveBreakpoints(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryBuffer& data,
+            Targets::TargetMemoryAddress startAddress
+        );
+        void concealPendingBreakpointOperations(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryBuffer& data,
+            Targets::TargetMemoryAddress startAddress
+        );
+        void commitPendingBreakpointOperations();
+        void injectBreakOpcodeAtBreakpoint(
+            const Targets::TargetProgramBreakpoint& breakpoint,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryBuffer& data,
+            Targets::TargetMemoryAddress startAddress
+        );
+        void injectOriginalOpcodeAtBreakpoint(
+            const Targets::TargetProgramBreakpoint& breakpoint,
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryBuffer& data,
+            Targets::TargetMemoryAddress startAddress
+        );
 
-        /**
-         * Fetches any queued events belonging to the AVR8 Generic protocol (such as target break events).
-         *
-         * @return
-         */
         std::unique_ptr<AvrEvent> getAvrEvent();
-
-        /**
-         * Clears (discards) any queued AVR8 Generic protocol events on the debug tool.
-         */
         void clearEvents();
 
         Avr8MemoryType getRegisterMemoryType(const Targets::TargetRegisterDescriptor& descriptor);
 
-        /**
-         * Checks if alignment is required for memory access via a given Avr8MemoryType.
-         *
-         * @param memoryType
-         * @return
-         */
         bool alignmentRequired(Avr8MemoryType memoryType);
-
-        /**
-         * Aligns a memory address for a given memory type's page size.
-         *
-         * @param memoryType
-         * @param address
-         * @return
-         */
         Targets::TargetMemoryAddress alignMemoryAddress(Avr8MemoryType memoryType, Targets::TargetMemoryAddress address);
-
-        /**
-         * Aligns a number of bytes used to address memory, for a given memory type's page size.
-         *
-         * @param memoryType
-         * @param bytes
-         * @return
-         */
         Targets::TargetMemorySize alignMemoryBytes(Avr8MemoryType memoryType, Targets::TargetMemorySize bytes);
 
-        /**
-         * Determines the maximum memory access size imposed on the given Avr8MemoryType.
-         *
-         * @param memoryType
-         *
-         * @return
-         */
         Targets::TargetMemorySize maximumMemoryAccessSize(Avr8MemoryType memoryType);
 
         /**
@@ -558,18 +333,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             Targets::TargetMemoryBufferSpan buffer
         );
 
-        /**
-         * Fetches the current target state.
-         *
-         * This currently uses AVR BREAK events to determine if a target has stopped. The lack of any
-         * queued BREAK events leads to the assumption that the target is still running.
-         */
         void refreshTargetState();
 
-        /**
-         * Temporarily disables the debugWIRE module on the target. This does not affect the DWEN fuse. The module
-         * will be reactivated upon the cycling of the target power.
-         */
         void disableDebugWire();
 
         /**
@@ -586,7 +351,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          *  will be returned.
          */
         template <class AvrEventType>
-        std::unique_ptr<AvrEventType> waitForAvrEvent(int maximumAttempts = 20) {
+        std::unique_ptr<AvrEventType> waitForAvrEvent(int maximumAttempts = 60) {
             int attemptCount = 0;
 
             while (attemptCount <= maximumAttempts) {
@@ -601,21 +366,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                     }
                 }
 
-                std::this_thread::sleep_for(std::chrono::milliseconds{50});
+                std::this_thread::sleep_for(std::chrono::milliseconds{5});
                 attemptCount++;
             }
 
             return nullptr;
         }
-
-        /**
-         * Waits for an AVR BREAK event.
-         *
-         * This simply wraps a call to waitForAvrEvent<BreakEvent>(). An exception will be thrown if the call doesn't
-         * return a BreakEvent.
-         *
-         * This should only be used when a BreakEvent is always expected.
-         */
         void waitForStoppedEvent();
     };
 }

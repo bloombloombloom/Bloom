@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
+#include <array>
 
 #include "src/Services/PathService.hpp"
 #include "src/Services/StringService.hpp"
@@ -80,15 +81,18 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     using CommandFrames::Avr8Generic::DisableDebugWire;
 
     using Targets::TargetAddressSpaceDescriptor;
+    using Targets::TargetMemorySegmentDescriptor;
     using Targets::TargetMemorySegmentType;
     using Targets::TargetExecutionState;
     using Targets::TargetPhysicalInterface;
     using Targets::TargetMemoryBuffer;
     using Targets::TargetMemoryAddress;
+    using Targets::TargetMemoryAddressRange;
     using Targets::TargetMemorySize;
     using Targets::TargetRegisterDescriptor;
     using Targets::TargetRegisterDescriptors;
     using Targets::TargetRegisterDescriptorAndValuePairs;
+    using Targets::TargetProgramBreakpoint;
 
     EdbgAvr8Interface::EdbgAvr8Interface(
         EdbgInterface* edbgInterface,
@@ -169,6 +173,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         this->cachedExecutionState = TargetExecutionState::RUNNING;
+        this->commitPendingBreakpointOperations();
     }
 
     void EdbgAvr8Interface::runTo(TargetMemoryAddress address) {
@@ -180,6 +185,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         this->cachedExecutionState = TargetExecutionState::RUNNING;
+        this->commitPendingBreakpointOperations();
     }
 
     void EdbgAvr8Interface::step() {
@@ -189,6 +195,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         this->cachedExecutionState = TargetExecutionState::STEPPING;
+        this->commitPendingBreakpointOperations();
     }
 
     void EdbgAvr8Interface::reset() {
@@ -360,80 +367,34 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         return responseFrame.extractSignature(this->session.targetConfig.physicalInterface);
     }
 
-    void EdbgAvr8Interface::setSoftwareBreakpoint(TargetMemoryAddress address) {
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            SetSoftwareBreakpoints{{address}}
-        );
+    void EdbgAvr8Interface::setProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->setHardwareBreakpoint(breakpoint.address);
 
-        if (responseFrame.id == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure{"AVR8 Set software breakpoint command failed", responseFrame};
-        }
-    }
-
-    void EdbgAvr8Interface::clearSoftwareBreakpoint(TargetMemoryAddress address) {
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            ClearSoftwareBreakpoints{{address}}
-        );
-
-        if (responseFrame.id == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure{"AVR8 Clear software breakpoint command failed", responseFrame};
-        }
-    }
-
-    void EdbgAvr8Interface::setHardwareBreakpoint(TargetMemoryAddress address) {
-        static const auto getAvailableBreakpointNumbers = [this] () {
-            auto breakpointNumbers = std::set<std::uint8_t>{1, 2, 3};
-
-            for (const auto& [address, allocatedNumber] : this->hardwareBreakpointNumbersByAddress) {
-                breakpointNumbers.erase(allocatedNumber);
+        } else {
+            if (this->pendingSoftwareBreakpointInsertions.contains(breakpoint)) {
+                return;
             }
 
-            return breakpointNumbers;
-        };
-
-        if (this->hardwareBreakpointNumbersByAddress.contains(address)) {
-            Logger::debug(
-                "Hardware breakpoint already installed for byte address 0x" + Services::StringService::toHex(address)
-                    + " - ignoring request"
-            );
-            return;
+            this->setSoftwareBreakpoint(breakpoint.address);
+            this->pendingSoftwareBreakpointInsertions.insert(breakpoint);
+            this->pendingSoftwareBreakpointDeletions.remove(breakpoint);
         }
-
-        const auto availableBreakpointNumbers = getAvailableBreakpointNumbers();
-
-        if (availableBreakpointNumbers.empty()) {
-            throw Exception{"Maximum hardware breakpoints have been allocated"};
-        }
-
-        const auto breakpointNumber = *(availableBreakpointNumbers.begin());
-
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            SetHardwareBreakpoint{address, breakpointNumber}
-        );
-
-        if (responseFrame.id == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure{"AVR8 Set hardware breakpoint command failed", responseFrame};
-        }
-
-        this->hardwareBreakpointNumbersByAddress.emplace(address, breakpointNumber);
     }
 
-    void EdbgAvr8Interface::clearHardwareBreakpoint(TargetMemoryAddress address) {
-        const auto breakpointNumberIt = this->hardwareBreakpointNumbersByAddress.find(address);
-        if (breakpointNumberIt == this->hardwareBreakpointNumbersByAddress.end()) {
-            Logger::error("No hardware breakpoint at byte address 0x" + Services::StringService::toHex(address));
-            return;
+    void EdbgAvr8Interface::removeProgramBreakpoint(const TargetProgramBreakpoint& breakpoint) {
+        if (breakpoint.type == TargetProgramBreakpoint::Type::HARDWARE) {
+            this->clearHardwareBreakpoint(breakpoint.address);
+
+        } else {
+            if (this->pendingSoftwareBreakpointDeletions.contains(breakpoint)) {
+                return;
+            }
+
+            this->clearSoftwareBreakpoint(breakpoint.address);
+            this->pendingSoftwareBreakpointDeletions.insert(breakpoint);
+            this->pendingSoftwareBreakpointInsertions.remove(breakpoint);
         }
-
-        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
-            ClearHardwareBreakpoint{breakpointNumberIt->second}
-        );
-
-        if (responseFrame.id == Avr8ResponseId::FAILED) {
-            throw Avr8CommandFailure{"AVR8 Clear hardware breakpoint command failed", responseFrame};
-        }
-
-        this->hardwareBreakpointNumbersByAddress.erase(address);
     }
 
     TargetRegisterDescriptorAndValuePairs EdbgAvr8Interface::readRegisters(
@@ -628,8 +589,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     TargetMemoryBuffer EdbgAvr8Interface::readMemory(
-        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
-        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         TargetMemorySize bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
@@ -659,12 +620,30 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
+            const auto injectAndConcealBreakpoints = [&] (TargetMemoryBuffer&& data) -> TargetMemoryBuffer&& {
+                this->injectActiveBreakpoints(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    data,
+                    startAddress
+                );
+                this->concealPendingBreakpointOperations(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    data,
+                    startAddress
+                );
+                return std::move(data);
+            };
+
             if (this->session.configVariant == Avr8ConfigVariant::MEGAJTAG) {
-                return this->readMemory(
-                    this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM,
-                    startAddress,
-                    bytes,
-                    excludedAddresses
+                return injectAndConcealBreakpoints(
+                    this->readMemory(
+                        this->programmingModeEnabled ? Avr8MemoryType::FLASH_PAGE : Avr8MemoryType::SPM,
+                        startAddress,
+                        bytes,
+                        excludedAddresses
+                    )
                 );
             }
 
@@ -675,11 +654,13 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                      * When using the BOOT_FLASH memory type, the address should be relative to the start of the
                      * boot section.
                      */
-                    return this->readMemory(
-                        Avr8MemoryType::BOOT_FLASH,
-                        startAddress - bootSectionStartAddress,
-                        bytes,
-                        excludedAddresses
+                    return injectAndConcealBreakpoints(
+                        this->readMemory(
+                            Avr8MemoryType::BOOT_FLASH,
+                            startAddress - bootSectionStartAddress,
+                            bytes,
+                            excludedAddresses
+                        )
                     );
                 }
 
@@ -687,15 +668,19 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                  * When using the APPL_FLASH memory type, the address should be relative to the start of the
                  * application section.
                  */
-                return this->readMemory(
-                    Avr8MemoryType::APPL_FLASH,
-                    startAddress - this->session.programAppSection.value().get().startAddress,
-                    bytes,
-                    excludedAddresses
+                return injectAndConcealBreakpoints(
+                    this->readMemory(
+                        Avr8MemoryType::APPL_FLASH,
+                        startAddress - this->session.programAppSection.value().get().startAddress,
+                        bytes,
+                        excludedAddresses
+                    )
                 );
             }
 
-            return this->readMemory(Avr8MemoryType::FLASH_PAGE, startAddress, bytes, excludedAddresses);
+            return injectAndConcealBreakpoints(
+                this->readMemory(Avr8MemoryType::FLASH_PAGE, startAddress, bytes, excludedAddresses)
+            );
         }
 
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::EEPROM) {
@@ -742,8 +727,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
     }
 
     void EdbgAvr8Interface::writeMemory(
-        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
-        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
         TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
@@ -772,8 +757,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                         buffer
                     );
                 }
-
-                return this->writeMemory(Avr8MemoryType::FLASH_PAGE, startAddress, buffer);
             }
 
             return this->writeMemory(Avr8MemoryType::FLASH_PAGE, startAddress, buffer);
@@ -895,6 +878,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
          * To avoid this issue, we send the 'clear all software breakpoints' command to the tool, just before
          * entering programming mode. That command will clear all breakpoints immediately, preventing program
          * memory corruption at the next flow control command.
+         *
+         * The TargetController will reinsert all breakpoints at the end of a programming session, so the breakpoints
+         * that we clear here will be restored.
          */
         Logger::debug("Clearing all software breakpoints in preparation for programming mode");
         this->clearAllSoftwareBreakpoints();
@@ -1232,6 +1218,82 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         this->targetAttached = false;
     }
 
+    void EdbgAvr8Interface::setSoftwareBreakpoint(TargetMemoryAddress address) {
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            SetSoftwareBreakpoints{{address}}
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure{"AVR8 Set software breakpoint command failed", responseFrame};
+        }
+    }
+
+    void EdbgAvr8Interface::clearSoftwareBreakpoint(TargetMemoryAddress address) {
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            ClearSoftwareBreakpoints{{address}}
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure{"AVR8 Clear software breakpoint command failed", responseFrame};
+        }
+    }
+
+    void EdbgAvr8Interface::setHardwareBreakpoint(TargetMemoryAddress address) {
+        static const auto getAvailableBreakpointNumbers = [this] () {
+            auto breakpointNumbers = std::set<std::uint8_t>{1, 2, 3};
+
+            for (const auto& [address, allocatedNumber] : this->hardwareBreakpointNumbersByAddress) {
+                breakpointNumbers.erase(allocatedNumber);
+            }
+
+            return breakpointNumbers;
+        };
+
+        if (this->hardwareBreakpointNumbersByAddress.contains(address)) {
+            Logger::debug(
+                "Hardware breakpoint already installed for byte address 0x" + Services::StringService::toHex(address)
+                    + " - ignoring request"
+            );
+            return;
+        }
+
+        const auto availableBreakpointNumbers = getAvailableBreakpointNumbers();
+
+        if (availableBreakpointNumbers.empty()) {
+            throw Exception{"Maximum hardware breakpoints have been allocated"};
+        }
+
+        const auto breakpointNumber = *(availableBreakpointNumbers.begin());
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            SetHardwareBreakpoint{address, breakpointNumber}
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure{"AVR8 Set hardware breakpoint command failed", responseFrame};
+        }
+
+        this->hardwareBreakpointNumbersByAddress.emplace(address, breakpointNumber);
+    }
+
+    void EdbgAvr8Interface::clearHardwareBreakpoint(TargetMemoryAddress address) {
+        const auto breakpointNumberIt = this->hardwareBreakpointNumbersByAddress.find(address);
+        if (breakpointNumberIt == this->hardwareBreakpointNumbersByAddress.end()) {
+            Logger::error("No hardware breakpoint at byte address 0x" + Services::StringService::toHex(address));
+            return;
+        }
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            ClearHardwareBreakpoint{breakpointNumberIt->second}
+        );
+
+        if (responseFrame.id == Avr8ResponseId::FAILED) {
+            throw Avr8CommandFailure{"AVR8 Clear hardware breakpoint command failed", responseFrame};
+        }
+
+        this->hardwareBreakpointNumbersByAddress.erase(address);
+    }
+
     void EdbgAvr8Interface::clearAllSoftwareBreakpoints() {
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             ClearAllSoftwareBreakpoints{}
@@ -1240,6 +1302,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         if (responseFrame.id == Avr8ResponseId::FAILED) {
             throw Avr8CommandFailure{"AVR8 Clear all software breakpoints command failed", responseFrame};
         }
+
+        this->activeSoftwareBreakpoints.clear();
+        this->pendingSoftwareBreakpointInsertions.clear();
+        this->pendingSoftwareBreakpointDeletions.clear();
     }
 
     void EdbgAvr8Interface::clearAllBreakpoints() {
@@ -1249,6 +1315,164 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         while (!this->hardwareBreakpointNumbersByAddress.empty()) {
             this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
         }
+    }
+
+    void EdbgAvr8Interface::injectActiveBreakpoints(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryBuffer& data,
+        TargetMemoryAddress startAddress
+    ) {
+        if (data.empty()) {
+            return;
+        }
+
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->activeSoftwareBreakpoints) {
+            if (addressSpaceId != addressSpaceDescriptor.id) {
+                continue;
+            }
+
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->injectBreakOpcodeAtBreakpoint(
+                    breakpoint,
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    data,
+                    startAddress
+                );
+            }
+        }
+    }
+
+    void EdbgAvr8Interface::concealPendingBreakpointOperations(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryBuffer& data,
+        TargetMemoryAddress startAddress
+    ) {
+        if (data.empty()) {
+            return;
+        }
+
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->pendingSoftwareBreakpointInsertions) {
+            if (addressSpaceId != addressSpaceDescriptor.id) {
+                continue;
+            }
+
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->injectBreakOpcodeAtBreakpoint(
+                    breakpoint,
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    data,
+                    startAddress
+                );
+            }
+        }
+
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->pendingSoftwareBreakpointDeletions) {
+            if (addressSpaceId != addressSpaceDescriptor.id) {
+                continue;
+            }
+
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->injectOriginalOpcodeAtBreakpoint(
+                    breakpoint,
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    data,
+                    startAddress
+                );
+            }
+        }
+    }
+
+    void EdbgAvr8Interface::commitPendingBreakpointOperations() {
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->pendingSoftwareBreakpointInsertions) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->activeSoftwareBreakpoints.insert(breakpoint);
+            }
+        }
+
+        for (const auto& [addressSpaceId, breakpointsByAddress] : this->pendingSoftwareBreakpointDeletions) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->activeSoftwareBreakpoints.remove(breakpoint);
+            }
+        }
+
+        this->pendingSoftwareBreakpointInsertions.clear();
+        this->pendingSoftwareBreakpointDeletions.clear();
+    }
+
+    void EdbgAvr8Interface::injectBreakOpcodeAtBreakpoint(
+        const Targets::TargetProgramBreakpoint& breakpoint,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryBuffer& data,
+        Targets::TargetMemoryAddress startAddress
+    ) {
+        static constexpr auto breakOpcode = std::to_array<unsigned char>({0x98, 0x95});
+        assert(breakpoint.size == breakOpcode.size());
+
+        const auto addressRange = TargetMemoryAddressRange{
+            startAddress,
+            static_cast<TargetMemoryAddress>(startAddress + (data.size() / addressSpaceDescriptor.unitSize) - 1)
+        };
+
+        const auto breakpointRange = TargetMemoryAddressRange{
+            breakpoint.address,
+            breakpoint.address + breakpoint.size - 1
+        };
+
+        const auto intersectingSize = addressRange.intersectingSize(breakpointRange);
+        if (intersectingSize == 0) {
+            return;
+        }
+
+        const auto addressOffset = breakpointRange.startAddress < addressRange.startAddress
+            ? addressRange.startAddress - breakpointRange.startAddress
+            : 0;
+        const auto breakOpcodeOffset = breakOpcode.begin() + addressOffset;
+
+        std::copy(
+            breakOpcodeOffset,
+            breakOpcodeOffset + intersectingSize,
+            data.begin() + (breakpointRange.startAddress - addressRange.startAddress + addressOffset)
+        );
+    }
+
+    void EdbgAvr8Interface::injectOriginalOpcodeAtBreakpoint(
+        const Targets::TargetProgramBreakpoint& breakpoint,
+        const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryBuffer& data,
+        Targets::TargetMemoryAddress startAddress
+    ) {
+        const auto addressRange = TargetMemoryAddressRange{
+            startAddress,
+            static_cast<TargetMemoryAddress>(startAddress + (data.size() / addressSpaceDescriptor.unitSize) - 1)
+        };
+
+        const auto breakpointRange = TargetMemoryAddressRange{
+            breakpoint.address,
+            breakpoint.address + breakpoint.size - 1
+        };
+
+        const auto intersectingSize = addressRange.intersectingSize(breakpointRange);
+        if (intersectingSize == 0) {
+            return;
+        }
+
+        const auto addressOffset = breakpointRange.startAddress < addressRange.startAddress
+            ? addressRange.startAddress - breakpointRange.startAddress
+            : 0;
+        const auto originalDataOffset = breakpoint.originalData.begin() + addressOffset;
+
+        std::copy(
+            originalDataOffset,
+            originalDataOffset + intersectingSize,
+            data.begin() + (breakpointRange.startAddress - addressRange.startAddress + addressOffset)
+        );
     }
 
     std::unique_ptr<AvrEvent> EdbgAvr8Interface::getAvrEvent() {
@@ -1510,7 +1734,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         auto data = responseFrame.getMemoryData();
-
         if (data.size() != bytes) {
             throw Avr8CommandFailure{"Unexpected number of bytes returned from EDBG debug tool"};
         }

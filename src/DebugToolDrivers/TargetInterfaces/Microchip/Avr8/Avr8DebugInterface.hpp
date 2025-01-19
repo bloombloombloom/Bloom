@@ -15,6 +15,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetBreakpoint.hpp"
 
 namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
 {
@@ -95,10 +96,8 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
          */
         virtual Targets::Microchip::Avr8::TargetSignature getDeviceId() = 0;
 
-        virtual void setSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearSoftwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void setHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
-        virtual void clearHardwareBreakpoint(Targets::TargetMemoryAddress address) = 0;
+        virtual void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
+        virtual void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
 
         virtual Targets::TargetMemoryAddress getProgramCounter() = 0;
         virtual void setProgramCounter(Targets::TargetMemoryAddress programCounter) = 0;
