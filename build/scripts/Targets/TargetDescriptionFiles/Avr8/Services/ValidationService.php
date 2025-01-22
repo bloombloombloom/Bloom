@@ -37,8 +37,12 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Program memory address space exceeds 1M bytes';
         }
 
-        if ($tdf->getProgramMemorySegment() === null) {
+        $programMemorySegment = $tdf->getProgramMemorySegment();
+        if ($programMemorySegment === null) {
             $failures[] = 'Missing "internal_program_memory" memory segment';
+
+        } elseif ($programMemorySegment->pageSize === null) {
+            $failures[] = 'Missing page size in program memory segment';
         }
 
         if (($gprSegment = $tdf->getGpRegistersMemorySegment()) === null) {

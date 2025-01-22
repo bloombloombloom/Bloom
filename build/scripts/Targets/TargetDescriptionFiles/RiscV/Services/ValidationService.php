@@ -50,8 +50,24 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             $failures[] = 'Missing "programming_opcode_key" property';
         }
 
-        if ($tdf->getProperty('wch_link_interface', 'programming_block_size') === null) {
-            $failures[] = 'Missing "programming_block_size" property';
+        $programmingBlockSize = $tdf->getPropertyValue('wch_link_interface', 'programming_block_size');
+        if (!is_numeric($programmingBlockSize)) {
+            $failures[] = 'Missing/invalid "programming_block_size" property';
+
+        } else {
+            if (
+                $mainProgramSegment !== null
+                && ($mainProgramSegment->addressRange->startAddress % (int)$programmingBlockSize) !== 0
+            ) {
+                $failures[] = 'Main program memory segment start address does not align with programming block size';
+            }
+
+            if (
+                $bootProgramSegment !== null
+                && ($bootProgramSegment->addressRange->startAddress % (int)$programmingBlockSize) !== 0
+            ) {
+                $failures[] = 'Boot program memory segment start address does not align with programming block size';
+            }
         }
 
         if ($tdf->getProperty('riscv_debug_module', 'trigger_count') === null) {
