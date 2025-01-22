@@ -605,10 +605,20 @@ class AtdfService
 
     private function memorySegmentFromElement(DOMElement $element): MemorySegment
     {
+        // Some segments tend to have invalid page sizes.
+        $ignorePageSizeForSegments = [
+            'signatures',
+            'prod_signatures',
+            'user_signatures',
+            'lockbits',
+            'fuses',
+        ];
+
         $attributes = $this->getNodeAttributesByName($element);
 
+        $segmentKey = isset($attributes['name']) ? strtolower($attributes['name']) : null;
         return new MemorySegment(
-            isset($attributes['name']) ? strtolower($attributes['name']) : null,
+            $segmentKey,
             $attributes['name'] ?? null,
             $this->resolveMemorySegmentType(
                 $attributes['type'] ?? '',
@@ -617,7 +627,9 @@ class AtdfService
             $this->stringService->tryStringToInt($attributes['start'] ?? null),
             $this->stringService->tryStringToInt($attributes['size'] ?? null),
             null,
-            $this->stringService->tryStringToInt($attributes['pagesize'] ?? null),
+            !in_array($segmentKey, $ignorePageSizeForSegments)
+                ? $this->stringService->tryStringToInt($attributes['pagesize'] ?? null)
+                : null,
             $attributes['rw'] ?? null,
             [],
             isset($attributes['exec']) && $attributes['exec']
