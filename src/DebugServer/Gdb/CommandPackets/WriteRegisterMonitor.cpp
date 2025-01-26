@@ -113,7 +113,7 @@ namespace DebugServer::Gdb::CommandPackets
             buffer.reserve(registerDescriptor.size);
 
             for (auto i = std::uint8_t{0}; i < registerDescriptor.size; ++i) {
-                buffer.insert(buffer.begin(), static_cast<unsigned char>(value >> (registerDescriptor.size * 8 * i)));
+                buffer.insert(buffer.begin(), static_cast<unsigned char>(value >> (i * 8)));
             }
 
             debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex(
