@@ -151,12 +151,26 @@ namespace Targets::RiscV
         for (const auto& pair : registers) {
             const auto& descriptor = pair.first;
 
-            if (descriptor.addressSpaceId == this->csrAddressSpaceDescriptor.id) {
+            if (
+                descriptor.addressSpaceId == this->csrAddressSpaceDescriptor.id
+                || descriptor.addressSpaceId == this->gprAddressSpaceDescriptor.id
+            ) {
                 if (
-                    !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
+                    descriptor.addressSpaceId == this->csrAddressSpaceDescriptor.id
+                    && !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
+                ) {
+                    throw Exceptions::Exception{
+                        "Cannot access CPU CSR `" + descriptor.key + "` - unknown memory segment"
+                    };
+                }
+
+                if (
+                    descriptor.addressSpaceId == this->gprAddressSpaceDescriptor.id
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
                 ) {
-                    throw Exceptions::Exception{"Cannot access CPU register - unknown memory segment"};
+                    throw Exceptions::Exception{
+                        "Cannot access CPU GPR `" + descriptor.key + "` - unknown memory segment"
+                    };
                 }
 
                 this->riscVDebugInterface->writeCpuRegisters({pair});
