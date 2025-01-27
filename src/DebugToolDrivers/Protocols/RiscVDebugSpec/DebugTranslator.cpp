@@ -179,19 +179,24 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         if (statusRegister.anyHaveReset) {
             Logger::warning("Reset detected at RISC-V hart " + std::to_string(this->selectedHartIndex));
 
-            if (statusRegister.anyRunning) {
-                this->stop();
-            }
+            try {
+                if (statusRegister.anyRunning) {
+                    this->stop();
+                }
 
-            this->initDebugControlStatusRegister();
-            this->writeDebugModuleControlRegister(ControlRegister{
-                .debugModuleActive = true,
-                .selectedHartIndex = this->selectedHartIndex,
-                .acknowledgeHaveReset = true,
-            });
+                this->initDebugControlStatusRegister();
+                this->writeDebugModuleControlRegister(ControlRegister{
+                    .debugModuleActive = true,
+                    .selectedHartIndex = this->selectedHartIndex,
+                    .acknowledgeHaveReset = true,
+                });
 
-            if (statusRegister.anyRunning) {
-                this->run();
+                if (statusRegister.anyRunning) {
+                    this->run();
+                }
+
+            } catch (const Exceptions::TargetOperationFailure& exception) {
+                Logger::error("Failed to handle unexpected RISC-V hart reset - error: " + exception.getMessage());
             }
         }
 
