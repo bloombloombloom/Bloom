@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "TargetMemory.hpp"
+#include "TargetMemoryAddressRange.hpp"
 #include "TargetMemorySegmentType.hpp"
 
 namespace Targets

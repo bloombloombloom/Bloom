@@ -2,7 +2,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/ListView/ListItem.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 
 namespace Widgets
 {

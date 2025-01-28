@@ -10,6 +10,7 @@
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentType.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 
 namespace TargetController::Commands
 {

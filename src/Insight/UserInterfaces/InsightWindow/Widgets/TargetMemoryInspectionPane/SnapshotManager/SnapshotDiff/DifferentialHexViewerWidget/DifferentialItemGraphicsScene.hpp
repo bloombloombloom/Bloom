@@ -7,6 +7,8 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/SnapshotDiffSettings.hpp"
 
+#include "src/Targets/TargetMemoryAddressRange.hpp"
+
 namespace Widgets
 {
     class DifferentialItemGraphicsScene final: public ItemGraphicsScene

@@ -1,5 +1,7 @@
 #include "WriteMemory.hpp"
 
+#include "src/Targets/TargetMemoryAddressRange.hpp"
+
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 

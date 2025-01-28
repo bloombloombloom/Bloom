@@ -16,6 +16,7 @@
 #include "TargetState.hpp"
 #include "TargetRegisterDescriptor.hpp"
 #include "TargetMemory.hpp"
+#include "TargetMemoryAddressRange.hpp"
 #include "TargetBreakpoint.hpp"
 #include "TargetPadDescriptor.hpp"
 #include "TargetGpioPadState.hpp"

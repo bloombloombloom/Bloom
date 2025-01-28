@@ -6,7 +6,7 @@
 #include <QJsonObject>
 #include <utility>
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 #include "AddressType.hpp"
 
 #include "src/Services/DateTimeService.hpp"

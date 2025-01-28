@@ -13,7 +13,7 @@
 
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/MemoryRegion.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 
 namespace Widgets

@@ -10,7 +10,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/Label.hpp"
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/TargetMemoryInspectionPane/SnapshotManager/SnapshotDiff/DifferentialHexViewerWidget/DifferentialHexViewerWidget.hpp"
 
-#include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 
 #include "ChangeListItem.hpp"
 

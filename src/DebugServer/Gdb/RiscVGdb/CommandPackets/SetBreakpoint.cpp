@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "src/Targets/TargetMemoryAddressRange.hpp"
+
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
@@ -9,8 +11,8 @@
 #include "src/Targets/TargetBreakpoint.hpp"
 
 #include "src/Services/StringService.hpp"
-
 #include "src/Logger/Logger.hpp"
+
 #include "src/Exceptions/Exception.hpp"
 
 namespace DebugServer::Gdb::RiscVGdb::CommandPackets

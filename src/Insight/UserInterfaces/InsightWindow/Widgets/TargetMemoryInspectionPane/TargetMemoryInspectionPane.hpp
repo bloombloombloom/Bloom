@@ -12,6 +12,7 @@
 #include "src/Insight/UserInterfaces/InsightWindow/Widgets/PaneWidget.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"

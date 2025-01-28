@@ -19,6 +19,7 @@
 #include "src/Targets/TargetPadDescriptor.hpp"
 #include "src/Targets/TargetGpioPadState.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 #include "src/Targets/PassthroughCommand.hpp"
 #include "src/Targets/PassthroughResponse.hpp"

@@ -1,6 +1,7 @@
 #include "DynamicRegisterValue.hpp"
 
 #include <bitset>
+#include <cassert>
 
 namespace Targets
 {

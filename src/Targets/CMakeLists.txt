@@ -1,6 +1,7 @@
 target_sources(
     Bloom
     PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/TargetMemoryAddressRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetAddressSpaceDescriptor.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TargetMemorySegmentDescriptor.cpp

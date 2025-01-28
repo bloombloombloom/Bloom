@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include "src/Targets/TargetMemoryAddressRange.hpp"
+
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 

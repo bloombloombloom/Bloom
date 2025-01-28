@@ -15,6 +15,7 @@
 #include "src/Targets/TargetState.hpp"
 #include "src/Targets/TargetRegisterDescriptor.hpp"
 #include "src/Targets/TargetMemory.hpp"
+#include "src/Targets/TargetMemoryAddressRange.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
 
 namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
