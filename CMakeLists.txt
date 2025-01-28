@@ -45,6 +45,16 @@ if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     set(CMAKE_BUILD_RPATH /opt/Qt/6.2.4/gcc_64/lib/)
 endif()
 
+if (${CMAKE_BUILD_TYPE} MATCHES "Release")
+    # A lot of Bloom's code runs on the assumption that the loaded TDF is valid and doesn't contain any errors.
+    # The TDF validation script confirms this at build time, and we perform some sanity checks via assertions.
+    # Disabling these sanity checks in release builds is problematic, because users can edit TDFs. They really
+    # shouldn't do this, but I can see it happening.
+    #
+    # Enabling assertions in release builds will decrease the likelihood of all sorts of horrible things, if the user
+    # messes with the TDFs in Bloom's installation directory.
+    remove_definitions("-DNDEBUG")
+endif()
 add_executable(Bloom)
 set_target_properties(
     Bloom
