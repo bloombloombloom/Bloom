@@ -100,7 +100,7 @@ namespace Widgets
         }
 
         auto addressType = this->getSelectedAddressInputType();
-        const auto memoryAddressRange = this->memorySegmentDescriptor.addressRange;
+        const auto& memoryAddressRange = this->memorySegmentDescriptor.addressRange;
 
         const auto memoryAddressRangeStr = QString{
             "0x" + QString::number(memoryAddressRange.startAddress, 16).toUpper() + QString(" -> ")

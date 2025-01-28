@@ -273,7 +273,7 @@ namespace DebugToolDrivers::Wch
             return this->wchLinkInterface.eraseProgramMemory();
         }
 
-        // Ignore other (non-program memory) erase requests, for now.
+        Logger::debug("Ignoring erase operation on `" + memorySegmentDescriptor.key + "` segment - not supported");
     }
 
     void WchLinkDebugInterface::enableProgrammingMode() {
@@ -282,7 +282,7 @@ namespace DebugToolDrivers::Wch
          *
          * We cannot prepare the WCH-Link tool for a programming session here, as the preparation process differs
          * across the two types of flash write commands (full and partial block write). We don't know which command
-         * we'll be utilising at this point, so we perform the preparation in writeMemory().
+         * we'll be utilising at this point.
          */
     }
 
@@ -326,14 +326,14 @@ namespace DebugToolDrivers::Wch
             )
         };
 
-        static constexpr auto ebreakBytes = std::to_array<unsigned char>({
+        static constexpr auto EBREAK_OPCODE = std::to_array<unsigned char>({
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak),
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 8),
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 16),
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak >> 24)
         });
 
-        static constexpr auto compressedEbreakBytes = std::to_array<unsigned char>({
+        static constexpr auto COMPRESSED_EBREAK_OPCODE = std::to_array<unsigned char>({
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::EbreakCompressed),
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::EbreakCompressed >> 8)
         });
@@ -343,8 +343,8 @@ namespace DebugToolDrivers::Wch
             softwareBreakpoint.memorySegmentDescriptor,
             softwareBreakpoint.address,
             softwareBreakpoint.size == 2
-                ? TargetMemoryBufferSpan{compressedEbreakBytes}
-                : TargetMemoryBufferSpan{ebreakBytes}
+                ? TargetMemoryBufferSpan{COMPRESSED_EBREAK_OPCODE}
+                : TargetMemoryBufferSpan{EBREAK_OPCODE}
         );
 
         this->softwareBreakpointRegistry.insert(softwareBreakpoint);

@@ -15,18 +15,8 @@
  * multiple debug environments, each environment must be assigned a unique name that can be used to identify the
  * environment. This is why the 'environments' parameter is a YAML map, with the key being the environment name.
  *
- * On application start up, we extract the config from this YAML file and generate a ProjectConfig object.
+ * On application start up, we extract the config from this YAML file and construct a ProjectConfig object.
  * See Application::loadProjectConfiguration() for more on this.
- *
- * Some config parameters are specific to certain entities within Bloom, but have no significance across the
- * rest of the application. For example, AVR8 targets require the 'physicalInterface' and other AVR8 specific
- * parameters. These are used to configure AVR8 targets, but have no significance across the rest of the
- * application. This is why some configuration structs (like TargetConfig) include a YAML::Node member.
- * When instances of these structs are passed to the appropriate entities, any configuration required by those
- * entities is extracted from the YAML::Node member. This means we don't have to worry about any entity specific
- * config parameters at the application level. We can simply extract what we need at an entity level and the rest
- * of the application can remain oblivious. For an example on extracting entity specific config, see
- * Avr8TargetConfig::Avr8TargetConfig() and Avr8::preActivationConfigure().
  *
  * For more on project configuration, see Bloom documentation at https://bloom.oscillate.io/docs/configuration
  */
@@ -36,8 +26,7 @@
  *
  * Please don't define any target specific configuration here, unless it applies to *all* targets across
  * the application. If a target requires specific config, it should be extracted from the YAML::Node (targetNode)
- * member. This should be done in Target::preActivationConfigure(), to which an instance of TargetConfig is passed.
- * See the comment above on entity specific config for more on this.
+ * member.
  */
 struct TargetConfig
 {
@@ -73,8 +62,8 @@ struct TargetConfig
     std::optional<bool> reserveSteppingBreakpoint = std::nullopt;
 
     /**
-     * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() and
-     * Avr8::preActivationConfigure() for an example of this.
+     * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() for an example of
+     * this.
      */
     YAML::Node targetNode;
 

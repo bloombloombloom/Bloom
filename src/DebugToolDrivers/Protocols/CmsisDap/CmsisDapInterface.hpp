@@ -109,10 +109,6 @@ namespace DebugToolDrivers::Protocols::CmsisDap
     private:
         /**
          * All CMSIS-DAP devices employ the USB HID interface for communication.
-         *
-         * For many CMSIS-DAP devices, the USB HID interface parameters (interface number, endpoint config, etc) vary
-         * amongst devices, so we'll need to be able to preActivationConfigure the CMSISDAPInterface from a
-         * higher level. For an example, see the constructor of the AtmelIce device class.
          */
         Usb::HidInterface usbHidInterface;
 
@@ -120,7 +116,7 @@ namespace DebugToolDrivers::Protocols::CmsisDap
          * Some CMSIS-DAP debug tools fail to operate properly when we send commands too quickly. Even if we've
          * received a response from every previous command.
          *
-         * Because of this, we may need to enforce a minimum time gap between sending CMSIS commands.
+         * Because of this, we may need to enforce a minimum interval between sending CMSIS commands.
          */
         std::chrono::milliseconds commandDelay = std::chrono::milliseconds{0};
         std::int64_t lastCommandSentTimeStamp = 0;

@@ -8,8 +8,6 @@
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
-#include "src/Targets/TargetBreakpoint.hpp"
-
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 

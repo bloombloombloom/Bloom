@@ -139,13 +139,8 @@ namespace TargetController
 
         std::optional<AtomicSession> activeAtomicSession = std::nullopt;
 
-        /**
-         * The TargetController should be the sole owner of the target and debugTool. They are constructed and
-         * destroyed within the TargetController. Under no circumstance should ownership of these resources be
-         * transferred to any other component within Bloom.
-         */
-        std::unique_ptr<Targets::Target> target = nullptr;
         std::unique_ptr<DebugTool> debugTool = nullptr;
+        std::unique_ptr<Targets::Target> target = nullptr;
 
         std::map<
             Commands::CommandType,
@@ -171,8 +166,7 @@ namespace TargetController
          * If program caching is enabled, all program memory reads will be serviced by the cache, if we have the data.
          *
          * Most targets only have a single memory segment for program memory, but some may have multiple program
-         * memories, across multiple address spaces. We have a single cache (TargetMemoryCache object) for each
-         * memory segment.
+         * memories, across multiple address spaces. We have a single cache for each memory segment.
          */
         std::map<Targets::TargetMemorySegmentId, Targets::TargetMemoryCache> programMemoryCachesBySegmentId;
 

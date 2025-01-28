@@ -58,7 +58,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
     }
 
     void WchLinkInterface::setClockSpeed(WchLinkTargetClockSpeed speed, WchTargetId targetId) {
-        const auto speedIdsBySpeed = BiMap<WchLinkTargetClockSpeed, std::uint8_t>{
+        static const auto speedIdsBySpeed = BiMap<WchLinkTargetClockSpeed, std::uint8_t>{
             {WchLinkTargetClockSpeed::CLK_6000_KHZ, 0x01},
             {WchLinkTargetClockSpeed::CLK_4000_KHZ, 0x02},
             {WchLinkTargetClockSpeed::CLK_400_KHZ, 0x03},
@@ -155,7 +155,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
 
             const auto response = this->sendCommandAndWaitForResponse(
                 Commands::PreparePartialFlashBlockWrite{
-                    static_cast<Targets::TargetMemorySize>(startAddress + (packetSize * i)),
+                    static_cast<Targets::TargetMemoryAddress>(startAddress + (packetSize * i)),
                     static_cast<std::uint8_t>(segmentSize)
                 }
             );
