@@ -82,7 +82,17 @@ namespace DebugToolDrivers::Wch
     }
 
     void WchLinkBase::postInit() {
-        Logger::info("WCH-Link firmware version: " + this->getDeviceInfo().firmwareVersion.toString());
+        const auto& deviceInfo = this->getDeviceInfo();
+
+        constexpr auto MIN_VERSION = WchFirmwareVersion{.major = 2, .minor = 9};
+        if (deviceInfo.firmwareVersion < MIN_VERSION) {
+            Logger::warning(
+                "WCH-Link firmware version (" + deviceInfo.firmwareVersion.toString() + ") may not be compatible with"
+                    " Bloom. A minimum version of " + MIN_VERSION.toString() + " is required."
+            );
+        }
+
+        Logger::info("WCH-Link firmware version: " + deviceInfo.firmwareVersion.toString());
     }
 
     bool WchLinkBase::isInitialised() const {

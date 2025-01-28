@@ -11,13 +11,7 @@ namespace DebugToolDrivers::Wch
         std::uint8_t major = 0;
         std::uint8_t minor = 0;
 
-        WchFirmwareVersion() = default;
-        WchFirmwareVersion(std::uint8_t major, std::uint8_t minor)
-            : major{major}
-            , minor{minor}
-        {}
-
-        std::string toString() const {
+        [[nodiscard]] std::string toString() const {
             return std::to_string(this->major) + "." + std::to_string(this->minor);
         }
 
