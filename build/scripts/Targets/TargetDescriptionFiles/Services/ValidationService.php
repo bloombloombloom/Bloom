@@ -358,12 +358,12 @@ class ValidationService
         }
 
         if ($segment->pageSize !== null) {
-            if (($segment->addressRange->startAddress % $segment->pageSize) !== 0) {
-                $failures[] = 'Start address is not a multiple of the page size';
+            if (!$this->alignsWith($segment->addressRange->startAddress, $segment->pageSize)) {
+                $failures[] = 'Start address does not align with the page size';
             }
 
-            if ($segment->size() !== null && ($segment->size() % $segment->pageSize) !== 0) {
-                $failures[] = 'Size (' . $segment->size() . ') is not a multiple of the page size ('
+            if ($segment->size() !== null && !$this->alignsWith($segment->size(), $segment->pageSize)) {
+                $failures[] = 'Size (' . $segment->size() . ') does not align with the page size ('
                     . $segment->pageSize . ')';
             }
         }
@@ -1164,5 +1164,10 @@ class ValidationService
                 . '": ' . $failure,
             $failures
         );
+    }
+
+    protected function alignsWith(int $value, int $alignTo): bool
+    {
+        return ($value % $alignTo) === 0;
     }
 }

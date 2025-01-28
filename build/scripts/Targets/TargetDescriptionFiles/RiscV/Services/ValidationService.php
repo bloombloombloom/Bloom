@@ -57,16 +57,63 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
         } else {
             if (
                 $mainProgramSegment !== null
-                && ($mainProgramSegment->addressRange->startAddress % (int)$programmingBlockSize) !== 0
+                && !$this->alignsWith($mainProgramSegment->addressRange->startAddress, (int)$programmingBlockSize)
             ) {
                 $failures[] = 'Main program memory segment start address does not align with programming block size';
             }
 
             if (
                 $bootProgramSegment !== null
-                && ($bootProgramSegment->addressRange->startAddress % (int)$programmingBlockSize) !== 0
+                && !$this->alignsWith($bootProgramSegment->addressRange->startAddress, (int)$programmingBlockSize)
             ) {
                 $failures[] = 'Boot program memory segment start address does not align with programming block size';
+            }
+        }
+
+        $wchLinkPartialWriteAlignmentSize = 2;
+        if ($mainProgramSegment !== null) {
+            if (
+                !$this->alignsWith(
+                    $mainProgramSegment->addressRange->startAddress,
+                    $wchLinkPartialWriteAlignmentSize
+                )
+            ) {
+                $failures[] = 'Main program memory segment start address does not align with partial write alignment '
+                    . 'size';
+            }
+
+            if (!$this->alignsWith($mainProgramSegment->addressRange->size(), $wchLinkPartialWriteAlignmentSize)) {
+                $failures[] = 'Main program memory segment size does not align with partial write alignment size';
+            }
+
+            if ($mainProgramSegment->pageSize === null) {
+                $failures[] = 'Missing page size in main program memory segment';
+
+            } elseif (!$this->alignsWith($mainProgramSegment->pageSize, $wchLinkPartialWriteAlignmentSize)) {
+                $failures[] = 'Main program memory segment page size does not align with partial write alignment size';
+            }
+        }
+
+        if ($bootProgramSegment !== null) {
+            if (
+                !$this->alignsWith(
+                    $bootProgramSegment->addressRange->startAddress,
+                    $wchLinkPartialWriteAlignmentSize
+                )
+            ) {
+                $failures[] = 'Boot program memory segment start address does not align with partial write alignment '
+                    . 'size';
+            }
+
+            if (!$this->alignsWith($bootProgramSegment->addressRange->size(), $wchLinkPartialWriteAlignmentSize)) {
+                $failures[] = 'Boot program memory segment size does not align with partial write alignment size';
+            }
+
+            if ($bootProgramSegment->pageSize === null) {
+                $failures[] = 'Missing page size in boot program memory segment';
+
+            } elseif (!$this->alignsWith($bootProgramSegment->pageSize, $wchLinkPartialWriteAlignmentSize)) {
+                $failures[] = 'Boot program memory segment page size does not align with partial write alignment size';
             }
         }
 
