@@ -112,6 +112,24 @@ namespace DebugToolDrivers::Wch
         void setSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
         void clearSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
 
+        void writeProgramMemoryPartialBlock(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemoryBufferSpan buffer
+        );
+        void writeProgramMemoryFullBlock(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress,
+            Targets::TargetMemoryBufferSpan buffer
+        );
+        bool fullBlockWriteCompatible(
+            const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            Targets::TargetMemoryAddress startAddress
+        );
+
         static std::span<const unsigned char> getFlashProgramOpcodes(const std::string& key);
     };
 }

@@ -218,132 +218,42 @@ namespace DebugToolDrivers::Wch
     ) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             /*
-             * WCH-Link tools cannot write to flash memory via the target's debug module. They do, however, offer a
-             * set of dedicated commands for this. We invoke them here.
-             *
-             * There are two commands we can choose from:
+             * WCH-Link tools provide two dedicated commands for writing to flash memory:
              *
              * - Partial block write
-             *     Writes any number of bytes to flash, but limited to a maximum of 64 bytes per write. Larger writes
-             *     must be split into multiple writes.
+             *     Writes any number of 16-bit-aligned bytes to flash, but limited to a maximum of 64 bytes per write -
+             *     larger writes must be split into multiple writes. Can only access a single page at a time - writes
+             *     which span multiple pages must be split into multiple writes.
              * - Full block write
              *     Writes an entire block to flash, where the block size is target-specific (resides in the target's
-             *     TDF). Requires alignment to the block size. Requires reattaching to the target at the end of the
-             *     programming session.
+             *     TDF) and is typically equal to 16 pages. Requires alignment to the block size. Requires reattaching
+             *     to the target at the end of the write operation.
              *
              * The full block write is much faster for writing large buffers (KiBs), such as when we're programming
              * the target. But the partial block write is faster and more suitable for writing buffers that are
              * smaller than 64 bytes, such as when we're inserting software breakpoints.
              */
-            const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
-            const auto alignmentSize = this->programmingBlockSize;
-            const auto alignedStartAddress = (startAddress / alignmentSize) * alignmentSize;
-            const auto alignedBufferSize = static_cast<TargetMemorySize>(std::ceil(
-                static_cast<double>(bufferSize) / static_cast<double>(alignmentSize)
-            ) * alignmentSize);
-            const auto alignmentRequired = alignedStartAddress != startAddress || alignedBufferSize != bufferSize;
 
             if (
-                bufferSize <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
-                || (
-                    alignmentRequired
-                    && !memorySegmentDescriptor.addressRange.contains(
-                        TargetMemoryAddressRange{
-                            alignedStartAddress,
-                            alignedStartAddress + alignedBufferSize - 1
-                        }
-                    )
-                )
+                buffer.size() <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
+                || !this->fullBlockWriteCompatible(addressSpaceDescriptor, memorySegmentDescriptor, startAddress)
             ) {
-                using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
-                Logger::debug("Using partial block write command");
-
-                /*
-                 * WCH-Link tools seem to make use of the target's program buffer to service the partial block write
-                 * command.
-                 *
-                 * This sometimes leads to exceptions occurring on the target, when the program buffer contains certain
-                 * instructions before the partial block write command is invoked. This is why we clear the program
-                 * buffer beforehand.
-                 */
-                this->riscVTranslator.clearProgramBuffer();
-                this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
-
-                const auto commandError = this->riscVTranslator.readAndClearAbstractCommandError();
-                if (commandError != DebugModule::AbstractCommandError::NONE) {
-                    throw Exception{
-                        "Partial block write failed - abstract command error: 0x"
-                            + Services::StringService::toHex(commandError)
-                    };
-                }
-
-                return;
-            }
-
-            if (alignmentRequired) {
-                auto alignedBuffer = (alignedStartAddress < startAddress)
-                    ? this->readMemory(
-                        addressSpaceDescriptor,
-                        memorySegmentDescriptor,
-                        alignedStartAddress,
-                        (startAddress - alignedStartAddress),
-                        {}
-                    )
-                    : TargetMemoryBuffer{};
-
-                alignedBuffer.resize(alignedBufferSize);
-
-                std::copy(
-                    buffer.begin(),
-                    buffer.end(),
-                    alignedBuffer.begin() + (startAddress - alignedStartAddress)
-                );
-
-                const auto dataBack = this->readMemory(
+                Logger::debug("Using partial block write method");
+                return this->writeProgramMemoryPartialBlock(
                     addressSpaceDescriptor,
                     memorySegmentDescriptor,
-                    startAddress + bufferSize,
-                    alignedBufferSize - bufferSize - (startAddress - alignedStartAddress),
-                    {}
-                );
-                std::copy(
-                    dataBack.begin(),
-                    dataBack.end(),
-                    alignedBuffer.begin() + (startAddress - alignedStartAddress) + bufferSize
-                );
-
-                return this->writeMemory(
-                    addressSpaceDescriptor,
-                    memorySegmentDescriptor,
-                    alignedStartAddress,
-                    alignedBuffer
+                    startAddress,
+                    buffer
                 );
             }
 
-            Logger::debug(
-                "Using full block write command (block size: " + std::to_string(this->programmingBlockSize) + ")"
-            );
-            this->wchLinkInterface.writeFlashFullBlocks(
+            Logger::debug("Using full block write method");
+            return this->writeProgramMemoryFullBlock(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
                 startAddress,
-                buffer,
-                this->programmingBlockSize,
-                this->flashProgramOpcodes
+                buffer
             );
-
-            /*
-             * Would this not be better placed in endProgrammingSession()? We could persist the command type we invoked
-             * to perform the write, and if required, reattach at the end of the programming session.
-             *
-             * I don't think that would work, because the target needs to be accessible for other operations whilst in
-             * programming mode. We may perform other operations in between program memory writes, but that wouldn't
-             * work if we left the target in an inaccessible state between writes. So I think we have to reattach here.
-             *
-             * TODO: Review after v2.0.0.
-             */
-            this->deactivate();
-            this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
-            this->activate();
-            return;
         }
 
         this->riscVTranslator.writeMemory(
@@ -475,6 +385,319 @@ namespace DebugToolDrivers::Wch
         );
 
         this->softwareBreakpointRegistry.remove(softwareBreakpoint);
+    }
+
+    void WchLinkDebugInterface::writeProgramMemoryPartialBlock(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemoryBufferSpan buffer
+    ) {
+        using Services::AlignmentService;
+        using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+
+        if (buffer.empty()) {
+            return;
+        }
+
+        const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
+        const auto addressRange = TargetMemoryAddressRange{startAddress, startAddress + bufferSize - 1};
+        assert(memorySegmentDescriptor.addressRange.contains(addressRange));
+
+        /*
+         * Partial block writes can only write to a single flash page at a time. If a write operation spans multiple
+         * pages, the WCH-Link tool will write to the first page and ignore the rest, without reporting any error.
+         *
+         * We must break down write operations that span multiple pages.
+         */
+        assert(memorySegmentDescriptor.pageSize.has_value());
+        const auto pages = addressRange.blocks(*memorySegmentDescriptor.pageSize);
+        if (pages.size() > 1) {
+            for (const auto& pageAddressRange : pages) {
+                this->writeProgramMemoryPartialBlock(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    pageAddressRange.startAddress,
+                    buffer.subspan(
+                        pageAddressRange.startAddress - addressRange.startAddress,
+                        pageAddressRange.size()
+                    )
+                );
+            }
+
+            return;
+        }
+
+        // Partial block write operations must be 16-bit aligned.
+        static constexpr auto ALIGNMENT_SIZE = 2;
+        const auto alignedAddressRange = AlignmentService::alignAddressRange(addressRange, ALIGNMENT_SIZE);
+
+        if (alignedAddressRange != addressRange) {
+            const auto alignedBufferSize = alignedAddressRange.size();
+            const auto addressAlignmentBytes = static_cast<TargetMemorySize>(
+                addressRange.startAddress - alignedAddressRange.startAddress
+            );
+            const auto sizeAlignmentBytes = alignedBufferSize - bufferSize - addressAlignmentBytes;
+
+            auto alignedBuffer = addressAlignmentBytes > 0
+                ? this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    alignedAddressRange.startAddress,
+                    addressAlignmentBytes,
+                    {}
+                )
+                : TargetMemoryBuffer{};
+
+            alignedBuffer.resize(alignedBufferSize);
+
+            std::copy(buffer.begin(), buffer.end(), alignedBuffer.begin() + addressAlignmentBytes);
+
+            if (sizeAlignmentBytes > 0) {
+                const auto dataBack = this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    addressRange.startAddress + bufferSize,
+                    sizeAlignmentBytes,
+                    {}
+                );
+                std::copy(
+                    dataBack.begin(),
+                    dataBack.end(),
+                    alignedBuffer.begin() + addressAlignmentBytes + bufferSize
+                );
+            }
+
+            return this->writeProgramMemoryPartialBlock(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                alignedAddressRange.startAddress,
+                alignedBuffer
+            );
+        }
+
+        /*
+         * WCH-Link tools seem to make use of the target's program buffer to service the partial block write
+         * command.
+         *
+         * This sometimes leads to exceptions occurring on the target, when the program buffer contains certain
+         * instructions before the partial block write command is invoked. This is why we clear the program buffer
+         * beforehand.
+         */
+        this->riscVTranslator.clearProgramBuffer();
+        this->wchLinkInterface.writeFlashPartialBlock(startAddress, buffer);
+
+        /*
+         * Sometimes, when delegating part of a full block write operation to the partial block write method, a "busy"
+         * error occurs. However, this doesn't seem to affect the outcome of the operation at all.
+         *
+         * This only seems to happen when writing to the boot segment of the CH32V003, shortly after a full block write
+         * has taken place. It doesn't happen in the absence of a full block write.
+         *
+         * I suspect the tool may be attempting to verify the newly written data, and that is what's failing. But I
+         * really don't know.
+         *
+         * For now, I think it's safe to ignore the "busy" error.
+         */
+        const auto commandError = this->riscVTranslator.readAndClearAbstractCommandError();
+        if (
+            commandError != DebugModule::AbstractCommandError::NONE
+            && commandError != DebugModule::AbstractCommandError::BUSY
+        ) {
+            throw Exception{
+                "Partial block write failed - abstract command error: 0x"
+                    + Services::StringService::toHex(commandError)
+            };
+        }
+    }
+
+    void WchLinkDebugInterface::writeProgramMemoryFullBlock(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        Targets::TargetMemoryAddress startAddress,
+        Targets::TargetMemoryBufferSpan buffer
+    ) {
+        using Services::AlignmentService;
+        using Services::StringService;
+        using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+
+        if (buffer.empty()) {
+            return;
+        }
+
+        const auto bufferSize = static_cast<TargetMemorySize>(buffer.size());
+        const auto addressRange = TargetMemoryAddressRange{startAddress, startAddress + bufferSize - 1};
+        assert(memorySegmentDescriptor.addressRange.contains(addressRange));
+
+        auto alignedAddressRange = AlignmentService::alignAddressRange(addressRange, this->programmingBlockSize);
+        if (alignedAddressRange != addressRange) {
+            /*
+             * The memory segment capacity may not be a multiple of the (target-specific) block size, meaning alignment
+             * to the block size could result in breaching the boundary of the segment.
+             *
+             * For example, the CH32X035 has a block size of 4096, but its main program segment (`main_program`) has a
+             * capacity of 62KiB (63488 bytes), which is not a multiple of 4096. This means we cannot access the final,
+             * partial block of that segment, via a full block write.
+             *
+             * Some segments on some WCH RISC-V targets don't even have the capacity to accommodate the block size.
+             *
+             * This makes me suspect that
+             *   1. I may be using the wrong block size, and the actual size is smaller, or
+             *   2. Memory segment capacities could be wrong. I obtained these from the target datasheet.
+             *
+             * I have already tried experimenting with smaller block sizes, but nothing has worked. The WCH-Link tool
+             * seems to expect these exact sizes before it will begin the full block write operation.
+             *
+             * Anyway, if the alignment results in the segment boundary being breached, we delegate the final part
+             * of the write operation to the partial block write method, which only requires 16-bit alignment.
+             *
+             * In other words, we will write as many blocks as we can with the full block write method, and then write
+             * the final part with the partial block write method. This allows us to benefit from the performance of
+             * full block writes, whilst maintaining the ability to access the entire segment.
+             */
+            auto delegatedBytes = TargetMemorySize{0};
+            if (!memorySegmentDescriptor.addressRange.contains(alignedAddressRange)) {
+                Logger::debug(
+                    "Alignment to the block size (" + std::to_string(this->programmingBlockSize)
+                        + ") has resulted in a segment boundary breach"
+                );
+
+                alignedAddressRange.endAddress -= this->programmingBlockSize;
+
+                /*
+                 * This function isn't designed to handle instances where the entire write operation needs to be
+                 * delegated. In such instances, this function should not be called at all. The following assertion
+                 * enforces this.
+                 *
+                 * The WchLinkDebugInterface::fullBlockWriteCompatible() function will determine if at least part of
+                 * the operation can be performed using the full block write method.
+                 */
+                assert(alignedAddressRange.intersectsWith(addressRange));
+
+                delegatedBytes = addressRange.endAddress - alignedAddressRange.endAddress;
+
+                Logger::debug(
+                    "The full block write has been reduced to " + std::to_string(alignedAddressRange.size())
+                        + " byte(s), from 0x" + StringService::toHex(alignedAddressRange.startAddress)
+                );
+                Logger::debug(std::to_string(delegatedBytes) + " byte(s) will be delegated to a partial write");
+            }
+
+            const auto alignedBufferSize = alignedAddressRange.size();
+            const auto addressAlignmentBytes = static_cast<TargetMemorySize>(
+                startAddress - alignedAddressRange.startAddress
+            );
+            const auto sizeAlignmentBytes = (alignedAddressRange.endAddress > addressRange.endAddress)
+                ? alignedAddressRange.endAddress - addressRange.endAddress
+                : 0;
+
+            auto alignedBuffer = addressAlignmentBytes > 0
+                ? this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    alignedAddressRange.startAddress,
+                    addressAlignmentBytes,
+                    {}
+                )
+                : TargetMemoryBuffer{};
+
+            alignedBuffer.resize(alignedBufferSize);
+
+            std::copy(
+                buffer.begin(),
+                buffer.begin() + (bufferSize - delegatedBytes),
+                alignedBuffer.begin() + addressAlignmentBytes
+            );
+
+            if (sizeAlignmentBytes > 0) {
+                const auto dataBack = this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    startAddress + bufferSize,
+                    sizeAlignmentBytes,
+                    {}
+                );
+                std::copy(
+                    dataBack.begin(),
+                    dataBack.end(),
+                    alignedBuffer.begin() + addressAlignmentBytes + bufferSize
+                );
+            }
+
+            this->writeProgramMemoryFullBlock(
+                addressSpaceDescriptor,
+                memorySegmentDescriptor,
+                alignedAddressRange.startAddress,
+                alignedBuffer
+            );
+
+            if (delegatedBytes > 0) {
+                // Delegate the final part of the write operation to the partial write method
+                const auto delegatedStartAddress = alignedAddressRange.endAddress + 1;
+                const auto delegatedBuffer = buffer.subspan(bufferSize - delegatedBytes);
+                Logger::debug(
+                    "Delegating write operation 0x" + StringService::toHex(delegatedStartAddress) + ", "
+                        + std::to_string(delegatedBuffer.size()) + " byte(s)"
+                );
+
+                this->writeProgramMemoryPartialBlock(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    delegatedStartAddress,
+                    delegatedBuffer
+                );
+            }
+
+            return;
+        }
+
+        this->wchLinkInterface.writeFlashFullBlocks(
+            startAddress,
+            buffer,
+            this->programmingBlockSize,
+            this->flashProgramOpcodes
+        );
+
+        /*
+         * Would this not be better placed in endProgrammingSession()? We could persist the command type we invoked to
+         * perform the write, and if required, reattach at the end of the programming session.
+         *
+         * I don't think that would work, because the target needs to be accessible for other operations whilst in
+         * programming mode. We may perform other operations in between program memory writes, but that wouldn't work
+         * if we left the target in an inaccessible state between writes. So I think we have to reattach here.
+         *
+         * TODO: Review after v2.0.0.
+         */
+        this->deactivate();
+        this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::GetDeviceInfo{});
+        this->activate();
+    }
+
+    bool WchLinkDebugInterface::fullBlockWriteCompatible(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        TargetMemoryAddress startAddress
+    ) {
+        /*
+         * If we cannot access the entire segment via the full block write method (the segment capacity is not a
+         * multiple of the block size), we delegate the final part of the write operation to the partial write method.
+         *
+         * We use the end address of the final accessible block to determine if the write operation is contained
+         * within the inaccessible region of the segment. If it is, we must not attempt the write operation via the
+         * full block write, as the full block write code doesn't handle instances where the entire operation needs to
+         * be delegated.
+         *
+         * See the WchLinkDebugInterface::writeProgramMemoryFullBlock() member function for more.
+         */
+        const auto finalBlockEnd = (
+            (memorySegmentDescriptor.addressRange.endAddress / this->programmingBlockSize) * this->programmingBlockSize
+        );
+        return addressSpaceDescriptor == this->sysAddressSpaceDescriptor
+            && memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH
+            && memorySegmentDescriptor.size() >= this->programmingBlockSize
+            && (memorySegmentDescriptor.addressRange.startAddress % this->programmingBlockSize) == 0
+            && (memorySegmentDescriptor.size() % this->programmingBlockSize == 0 || startAddress <= finalBlockEnd)
+        ;
     }
 
     std::span<const unsigned char> WchLinkDebugInterface::getFlashProgramOpcodes(const std::string& key) {
