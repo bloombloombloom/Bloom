@@ -12,6 +12,7 @@
 
 #include "src/Targets/RiscV/Opcodes/Opcode.hpp"
 
+#include "src/Services/AlignmentService.hpp"
 #include "src/Services/StringService.hpp"
 
 #include "src/Exceptions/InternalFatalErrorException.hpp"
