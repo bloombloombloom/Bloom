@@ -3227,7 +3227,7 @@
                     <bit-field key="errie" name="ERRIE" description="Error Interrupt Enable" mask="0x00000400" access="RW"/>
                     <bit-field key="obwre" name="OBWRE" description="Flash Address Locked Flag" mask="0x00000200" access="RW"/>
                     <bit-field key="lock" name="LOCK" description="FPEC and CTRL Write-lock Enable" mask="0x00000080" access="RW"/>
-                    <bit-field key="strt" name="STRT" description="Start Operation" mask="0x00000040" access="RW"/>
+                    <bit-field key="strt" name="STRT" description="Start Erase Operation" mask="0x00000040" access="RW"/>
                     <bit-field key="ober" name="OBER" description="Select Word Erase Operation" mask="0x00000020" access="RW"/>
                     <bit-field key="obpg" name="OBPG" description="Select Word Programming Operation" mask="0x00000010" access="RW"/>
                     <bit-field key="mer" name="MER" description="Select User Area Erase Operation" mask="0x00000004" access="RW"/>

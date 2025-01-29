@@ -2,6 +2,8 @@
 
 #include <utility>
 #include <cassert>
+#include <chrono>
+#include <thread>
 
 #include "src/Targets/DynamicRegisterValue.hpp"
 
@@ -12,6 +14,7 @@
 
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
 namespace Targets::RiscV::Wch
 {
@@ -36,8 +39,21 @@ namespace Targets::RiscV::Wch
         , flashKeyRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "keyr"))
         , flashBootKeyRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "boot_modekeyr"))
         , flashStatusRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "statr"))
-        , flashStatusBootLockFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"))
-        , flashStatusBootModeFieldDescriptor(this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"))
+        , flashControlRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "ctrl"))
+        , flashControlRegisterFields(
+            Peripherals::Flash::FlashControlRegisterFields{
+                .locked = this->flashControlRegisterDescriptor.getBitFieldDescriptor("lock"),
+                .startErase = this->flashControlRegisterDescriptor.getBitFieldDescriptor("strt"),
+                .mainSegmentErase = this->flashControlRegisterDescriptor.getBitFieldDescriptor("mer"),
+            }
+        )
+        , flashStatusRegisterFields(
+            Peripherals::Flash::FlashStatusRegisterFields{
+                .busy = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("bsy"),
+                .bootLock = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"),
+                .bootMode = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"),
+            }
+        )
         , rccPeripheralDescriptor(this->targetDescriptionFile.getTargetPeripheralDescriptor("rcc"))
         , portPeripheralClockEnableRegisterDescriptor(
             this->rccPeripheralDescriptor.getRegisterDescriptor("rcc", "apb2pcenr")
@@ -321,11 +337,17 @@ namespace Targets::RiscV::Wch
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        if (memorySegmentDescriptor == this->mappedSegmentDescriptor) {
-            return RiscV::eraseMemory(addressSpaceDescriptor, this->selectedProgramSegmentDescriptor);
+        if (
+            memorySegmentDescriptor == this->mainProgramSegmentDescriptor
+            || (
+                memorySegmentDescriptor == this->mappedSegmentDescriptor
+                && this->selectedProgramSegmentDescriptor == this->mainProgramSegmentDescriptor
+            )
+        ) {
+            return this->eraseMainFlashSegment();
         }
 
-        RiscV::eraseMemory(addressSpaceDescriptor, memorySegmentDescriptor);
+        Logger::debug("Ignoring erase operation on `" + memorySegmentDescriptor.key + "` segment - not supported");
     }
 
     TargetMemoryAddress WchRiscV::getProgramCounter() {
@@ -659,11 +681,11 @@ namespace Targets::RiscV::Wch
 
         auto statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
 
-        if (statusRegister.bitFieldAs<bool>(this->flashStatusBootLockFieldDescriptor)) {
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusRegisterFields.bootLock)) {
             throw Exceptions::Exception{"Failed to unlock boot mode field"};
         }
 
-        statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, true);
+        statusRegister.setBitField(this->flashStatusRegisterFields.bootMode, true);
         this->writeRegister(statusRegister);
 
         this->reset();
@@ -675,14 +697,57 @@ namespace Targets::RiscV::Wch
 
         auto statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
 
-        if (statusRegister.bitFieldAs<bool>(this->flashStatusBootLockFieldDescriptor)) {
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusRegisterFields.bootLock)) {
             throw Exceptions::Exception{"Failed to unlock boot mode field"};
         }
 
-        statusRegister.setBitField(this->flashStatusBootModeFieldDescriptor, false);
+        statusRegister.setBitField(this->flashStatusRegisterFields.bootMode, false);
         this->writeRegister(statusRegister);
 
         this->reset();
+    }
+
+    void WchRiscV::eraseMainFlashSegment() {
+        static constexpr auto ERASE_RESPONSE_DELAY = std::chrono::microseconds{10};
+        static constexpr auto ERASE_TIMEOUT = std::chrono::milliseconds{100};
+
+        this->unlockFlash();
+
+        auto statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusRegisterFields.busy)) {
+            throw Exceptions::TargetOperationFailure{"Flash peripheral is unavailable"};
+        }
+
+        auto controlRegister = this->readRegisterDynamicValue(this->flashControlRegisterDescriptor);
+        if (controlRegister.bitFieldAs<bool>(this->flashControlRegisterFields.locked)) {
+            throw Exceptions::TargetOperationFailure{"Failed to unlock flash"};
+        }
+
+        // It seems we have to write these bit fields individually. Otherwise, the target misbehaves
+        controlRegister.setBitField(this->flashControlRegisterFields.mainSegmentErase, true);
+        this->writeRegister(controlRegister);
+        controlRegister.setBitField(this->flashControlRegisterFields.startErase, true);
+        this->writeRegister(controlRegister);
+
+        statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
+        for (
+            auto attempts = 0;
+            statusRegister.bitFieldAs<bool>(this->flashStatusRegisterFields.busy)
+                && (ERASE_RESPONSE_DELAY * attempts) <= ERASE_TIMEOUT;
+            ++attempts
+        ) {
+            std::this_thread::sleep_for(ERASE_RESPONSE_DELAY);
+            statusRegister = this->readRegisterDynamicValue(this->flashStatusRegisterDescriptor);
+        }
+
+        controlRegister = this->readRegisterDynamicValue(this->flashControlRegisterDescriptor);
+        controlRegister.setBitField(this->flashControlRegisterFields.mainSegmentErase, false);
+        controlRegister.setBitField(this->flashControlRegisterFields.startErase, false);
+        this->writeRegister(controlRegister);
+
+        if (statusRegister.bitFieldAs<bool>(this->flashStatusRegisterFields.busy)) {
+            throw Exceptions::TargetOperationFailure{"Erase operation timed out"};
+        }
     }
 
     std::map<TargetPadId, GpioPadDescriptor> WchRiscV::generateGpioPadDescriptorMapping(

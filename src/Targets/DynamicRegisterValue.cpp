@@ -31,6 +31,13 @@ namespace Targets
         assert(registerDescriptor.size <= 8);
     }
 
+    DynamicRegisterValue& DynamicRegisterValue::operator = (const DynamicRegisterValue& other) {
+        assert(other.registerDescriptor == this->registerDescriptor);
+        this->value = other.value;
+
+        return *this;
+    }
+
     void DynamicRegisterValue::setBitField(
         const TargetBitFieldDescriptor& bitFieldDescriptor,
         std::uint64_t inputValue

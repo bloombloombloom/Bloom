@@ -19,6 +19,8 @@ namespace Targets
         DynamicRegisterValue(const TargetRegisterDescriptor& registerDescriptor, TargetMemoryBufferSpan value);
         DynamicRegisterValue(const TargetRegisterDescriptor& registerDescriptor, std::uint64_t value);
 
+        DynamicRegisterValue& operator = (const DynamicRegisterValue& other);
+
         void setBitField(const TargetBitFieldDescriptor& bitFieldDescriptor, std::uint64_t inputValue);
         void setBitField(const std::string& bitFieldKey, std::uint64_t inputValue);
 

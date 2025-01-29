@@ -241,6 +241,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         this->sendCommandAndWaitForResponse(Commands::EndProgrammingSession{});
     }
 
+    /*
+     * We don't actually use this anywhere, as the WCH-Link's erase function is buggy. For more, see the comment in
+     * the WchLinkDebugInterface::eraseMemory() member function.
+     *
+     * TODO: Consider removing this after v2.0.0
+     */
     void WchLinkInterface::eraseProgramMemory() {
         this->sendCommandAndWaitForResponse(Commands::EraseProgramMemory{});
     }

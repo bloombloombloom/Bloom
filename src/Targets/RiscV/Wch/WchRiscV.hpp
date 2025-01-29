@@ -12,11 +12,16 @@
 
 #include "WchRiscVTargetConfig.hpp"
 #include "TargetDescriptionFile.hpp"
+
 #include "GpioPadDescriptor.hpp"
+#include "Peripherals/Flash/FlashControlRegisterFields.hpp"
+#include "Peripherals/Flash/FlashStatusRegisterFields.hpp"
 
 namespace Targets::RiscV::Wch
 {
-    class WchRiscV: public ::Targets::RiscV::RiscV
+    class WchRiscV
+        : public ::Targets::RiscV::RiscV
+        , public DeltaProgrammingInterface
     {
     public:
         WchRiscV(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
@@ -88,9 +93,10 @@ namespace Targets::RiscV::Wch
         const TargetRegisterDescriptor& flashKeyRegisterDescriptor;
         const TargetRegisterDescriptor& flashBootKeyRegisterDescriptor;
         const TargetRegisterDescriptor& flashStatusRegisterDescriptor;
+        const TargetRegisterDescriptor& flashControlRegisterDescriptor;
 
-        const TargetBitFieldDescriptor& flashStatusBootLockFieldDescriptor;
-        const TargetBitFieldDescriptor& flashStatusBootModeFieldDescriptor;
+        const Peripherals::Flash::FlashControlRegisterFields flashControlRegisterFields;
+        const Peripherals::Flash::FlashStatusRegisterFields flashStatusRegisterFields;
 
         const TargetPeripheralDescriptor rccPeripheralDescriptor;
         const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor;
@@ -109,6 +115,7 @@ namespace Targets::RiscV::Wch
         void unlockBootModeBitField();
         void enableBootMode();
         void enableUserMode();
+        void eraseMainFlashSegment();
 
         static std::map<TargetPadId, GpioPadDescriptor> generateGpioPadDescriptorMapping(
             const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor,

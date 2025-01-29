@@ -1932,7 +1932,7 @@
                     <bit-field key="wrprterr" name="WRPRTERR" description="Write Protected Error Flag" mask="0x00000010" access="RW"/>
                     <bit-field key="bsy" name="BSY" description="Busy Status" mask="0x00000001" access="R"/>
                 </register>
-                <register key="ctlr" name="CTLR" description="Control" offset="0x10" size="4" initial-value="0x00008080" access="RW">
+                <register key="ctrl" name="CTRL" description="Control" offset="0x10" size="4" initial-value="0x00008080" access="RW">
                     <bit-field key="bufrst" name="BUFRST" description="Reset BUF Cache" mask="0x00080000" access="RW"/>
                     <bit-field key="bufload" name="BUFLOAD" description="BUF Cache Enable" mask="0x00040000" access="RW"/>
                     <bit-field key="fter" name="FTER" description="Select Fast Page Erase Operation" mask="0x00020000" access="RW"/>

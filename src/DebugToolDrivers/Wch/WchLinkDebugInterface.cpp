@@ -234,13 +234,12 @@ namespace DebugToolDrivers::Wch
              * the target. But the partial block write is faster and more suitable for writing buffers that are
              * smaller than 64 bytes, such as when we're inserting software breakpoints.
              */
-
             if (
-                buffer.size() <= WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE
-                || !this->fullBlockWriteCompatible(addressSpaceDescriptor, memorySegmentDescriptor, startAddress)
+                buffer.size() > (WchLinkInterface::MAX_PARTIAL_BLOCK_WRITE_SIZE * 3)
+                && this->fullBlockWriteCompatible(addressSpaceDescriptor, memorySegmentDescriptor, startAddress)
             ) {
-                Logger::debug("Using partial block write method");
-                return this->writeProgramMemoryPartialBlock(
+                Logger::debug("Using full block write method");
+                return this->writeProgramMemoryFullBlock(
                     addressSpaceDescriptor,
                     memorySegmentDescriptor,
                     startAddress,
@@ -248,8 +247,8 @@ namespace DebugToolDrivers::Wch
                 );
             }
 
-            Logger::debug("Using full block write method");
-            return this->writeProgramMemoryFullBlock(
+            Logger::debug("Using partial block write method");
+            return this->writeProgramMemoryPartialBlock(
                 addressSpaceDescriptor,
                 memorySegmentDescriptor,
                 startAddress,
@@ -269,21 +268,40 @@ namespace DebugToolDrivers::Wch
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor
     ) {
-        if (memorySegmentDescriptor == this->mainProgramSegmentDescriptor) {
-            return this->wchLinkInterface.eraseProgramMemory();
-        }
-
-        Logger::debug("Ignoring erase operation on `" + memorySegmentDescriptor.key + "` segment - not supported");
+        /*
+         * WCH-Link tools provide an erase function that erases the entire user section (main program segment).
+         * However, this function doesn't always work. Sometimes, it silently fails and leaves the target in a bad
+         * state, causing further issues (like program memory corruption).
+         *
+         * I spent a long time trying to fix this, but all attempts failed. I then decided to cease all use of this
+         * function and just implement the erase procedure myself, in the target driver.
+         *
+         * See the WchRiscV::eraseMainFlashSegment() member function for more.
+         *
+         * For future reference, my notes on this issue:
+         *
+         * - I discovered the issue with a WCH-LinkE, FW version 2.9, connected to a CH32V003. I'm not sure if other
+         *   targets are affected
+         *
+         * - The issue occurs rarely - a very specific sequence of events must take place for the issue to occur:
+         *     1. Perform exactly one partial block write, to the main program segment, at address 0x08000100, with
+         *        exactly 64 bytes of data
+         *     2. Reset the target
+         *     3. Erase the target via the erase function provided by the WCH-Link tool
+         *   The erase operation will silently fail, and the target will be left in a bad state, causing the subsequent
+         *   full block write to corrupt the target's program memory
+         *
+         * - The reset is what causes the erase operation to fail. But I have no idea why. I've inspected the relevant
+         *   registers, at the relevant times, but have found nothing significant that could explain this
+         *
+         * - Subsequent resets do not fix the issue, but another full block write does. My guess is that the first full
+         *   block write (which corrupted program memory) corrected the target state, cleaning the mess made by the
+         *   failed erase operation
+         */
+        throw TargetOperationFailure{"Not supported"};
     }
 
     void WchLinkDebugInterface::enableProgrammingMode() {
-        /*
-         * Nothing to do here
-         *
-         * We cannot prepare the WCH-Link tool for a programming session here, as the preparation process differs
-         * across the two types of flash write commands (full and partial block write). We don't know which command
-         * we'll be utilising at this point.
-         */
     }
 
     void WchLinkDebugInterface::disableProgrammingMode() {
