@@ -759,6 +759,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                 }
             }
 
+            if (this->session.configVariant == Avr8ConfigVariant::UPDI) {
+                return this->writeMemory(Avr8MemoryType::APPL_FLASH_ATOMIC, startAddress, buffer);
+            }
+
             return this->writeMemory(Avr8MemoryType::FLASH_PAGE, startAddress, buffer);
         }
 
@@ -1516,6 +1520,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             memoryType == Avr8MemoryType::FLASH_PAGE
             || memoryType == Avr8MemoryType::SPM
             || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::APPL_FLASH_ATOMIC
             || memoryType == Avr8MemoryType::BOOT_FLASH
             || memoryType == Avr8MemoryType::EEPROM_ATOMIC
             || memoryType == Avr8MemoryType::EEPROM_PAGE
@@ -1529,6 +1534,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             case Avr8MemoryType::FLASH_PAGE:
             case Avr8MemoryType::SPM:
             case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::APPL_FLASH_ATOMIC:
             case Avr8MemoryType::BOOT_FLASH: {
                 /*
                  * Although the EDBG documentation claims any number of bytes can be accessed via the FLASH_PAGE mem
@@ -1565,6 +1571,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             case Avr8MemoryType::FLASH_PAGE:
             case Avr8MemoryType::SPM:
             case Avr8MemoryType::APPL_FLASH:
+            case Avr8MemoryType::APPL_FLASH_ATOMIC:
             case Avr8MemoryType::BOOT_FLASH: {
                 // See comment in EdbgAvr8Interface::alignMemoryAddress()
                 alignTo = static_cast<std::uint16_t>(this->session.programMemorySegment.pageSize.value());
@@ -1593,6 +1600,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         if (
             memoryType == Avr8MemoryType::FLASH_PAGE
             || memoryType == Avr8MemoryType::APPL_FLASH
+            || memoryType == Avr8MemoryType::APPL_FLASH_ATOMIC
             || memoryType == Avr8MemoryType::BOOT_FLASH
             || (memoryType == Avr8MemoryType::SPM && this->session.configVariant == Avr8ConfigVariant::MEGAJTAG)
         ) {
@@ -1766,7 +1774,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                  * We can't just forward the memory type to readMemory(), because some memory types (such as
                  * EEPROM_ATOMIC) can only be used for writing.
                  */
-                const auto readMemType = type == Avr8MemoryType::EEPROM_ATOMIC ? Avr8MemoryType::EEPROM : type;
+                const auto readMemType = type == Avr8MemoryType::EEPROM_ATOMIC
+                    ? Avr8MemoryType::EEPROM
+                    : type == Avr8MemoryType::APPL_FLASH_ATOMIC
+                        ? Avr8MemoryType::FLASH_PAGE
+                        : type;
+
                 auto alignedBuffer = (alignedStartAddress < startAddress)
                     ? this->readMemory(readMemType, alignedStartAddress, startAddress - alignedStartAddress)
                     : TargetMemoryBuffer{};

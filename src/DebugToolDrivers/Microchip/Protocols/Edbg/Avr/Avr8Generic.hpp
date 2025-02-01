@@ -165,6 +165,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         APPL_FLASH = 0xC0,
         BOOT_FLASH = 0xC1,
 
+        APPL_FLASH_ATOMIC = 0xC2,
+
         /**
          * The SPM memory type can be used to read memory from the target whilst in debugging mode.
          *
