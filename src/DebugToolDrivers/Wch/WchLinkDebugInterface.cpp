@@ -44,7 +44,8 @@ namespace DebugToolDrivers::Wch
         const WchLinkToolConfig& toolConfig,
         const Targets::RiscV::RiscVTargetConfig& targetConfig,
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-        Protocols::WchLink::WchLinkInterface& wchLinkInterface
+        Protocols::WchLink::WchLinkInterface& wchLinkInterface,
+        const DeviceInfo& toolInfo
     )
         : toolConfig(toolConfig)
         , targetConfig(targetConfig)
@@ -58,6 +59,7 @@ namespace DebugToolDrivers::Wch
                 this->targetConfig
             }
         )
+        , toolInfo(toolInfo)
         , sysAddressSpaceDescriptor(this->targetDescriptionFile.getSystemAddressSpaceDescriptor())
         , mainProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
         , flashProgramOpcodes(
@@ -447,9 +449,22 @@ namespace DebugToolDrivers::Wch
             return;
         }
 
-        // Partial block write operations must be 16-bit aligned.
-        static constexpr auto ALIGNMENT_SIZE = 2;
-        const auto alignedAddressRange = AlignmentService::alignAddressRange(addressRange, ALIGNMENT_SIZE);
+        /*
+         * Partial block write operations must typically be 16-bit aligned.
+         *
+         * However, there is a bug in the WCH-Link firmware version 2.9, where partial writes of less than 64 bytes,
+         * to the main program segment, whilst the target is in "boot mode", result in the entire 64-byte block being
+         * written with garbage data. The bug can be circumvented by aligning to 64 bytes in these cases.
+         *
+         * This bug is fixed in firmware version 2.11, but I'm not sure if the fix was introduced in that version.
+         * I don't have a tool with version 2.10, to check, so I'm just going to apply the 64-byte alignment to
+         * anything below 2.11.
+         */
+        static constexpr auto MIN_FW_VERSION = WchFirmwareVersion{.major = 2, .minor = 11};
+        const auto alignmentSize = static_cast<TargetMemorySize>(
+            this->toolInfo.firmwareVersion < MIN_FW_VERSION ? 64 : 2
+        );
+        const auto alignedAddressRange = AlignmentService::alignAddressRange(addressRange, alignmentSize);
 
         if (alignedAddressRange != addressRange) {
             const auto alignedBufferSize = alignedAddressRange.size();

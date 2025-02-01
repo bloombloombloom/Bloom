@@ -35,7 +35,8 @@ namespace DebugToolDrivers::Wch
             const WchLinkToolConfig& toolConfig,
             const Targets::RiscV::RiscVTargetConfig& targetConfig,
             const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile,
-            Protocols::WchLink::WchLinkInterface& wchLinkInterface
+            Protocols::WchLink::WchLinkInterface& wchLinkInterface,
+            const DeviceInfo& toolInfo
         );
 
         void activate() override;
@@ -90,6 +91,8 @@ namespace DebugToolDrivers::Wch
 
         Protocols::WchLink::WchLinkInterface& wchLinkInterface;
         DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator riscVTranslator;
+
+        DeviceInfo toolInfo;
 
         const Targets::TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
         const Targets::TargetMemorySegmentDescriptor& mainProgramSegmentDescriptor;

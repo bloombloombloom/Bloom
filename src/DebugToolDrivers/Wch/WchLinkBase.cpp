@@ -113,7 +113,8 @@ namespace DebugToolDrivers::Wch
                 this->toolConfig,
                 targetConfig,
                 targetDescriptionFile,
-                *(this->wchLinkInterface)
+                *(this->wchLinkInterface),
+                this->getDeviceInfo()
             );
         }
         return this->wchLinkDebugInterface.get();
