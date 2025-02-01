@@ -220,7 +220,7 @@ namespace Services
                 addressSpaceDescriptor,
                 memorySegmentDescriptor,
                 startAddress,
-                buffer
+                TargetMemoryBuffer{buffer.begin(), buffer.end()}
             ),
             this->defaultTimeout,
             this->activeAtomicSessionId

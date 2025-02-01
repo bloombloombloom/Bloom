@@ -22,6 +22,7 @@
 #include "src/Targets/TargetBitFieldDescriptor.hpp"
 #include "src/Targets/TargetPadDescriptor.hpp"
 #include "src/Targets/TargetBreakpoint.hpp"
+#include "src/Targets/DeltaProgramming/DeltaProgrammingInterface.hpp"
 
 #include "TargetDescriptionFile.hpp"
 
@@ -29,7 +30,9 @@
 
 namespace Targets::Microchip::Avr8
 {
-    class Avr8: public Target
+    class Avr8
+        : public Target
+        , public DeltaProgramming::DeltaProgrammingInterface
     {
     public:
         explicit Avr8(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
@@ -110,6 +113,17 @@ namespace Targets::Microchip::Avr8
 
         std::string passthroughCommandHelpText() override;
         std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
+
+        DeltaProgramming::DeltaProgrammingInterface* deltaProgrammingInterface() override;
+        TargetMemorySize deltaBlockSize(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) override;
+        bool shouldAbandonSession(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const std::vector<DeltaProgramming::Session::WriteOperation::Region>& deltaSegments
+        ) override;
 
     protected:
         DebugToolDrivers::TargetInterfaces::TargetPowerManagementInterface* targetPowerManagementInterface = nullptr;

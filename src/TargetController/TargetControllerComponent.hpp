@@ -73,6 +73,8 @@
 #include "src/Targets/TargetMemorySegmentDescriptor.hpp"
 #include "src/Targets/ProgramBreakpointRegistry.hpp"
 #include "src/Targets/TargetMemoryCache.hpp"
+#include "src/Targets/DeltaProgramming/DeltaProgrammingInterface.hpp"
+#include "src/Targets/DeltaProgramming/Session.hpp"
 
 #include "src/EventManager/EventManager.hpp"
 #include "src/EventManager/EventListener.hpp"
@@ -142,6 +144,8 @@ namespace TargetController
         std::unique_ptr<DebugTool> debugTool = nullptr;
         std::unique_ptr<Targets::Target> target = nullptr;
 
+        Targets::DeltaProgramming::DeltaProgrammingInterface* deltaProgrammingInterface = nullptr;
+
         std::map<
             Commands::CommandType,
             std::function<std::unique_ptr<Responses::Response>(Commands::Command&)>
@@ -169,6 +173,11 @@ namespace TargetController
          * memories, across multiple address spaces. We have a single cache for each memory segment.
          */
         std::map<Targets::TargetMemorySegmentId, Targets::TargetMemoryCache> programMemoryCachesBySegmentId;
+
+        /**
+         * Active delta programming session
+         */
+        std::optional<Targets::DeltaProgramming::Session> deltaProgrammingSession;
 
         /**
          * Registers a handler function for a particular command type.
@@ -328,6 +337,9 @@ namespace TargetController
         Targets::TargetMemoryCache& getProgramMemoryCache(
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor
         );
+
+        void commitDeltaProgrammingSession(const Targets::DeltaProgramming::Session& session);
+        void abandonDeltaProgrammingSession(const Targets::DeltaProgramming::Session& session);
 
         /**
          * Invokes a shutdown.

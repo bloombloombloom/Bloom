@@ -9,6 +9,7 @@
 #include "src/Targets/RiscV/RiscV.hpp"
 #include "src/Targets/TargetPeripheralDescriptor.hpp"
 #include "src/Targets/TargetPadDescriptor.hpp"
+#include "src/Targets/DeltaProgramming/DeltaProgrammingInterface.hpp"
 
 #include "WchRiscVTargetConfig.hpp"
 #include "TargetDescriptionFile.hpp"
@@ -21,7 +22,7 @@ namespace Targets::RiscV::Wch
 {
     class WchRiscV
         : public ::Targets::RiscV::RiscV
-        , public DeltaProgrammingInterface
+        , public DeltaProgramming::DeltaProgrammingInterface
     {
     public:
         WchRiscV(const TargetConfig& targetConfig, TargetDescriptionFile&& targetDescriptionFile);
@@ -58,6 +59,17 @@ namespace Targets::RiscV::Wch
 
         std::string passthroughCommandHelpText() override;
         std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) override;
+
+        DeltaProgramming::DeltaProgrammingInterface* deltaProgrammingInterface() override;
+        TargetMemorySize deltaBlockSize(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+        ) override;
+        bool shouldAbandonSession(
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+            const std::vector<DeltaProgramming::Session::WriteOperation::Region>& deltaSegments
+        ) override;
 
     protected:
         WchRiscVTargetConfig targetConfig;

@@ -95,6 +95,14 @@ namespace Targets
             );
         }
 
+        decltype(ProgramBreakpointRegistryGeneric::mapping)::iterator begin() noexcept {
+            return this->mapping.begin();
+        }
+
+        decltype(ProgramBreakpointRegistryGeneric::mapping)::iterator end() noexcept {
+            return this->mapping.end();
+        }
+
         decltype(ProgramBreakpointRegistryGeneric::mapping)::const_iterator begin() const noexcept {
             return this->mapping.begin();
         }

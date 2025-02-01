@@ -55,31 +55,32 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
 
             if (!debugSession.programmingSession.has_value()) {
                 debugSession.programmingSession = ProgrammingSession{this->startAddress, this->buffer};
+                debugSession.connection.writePacket(OkResponsePacket{});
+                return;
+            }
 
-            } else {
-                auto& programmingSession = debugSession.programmingSession.value();
-                const auto currentEndAddress = programmingSession.startAddress + programmingSession.buffer.size() - 1;
-                const auto expectedStartAddress = (currentEndAddress + 1);
+            auto& programmingSession = debugSession.programmingSession.value();
+            const auto currentEndAddress = programmingSession.startAddress + programmingSession.buffer.size() - 1;
+            const auto expectedStartAddress = (currentEndAddress + 1);
 
-                if (this->startAddress < expectedStartAddress) {
-                    throw Exception{"Invalid start address from GDB - the buffer would overlap a previous buffer"};
-                }
+            if (this->startAddress < expectedStartAddress) {
+                throw Exception{"Invalid start address from GDB - the buffer would overlap a previous buffer"};
+            }
 
-                if (this->startAddress > expectedStartAddress) {
-                    // There is a gap in the buffer sent by GDB. Fill it with 0xFF
-                    programmingSession.buffer.insert(
-                        programmingSession.buffer.end(),
-                        this->startAddress - expectedStartAddress,
-                        0xFF
-                    );
-                }
-
+            if (this->startAddress > expectedStartAddress) {
+                // There is a gap in the buffer sent by GDB. Fill it with 0xFF
                 programmingSession.buffer.insert(
                     programmingSession.buffer.end(),
-                    this->buffer.begin(),
-                    this->buffer.end()
+                    this->startAddress - expectedStartAddress,
+                    0xFF
                 );
             }
+
+            programmingSession.buffer.insert(
+                programmingSession.buffer.end(),
+                this->buffer.begin(),
+                this->buffer.end()
+            );
 
             debugSession.connection.writePacket(OkResponsePacket{});
 

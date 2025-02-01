@@ -57,6 +57,13 @@ struct TargetConfig
     bool programMemoryCache = true;
 
     /**
+     * Determines whether Bloom will employ "delta programming" during programming sessions.
+     *
+     * Not all targets support delta programming.
+     */
+    bool deltaProgramming = true;
+
+    /**
      * Determines if Bloom will reserve a single hardware breakpoint for stepping operations.
      */
     std::optional<bool> reserveSteppingBreakpoint = std::nullopt;

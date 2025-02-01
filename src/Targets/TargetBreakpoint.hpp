@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <optional>
-#include <cassert>
+#include <array>
 
 #include "TargetMemory.hpp"
 #include "TargetAddressSpaceDescriptor.hpp"
@@ -18,6 +17,8 @@ namespace Targets
 
     struct TargetProgramBreakpoint
     {
+        static constexpr auto MAX_SIZE = TargetMemorySize{4};
+
         enum class Type: std::uint8_t
         {
             HARDWARE,
@@ -29,6 +30,7 @@ namespace Targets
         TargetMemoryAddress address;
         TargetMemorySize size;
         Type type;
+        std::array<unsigned char, TargetProgramBreakpoint::MAX_SIZE> originalData;
     };
 
     struct BreakpointResources

@@ -13,6 +13,7 @@
 #include "src/Services/PathService.hpp"
 #include "src/Services/ProcessService.hpp"
 #include "src/Services/StringService.hpp"
+#include "src/Services/AlignmentService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "Exceptions/TargetOperationFailure.hpp"
@@ -287,9 +288,34 @@ namespace TargetController
 
         this->acquireHardware();
 
-        if (this->targetState->executionState != TargetExecutionState::RUNNING) {
-//            this->target->run();
-//            this->targetState->executionState = TargetExecutionState::RUNNING;
+        this->targetState = std::make_unique<TargetState>(
+            TargetExecutionState::UNKNOWN,
+            TargetMode::DEBUGGING,
+            std::nullopt
+        );
+        this->refreshExecutionState();
+
+        if (this->environmentConfig.targetConfig.hardwareBreakpoints) {
+            const auto& breakpointResources = this->targetDescriptor->breakpointResources;
+            Logger::info("Available hardware breakpoints: " + std::to_string(breakpointResources.hardwareBreakpoints));
+            Logger::info(
+                "Reserved hardware breakpoints: " + std::to_string(breakpointResources.reservedHardwareBreakpoints)
+            );
+
+        } else {
+            Logger::warning("Hardware breakpoints have been disabled");
+        }
+
+        if (
+            this->targetState->executionState == TargetExecutionState::STOPPED
+            && this->environmentConfig.targetConfig.resumeOnStartup
+        ) {
+            try {
+                this->resumeTarget();
+
+            } catch (const Exceptions::TargetOperationFailure& exception) {
+                Logger::error("Failed to resume target execution on startup - error: " + exception.getMessage());
+            }
         }
 
         this->state = TargetControllerState::ACTIVE;
@@ -569,35 +595,7 @@ namespace TargetController
 
         this->target->postActivate();
 
-        this->targetState = std::make_unique<TargetState>(
-            TargetExecutionState::UNKNOWN,
-            TargetMode::DEBUGGING,
-            std::nullopt
-        );
-        this->refreshExecutionState();
-
-        if (this->environmentConfig.targetConfig.hardwareBreakpoints) {
-            const auto& breakpointResources = this->targetDescriptor->breakpointResources;
-            Logger::info("Available hardware breakpoints: " + std::to_string(breakpointResources.hardwareBreakpoints));
-            Logger::info(
-                "Reserved hardware breakpoints: " + std::to_string(breakpointResources.reservedHardwareBreakpoints)
-            );
-
-        } else {
-            Logger::warning("Hardware breakpoints have been disabled");
-        }
-
-        if (
-            this->targetState->executionState == TargetExecutionState::STOPPED
-            && this->environmentConfig.targetConfig.resumeOnStartup
-        ) {
-            try {
-                this->resumeTarget();
-
-            } catch (const Exceptions::TargetOperationFailure& exception) {
-                Logger::error("Failed to resume target execution on startup - error: " + exception.getMessage());
-            }
-        }
+        this->deltaProgrammingInterface = this->target->deltaProgrammingInterface();
     }
 
     void TargetControllerComponent::releaseHardware() {
@@ -752,7 +750,8 @@ namespace TargetController
                 );
             }
 
-            return cache.fetch(startAddress, bytes);
+            const auto cachedData = cache.fetch(startAddress, bytes);
+            return TargetMemoryBuffer{cachedData.begin(), cachedData.end()};
         }
 
         return this->target->readMemory(
@@ -783,7 +782,13 @@ namespace TargetController
 
         this->target->writeMemory(addressSpaceDescriptor, memorySegmentDescriptor, startAddress, buffer);
 
-        if (isProgramMemory && this->environmentConfig.targetConfig.programMemoryCache) {
+        if (
+            isProgramMemory
+            && (
+                this->environmentConfig.targetConfig.programMemoryCache
+                || this->environmentConfig.targetConfig.deltaProgramming
+            )
+        ) {
             this->getProgramMemoryCache(memorySegmentDescriptor).insert(startAddress, buffer);
         }
 
@@ -811,7 +816,10 @@ namespace TargetController
                 throw Exception{"Cannot erase program memory - programming mode not enabled."};
             }
 
-            if (this->environmentConfig.targetConfig.programMemoryCache) {
+            if (
+                this->environmentConfig.targetConfig.programMemoryCache
+                || this->environmentConfig.targetConfig.deltaProgramming
+            ) {
                 Logger::debug("Clearing program memory cache");
                 this->getProgramMemoryCache(memorySegmentDescriptor).clear();
             }
@@ -847,7 +855,10 @@ namespace TargetController
 
         if (
             breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
-            && this->environmentConfig.targetConfig.programMemoryCache
+            && (
+                this->environmentConfig.targetConfig.programMemoryCache
+                || this->environmentConfig.targetConfig.deltaProgramming
+            )
             && this->target->isProgramMemory(
                 breakpoint.addressSpaceDescriptor,
                 breakpoint.memorySegmentDescriptor,
@@ -881,39 +892,43 @@ namespace TargetController
 
         Logger::debug("Removing breakpoint at byte address 0x" + StringService::toHex(breakpoint.address));
 
-        if (!registry.contains(breakpoint)) {
+
+        const auto registeredBreakpointOpt = registry.find(breakpoint);
+        if (!registeredBreakpointOpt.has_value()) {
             Logger::debug("Breakpoint not found in registry - ignoring removal request");
             return;
         }
 
-        this->target->removeProgramBreakpoint(breakpoint);
-        registry.remove(breakpoint);
+        const auto& registeredBreakpoint = registeredBreakpointOpt->get();
+        this->target->removeProgramBreakpoint(registeredBreakpoint);
 
         if (
-            breakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
-            && this->environmentConfig.targetConfig.programMemoryCache
+            registeredBreakpoint.type == TargetProgramBreakpoint::Type::SOFTWARE
+            && (
+                this->environmentConfig.targetConfig.programMemoryCache
+                || this->environmentConfig.targetConfig.deltaProgramming
+           )
             && this->target->isProgramMemory(
-                breakpoint.addressSpaceDescriptor,
-                breakpoint.memorySegmentDescriptor,
-                breakpoint.address,
-                breakpoint.size
+                registeredBreakpoint.addressSpaceDescriptor,
+                registeredBreakpoint.memorySegmentDescriptor,
+                registeredBreakpoint.address,
+                registeredBreakpoint.size
             )
         ) {
-            auto& cache = this->getProgramMemoryCache(breakpoint.memorySegmentDescriptor);
-            if (cache.contains(breakpoint.address, breakpoint.size)) {
-                // Update program memory cache
+            auto& cache = this->getProgramMemoryCache(registeredBreakpoint.memorySegmentDescriptor);
+            if (cache.contains(registeredBreakpoint.address, registeredBreakpoint.size)) {
+                // Update program memory cache with the original instruction
                 cache.insert(
-                    breakpoint.address,
-                    this->target->readMemory(
-                        breakpoint.addressSpaceDescriptor,
-                        breakpoint.memorySegmentDescriptor,
-                        breakpoint.address,
-                        breakpoint.size,
-                        {}
-                    )
+                    registeredBreakpoint.address,
+                    TargetMemoryBufferSpan{
+                        registeredBreakpoint.originalData.begin(),
+                        registeredBreakpoint.originalData.begin() + registeredBreakpoint.size
+                    }
                 );
             }
         }
+
+        registry.remove(registeredBreakpoint);
     }
 
     void TargetControllerComponent::clearAllBreakpoints() {
@@ -935,12 +950,21 @@ namespace TargetController
         this->target->enableProgrammingMode();
         Logger::warning("Programming mode enabled");
 
+        if (this->environmentConfig.targetConfig.deltaProgramming && this->deltaProgrammingInterface != nullptr) {
+            this->deltaProgrammingSession = DeltaProgramming::Session{};
+        }
+
         auto newState = *(this->targetState);
         newState.mode = TargetMode::PROGRAMMING;
         this->updateTargetState(newState);
     }
 
     void TargetControllerComponent::disableProgrammingMode() {
+        if (this->deltaProgrammingSession.has_value()) {
+            this->commitDeltaProgrammingSession(*(this->deltaProgrammingSession));
+            this->deltaProgrammingSession = std::nullopt;
+        }
+
         Logger::debug("Disabling programming mode");
         this->target->disableProgrammingMode();
         Logger::info("Programming mode disabled");
@@ -948,14 +972,41 @@ namespace TargetController
         Logger::info("Restoring breakpoints");
         this->target->stop();
 
-        for (const auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
-            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+        static const auto refreshOriginalData = [this] (TargetProgramBreakpoint& breakpoint) {
+            const auto originalData = this->readTargetMemory(
+                breakpoint.addressSpaceDescriptor,
+                breakpoint.memorySegmentDescriptor,
+                breakpoint.address,
+                breakpoint.size,
+                {},
+                true
+            );
+
+            std::copy(originalData.begin(), originalData.end(), breakpoint.originalData.begin());
+        };
+
+        for (auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
+            for (auto& [address, breakpoint] : breakpointsByAddress) {
+                refreshOriginalData(breakpoint);
                 this->target->setProgramBreakpoint(breakpoint);
+
+                auto& cache = this->getProgramMemoryCache(breakpoint.memorySegmentDescriptor);
+                cache.insert(
+                    breakpoint.address,
+                    this->target->readMemory(
+                        breakpoint.addressSpaceDescriptor,
+                        breakpoint.memorySegmentDescriptor,
+                        breakpoint.address,
+                        breakpoint.size,
+                        {}
+                    )
+                );
             }
         }
 
-        for (const auto& [addressSpaceId, breakpointsByAddress] : this->hardwareBreakpointRegistry) {
-            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+        for (auto& [addressSpaceId, breakpointsByAddress] : this->hardwareBreakpointRegistry) {
+            for (auto& [address, breakpoint] : breakpointsByAddress) {
+                refreshOriginalData(breakpoint);
                 this->target->setProgramBreakpoint(breakpoint);
             }
         }
@@ -979,6 +1030,163 @@ namespace TargetController
         }
 
         return cacheIt->second;
+    }
+
+    void TargetControllerComponent::commitDeltaProgrammingSession(const DeltaProgramming::Session& session) {
+        using Services::AlignmentService;
+        using Services::StringService;
+
+        /*
+         * If a single write operation cannot be committed, we must abandon the whole session.
+         *
+         * We prepare CommitOperation objects and then commit all of them at the end, allowing for the abandoning of
+         * the session, if necessary.
+         */
+        struct CommitOperation
+        {
+            const TargetAddressSpaceDescriptor& addressSpaceDescriptor;
+            const TargetMemorySegmentDescriptor& memorySegmentDescriptor;
+            std::vector<DeltaProgramming::Session::WriteOperation::Region> deltaSegments;
+        };
+        auto commitOperations = std::vector<CommitOperation>{};
+
+        for (const auto& [segmentId, writeOperation] : session.writeOperationsBySegmentId) {
+            auto& segmentCache = this->getProgramMemoryCache(writeOperation.memorySegmentDescriptor);
+
+            // Can the program memory cache facilitate diffing with all regions in this write operation?
+            for (const auto& region : writeOperation.regions) {
+                if (!segmentCache.contains(region.addressRange.startAddress, region.addressRange.size())) {
+                    Logger::info("Abandoning delta programming session - insufficient data in program memory cache");
+                    return this->abandonDeltaProgrammingSession(session);
+                }
+            }
+
+            const auto alignTo = this->deltaProgrammingInterface->deltaBlockSize(
+                writeOperation.addressSpaceDescriptor,
+                writeOperation.memorySegmentDescriptor
+            );
+
+            /*
+             * Ensure that the segment cache has sufficient data to facilitate delta segment alignment
+             *
+             * If the cache doesn't contain the necessary data for alignment, we just fill it with 0xFF instead of
+             * obtaining the data with a read operation. This saves us some time.
+             */
+            for (const auto& region : writeOperation.regions) {
+                const auto alignedAddress = AlignmentService::alignMemoryAddress(
+                    region.addressRange.startAddress,
+                    alignTo
+                );
+                const auto alignedSize = AlignmentService::alignMemorySize(
+                    region.addressRange.size() + (region.addressRange.startAddress - alignedAddress),
+                    alignTo
+                );
+
+                if (!segmentCache.contains(alignedAddress, alignedSize)) {
+                    if (region.addressRange.startAddress != alignedAddress) {
+                        segmentCache.fill(alignedAddress, region.addressRange.startAddress - alignedAddress, 0xFF);
+                    }
+
+                    if (region.addressRange.size() != alignedSize) {
+                        segmentCache.fill(
+                            region.addressRange.endAddress + 1,
+                            alignedSize - region.addressRange.size(),
+                            0xFF
+                        );
+                    }
+                }
+            }
+
+            /*
+             * When constructing the delta segments, any software breakpoints currently installed in this memory
+             * segment can interfere with the diffing of the new program and the program memory cache.
+             *
+             * For this reason, we make a copy of the program memory cache and strip any software breakpoints from it,
+             * before constructing the delta segments.
+             */
+            auto cacheData = segmentCache.data;
+            for (const auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
+                for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                    if (breakpoint.memorySegmentDescriptor != writeOperation.memorySegmentDescriptor) {
+                        continue;
+                    }
+
+                    std::copy(
+                        breakpoint.originalData.begin(),
+                        breakpoint.originalData.begin() + breakpoint.size,
+                        cacheData.begin() + (breakpoint.address
+                            - breakpoint.memorySegmentDescriptor.addressRange.startAddress)
+                    );
+                }
+            }
+
+            auto operation = CommitOperation{
+                .addressSpaceDescriptor = writeOperation.addressSpaceDescriptor,
+                .memorySegmentDescriptor = writeOperation.memorySegmentDescriptor,
+                .deltaSegments = writeOperation.deltaSegments(cacheData, alignTo)
+            };
+
+            if (operation.deltaSegments.empty()) {
+                Logger::warning("Abandoning delta programming session - zero delta segments");
+                return this->abandonDeltaProgrammingSession(session);
+            }
+
+            if (
+                this->deltaProgrammingInterface->shouldAbandonSession(
+                    operation.addressSpaceDescriptor,
+                    operation.memorySegmentDescriptor,
+                    operation.deltaSegments
+                )
+            ) {
+                Logger::info("Abandoning delta programming session - upon target driver request");
+                return this->abandonDeltaProgrammingSession(session);
+            }
+
+            commitOperations.emplace_back(std::move(operation));
+        }
+
+        Logger::info("Committing delta programming session");
+
+        for (const auto& operation : commitOperations) {
+            auto& segmentCache = this->getProgramMemoryCache(operation.memorySegmentDescriptor);
+
+            Logger::info(
+                std::to_string(operation.deltaSegments.size()) + " delta segment(s) to be flushed to `"
+                    + operation.memorySegmentDescriptor.key + "`"
+            );
+            for (const auto& deltaSegment : operation.deltaSegments) {
+                Logger::info(
+                    "Flushing delta segment 0x" + StringService::toHex(deltaSegment.addressRange.startAddress)
+                        + " -> 0x" + StringService::toHex(deltaSegment.addressRange.endAddress) + " - "
+                        + std::to_string(deltaSegment.buffer.size()) + " byte(s)"
+                );
+                this->target->writeMemory(
+                    operation.addressSpaceDescriptor,
+                    operation.memorySegmentDescriptor,
+                    deltaSegment.addressRange.startAddress,
+                    deltaSegment.buffer
+                );
+
+                segmentCache.insert(deltaSegment.addressRange.startAddress, deltaSegment.buffer);
+            }
+        }
+    }
+
+    void TargetControllerComponent::abandonDeltaProgrammingSession(const DeltaProgramming::Session& session) {
+        for (const auto& [segmentId, eraseOperation] : session.eraseOperationsBySegmentId) {
+            this->eraseTargetMemory(eraseOperation.addressSpaceDescriptor, eraseOperation.memorySegmentDescriptor);
+        }
+
+        for (const auto& [segmentId, writeOperation] : session.writeOperationsBySegmentId) {
+            for (const auto& region : writeOperation.regions) {
+                this->writeTargetMemory(
+                    writeOperation.addressSpaceDescriptor,
+                    writeOperation.memorySegmentDescriptor,
+                    region.addressRange.startAddress,
+                    region.buffer
+                );
+            }
+        }
     }
 
     void TargetControllerComponent::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
@@ -1105,6 +1313,31 @@ namespace TargetController
             throw Exception{"Invalid address range"};
         }
 
+        if (
+            this->targetState->mode == TargetMode::PROGRAMMING
+            && this->deltaProgrammingSession.has_value()
+            && this->target->isProgramMemory(
+                command.addressSpaceDescriptor,
+                command.memorySegmentDescriptor,
+                command.startAddress,
+                static_cast<TargetMemorySize>(command.buffer.size())
+            )
+        ) {
+            Logger::debug(
+                "Pushing program memory write operation, at 0x" + Services::StringService::toHex(command.startAddress)
+                    + ", " + std::to_string(command.buffer.size()) + " byte(s), to active delta programming session"
+            );
+
+            this->deltaProgrammingSession->pushWriteOperation(
+                command.addressSpaceDescriptor,
+                command.memorySegmentDescriptor,
+                command.startAddress,
+                std::move(command.buffer)
+            );
+
+            return std::make_unique<Response>();
+        }
+
         this->writeTargetMemory(
             command.addressSpaceDescriptor,
             command.memorySegmentDescriptor,
@@ -1116,6 +1349,26 @@ namespace TargetController
     }
 
     std::unique_ptr<Response> TargetControllerComponent::handleEraseTargetMemory(EraseTargetMemory& command) {
+        if (
+            this->targetState->mode == TargetMode::PROGRAMMING
+            && this->deltaProgrammingSession.has_value()
+            && this->target->isProgramMemory(
+                command.addressSpaceDescriptor,
+                command.memorySegmentDescriptor,
+                command.memorySegmentDescriptor.addressRange.startAddress,
+                command.memorySegmentDescriptor.addressRange.size()
+            )
+        ) {
+            Logger::debug("Pushing program memory erase operation to active delta programming session");
+
+            this->deltaProgrammingSession->pushEraseOperation(
+                command.addressSpaceDescriptor,
+                command.memorySegmentDescriptor
+            );
+
+            return std::make_unique<Response>();
+        }
+
         this->eraseTargetMemory(command.addressSpaceDescriptor, command.memorySegmentDescriptor);
         return std::make_unique<Response>();
     }
@@ -1128,15 +1381,32 @@ namespace TargetController
     std::unique_ptr<ProgramBreakpoint> TargetControllerComponent::handleSetProgramBreakpointBreakpointAnyType(
         SetProgramBreakpointAnyType& command
     ) {
-        const auto breakpoint = TargetProgramBreakpoint{
+        if (command.size > TargetProgramBreakpoint::MAX_SIZE) {
+            throw Exception{"Invalid breakpoint size"};
+        }
+
+        auto breakpoint = TargetProgramBreakpoint{
             .addressSpaceDescriptor = command.addressSpaceDescriptor,
             .memorySegmentDescriptor = command.memorySegmentDescriptor,
             .address = command.address,
             .size = command.size,
             .type = this->environmentConfig.targetConfig.hardwareBreakpoints && this->availableHardwareBreakpoints() > 0
                 ? TargetProgramBreakpoint::Type::HARDWARE
-                : TargetProgramBreakpoint::Type::SOFTWARE
+                : TargetProgramBreakpoint::Type::SOFTWARE,
+            .originalData = {}
         };
+
+        const auto originalData = this->readTargetMemory(
+            command.addressSpaceDescriptor,
+            command.memorySegmentDescriptor,
+            command.address,
+            command.size,
+            {},
+            true
+        );
+
+        std::copy(originalData.begin(), originalData.end(), breakpoint.originalData.begin());
+
         this->setProgramBreakpoint(breakpoint);
         return std::make_unique<ProgramBreakpoint>(breakpoint);
     }

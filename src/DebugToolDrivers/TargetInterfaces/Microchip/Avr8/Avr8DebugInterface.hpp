@@ -99,6 +99,7 @@ namespace DebugToolDrivers::TargetInterfaces::Microchip::Avr8
 
         virtual void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
         virtual void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) = 0;
+        virtual void clearAllBreakpoints() = 0;
 
         virtual Targets::TargetMemoryAddress getProgramCounter() = 0;
         virtual void setProgramCounter(Targets::TargetMemoryAddress programCounter) = 0;

@@ -24,6 +24,8 @@
 #include "PassthroughCommand.hpp"
 #include "PassthroughResponse.hpp"
 
+#include "DeltaProgramming/DeltaProgrammingInterface.hpp"
+
 #include "src/DebugToolDrivers/DebugTool.hpp"
 
 namespace Targets
@@ -152,11 +154,19 @@ namespace Targets
         virtual TargetGpioPadDescriptorAndStatePairs getGpioPadStates(const TargetPadDescriptors& padDescriptors) = 0;
         virtual void setGpioPadState(const TargetPadDescriptor& padDescriptor, const TargetGpioPadState& state) = 0;
 
+        /**
+         * When enabling programming mode, the target driver is expected to clear all program breakpoints currently
+         * installed on the target.
+         *
+         * Before disabling program mode, the target controller will reinstall the necessary breakpoints.
+         */
         virtual void enableProgrammingMode() = 0;
         virtual void disableProgrammingMode() = 0;
         virtual bool programmingModeEnabled() = 0;
 
         virtual std::string passthroughCommandHelpText() = 0;
         virtual std::optional<PassthroughResponse> invokePassthroughCommand(const PassthroughCommand& command) = 0;
+
+        virtual DeltaProgramming::DeltaProgrammingInterface* deltaProgrammingInterface() = 0;
     };
 }

@@ -54,8 +54,6 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         try {
             targetControllerService.enableProgrammingMode();
 
-            Logger::warning("Erasing program memory, in preparation for programming");
-
             // We don't erase a specific address range - we just erase the entire program memory.
             targetControllerService.eraseMemory(
                 gdbTargetDescriptor.programAddressSpaceDescriptor,

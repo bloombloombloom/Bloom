@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <cassert>
+#include <algorithm>
 #include <chrono>
 #include <thread>
 
@@ -207,7 +208,8 @@ namespace Targets::RiscV::Wch
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
                 .address = this->deAliasMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
-                .type = breakpoint.type
+                .type = breakpoint.type,
+                .originalData = breakpoint.originalData
             });
 
             return;
@@ -233,7 +235,8 @@ namespace Targets::RiscV::Wch
                 .memorySegmentDescriptor = this->selectedProgramSegmentDescriptor,
                 .address = this->deAliasMappedAddress(breakpoint.address, this->selectedProgramSegmentDescriptor),
                 .size = breakpoint.size,
-                .type = breakpoint.type
+                .type = breakpoint.type,
+                .originalData = breakpoint.originalData
             });
 
             return;
@@ -611,6 +614,48 @@ namespace Targets::RiscV::Wch
         }
 
         return std::nullopt;
+    }
+
+    DeltaProgramming::DeltaProgrammingInterface* WchRiscV::deltaProgrammingInterface() {
+        return this;
+    }
+
+    TargetMemorySize WchRiscV::deltaBlockSize(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) {
+        return 64;
+    }
+
+    bool WchRiscV::shouldAbandonSession(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const std::vector<DeltaProgramming::Session::WriteOperation::Region>& deltaSegments
+    ) {
+        /*
+         * Delta programming isn't always faster on WCH RISC-V targets with WCH-Link debug tools.
+         *
+         * This is because the debug tool can write to program memory with two methods - one better suited for small
+         * operations and the other for larger ones. If there are many small delta segments, we'd end up using the
+         * slower method many times, resulting in a negative impact on programming speed.
+         *
+         * For this reason, we abandon delta sessions if they consist of too many delta segments.
+         *
+         * See WchLinkDebugInterface::writeMemory() for more.
+         *
+         * TODO: Consider moving this to the WCH-Link driver, seeing as it's specific to that debug tool. In fact, I
+         *       think the entire implementation of the DeltaProgrammingInterface should reside in the tool driver, as
+         *       opposed to the target driver. Something to look at after v2.0.0.
+         */
+        return
+            deltaSegments.size() > 5
+            || std::count_if(
+                deltaSegments.begin(),
+                deltaSegments.end(),
+                [] (const DeltaProgramming::Session::WriteOperation::Region& segment) {
+                    return segment.buffer.size() > 192;
+                }
+            ) > 2;
     }
 
     const TargetMemorySegmentDescriptor& WchRiscV::resolveAliasedMemorySegment() {

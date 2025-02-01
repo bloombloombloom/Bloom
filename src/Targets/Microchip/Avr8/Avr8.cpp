@@ -656,6 +656,7 @@ namespace Targets::Microchip::Avr8
             return;
         }
 
+        this->avr8DebugInterface->clearAllBreakpoints();
         this->avr8DebugInterface->enableProgrammingMode();
         this->activeProgrammingSession = ProgrammingSession();
     }
@@ -685,6 +686,32 @@ namespace Targets::Microchip::Avr8
     std::optional<PassthroughResponse> Avr8::invokePassthroughCommand(const PassthroughCommand& command) {
         // AVR targets do not currently support any passthrough commands
         return std::nullopt;
+    }
+
+    DeltaProgramming::DeltaProgrammingInterface* Avr8::deltaProgrammingInterface() {
+        if (
+            this->targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
+            || this->targetConfig.physicalInterface == TargetPhysicalInterface::UPDI
+        ) {
+            return this;
+        }
+
+        return nullptr;
+    }
+
+    TargetMemorySize Avr8::deltaBlockSize(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor
+    ) {
+        return memorySegmentDescriptor.pageSize.value_or(1);
+    }
+
+    bool Avr8::shouldAbandonSession(
+        const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
+        const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
+        const std::vector<DeltaProgramming::Session::WriteOperation::Region>& deltaSegments
+    ) {
+        return false;
     }
 
     std::map<TargetPadId, GpioPadDescriptor> Avr8::generateGpioPadDescriptorMapping(

@@ -1,6 +1,7 @@
 #include "TargetMemoryCache.hpp"
 
 #include <algorithm>
+#include <cassert>
 
 #include "src/Exceptions/Exception.hpp"
 
@@ -11,7 +12,7 @@ namespace Targets
         , data(TargetMemoryBuffer(memorySegmentDescriptor.size(), 0x00))
     {}
 
-    TargetMemoryBuffer TargetMemoryCache::fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
+    TargetMemoryBufferSpan TargetMemoryCache::fetch(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
         const auto startIndex = startAddress - this->memorySegmentDescriptor.addressRange.startAddress;
 
         if (
@@ -21,7 +22,7 @@ namespace Targets
             throw Exceptions::Exception{"Invalid cache access"};
         }
 
-        return TargetMemoryBuffer{this->data.begin() + startIndex, this->data.begin() + startIndex + bytes};
+        return TargetMemoryBufferSpan{this->data.begin() + startIndex, this->data.begin() + startIndex + bytes};
     }
 
     bool TargetMemoryCache::contains(TargetMemoryAddress startAddress, TargetMemorySize bytes) const {
@@ -34,12 +35,30 @@ namespace Targets
     }
 
     void TargetMemoryCache::insert(TargetMemoryAddress startAddress, TargetMemoryBufferSpan data) {
-        const auto startIndex = startAddress - this->memorySegmentDescriptor.addressRange.startAddress;
+        std::copy(
+            data.begin(),
+            data.end(),
+            this->data.begin() + (startAddress - this->memorySegmentDescriptor.addressRange.startAddress)
+        );
 
-        std::copy(data.begin(), data.end(), this->data.begin() + startIndex);
+        this->trackSegment(startAddress, static_cast<TargetMemoryAddress>(startAddress + data.size() - 1));
+    }
 
-        const auto endAddress = static_cast<Targets::TargetMemoryAddress>(startAddress + data.size() - 1);
+    void TargetMemoryCache::fill(TargetMemoryAddress startAddress, TargetMemorySize size, unsigned char value) {
+        assert(this->data.size() >= (startAddress - this->memorySegmentDescriptor.addressRange.startAddress) + size);
 
+        for (auto i = std::size_t{0}; i < size; ++i) {
+            this->data[i + (startAddress - this->memorySegmentDescriptor.addressRange.startAddress)] = value;
+        }
+
+        this->trackSegment(startAddress, static_cast<TargetMemoryAddress>(startAddress + size - 1));
+    }
+
+    void TargetMemoryCache::clear() {
+        this->populatedSegments.clear();
+    }
+
+    void TargetMemoryCache::trackSegment(TargetMemoryAddress startAddress, TargetMemoryAddress endAddress) {
         const auto intersectingStartSegmentIt = this->intersectingSegment(startAddress);
         const auto intersectingEndSegmentIt = this->intersectingSegment(endAddress);
 
@@ -93,10 +112,6 @@ namespace Targets
         if (newEndSegment.has_value()) {
             this->populatedSegments.insert(*newEndSegment);
         }
-    }
-
-    void TargetMemoryCache::clear() {
-        this->populatedSegments.clear();
     }
 
     TargetMemoryCache::SegmentIt TargetMemoryCache::intersectingSegment(TargetMemoryAddress address) const {

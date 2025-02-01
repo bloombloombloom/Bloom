@@ -80,8 +80,8 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
 
             debugSession.programmingSession.reset();
 
-            Logger::warning("Program memory updated");
             targetControllerService.disableProgrammingMode();
+            Logger::warning("Program memory updated");
 
             Logger::warning("Resetting target");
             targetControllerService.resetTarget();

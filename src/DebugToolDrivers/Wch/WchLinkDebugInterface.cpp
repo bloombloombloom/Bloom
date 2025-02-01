@@ -33,7 +33,9 @@ namespace DebugToolDrivers::Wch
     using ::Targets::TargetAddressSpaceDescriptor;
     using ::Targets::TargetMemorySegmentDescriptor;
     using ::Targets::TargetProgramBreakpoint;
+    using ::Targets::BreakpointResources;
     using ::Targets::TargetMemorySegmentType;
+    using ::Targets::TargetRegisterDescriptor;
     using ::Targets::TargetRegisterDescriptors;
     using ::Targets::TargetRegisterDescriptorAndValuePairs;
 
@@ -62,6 +64,7 @@ namespace DebugToolDrivers::Wch
         , toolInfo(toolInfo)
         , sysAddressSpaceDescriptor(this->targetDescriptionFile.getSystemAddressSpaceDescriptor())
         , mainProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("main_program"))
+        , bootProgramSegmentDescriptor(this->sysAddressSpaceDescriptor.getMemorySegmentDescriptor("boot_program"))
         , flashProgramOpcodes(
             WchLinkDebugInterface::getFlashProgramOpcodes(
                 this->targetDescriptionFile.getProperty("wch_link_interface", "programming_opcode_key").value
@@ -129,7 +132,6 @@ namespace DebugToolDrivers::Wch
     }
 
     void WchLinkDebugInterface::deactivate() {
-        this->riscVTranslator.clearAllTriggers();
         this->riscVTranslator.deactivate();
 
         const auto response = this->wchLinkInterface.sendCommandAndWaitForResponse(Commands::Control::DetachTarget{});
@@ -142,7 +144,7 @@ namespace DebugToolDrivers::Wch
         return "0x" + Services::StringService::toHex(this->cachedVariantId.value());
     }
 
-    Targets::TargetExecutionState WchLinkDebugInterface::getExecutionState() {
+    TargetExecutionState WchLinkDebugInterface::getExecutionState() {
         return this->riscVTranslator.getExecutionState();
     }
 
@@ -162,7 +164,7 @@ namespace DebugToolDrivers::Wch
         this->riscVTranslator.reset();
     }
 
-    Targets::BreakpointResources WchLinkDebugInterface::getBreakpointResources() {
+    BreakpointResources WchLinkDebugInterface::getBreakpointResources() {
         return {
             .hardwareBreakpoints = this->riscVTranslator.getTriggerCount(),
             .softwareBreakpoints = 0xFFFFFFFF, // TODO: Use the program memory size to determine the limit.
@@ -187,22 +189,22 @@ namespace DebugToolDrivers::Wch
         }
     }
 
-    Targets::TargetRegisterDescriptorAndValuePairs WchLinkDebugInterface::readCpuRegisters(
-        const Targets::TargetRegisterDescriptors& descriptors
+    TargetRegisterDescriptorAndValuePairs WchLinkDebugInterface::readCpuRegisters(
+        const TargetRegisterDescriptors& descriptors
     ) {
         return this->riscVTranslator.readCpuRegisters(descriptors);
     }
 
-    void WchLinkDebugInterface::writeCpuRegisters(const Targets::TargetRegisterDescriptorAndValuePairs& registers) {
+    void WchLinkDebugInterface::writeCpuRegisters(const TargetRegisterDescriptorAndValuePairs& registers) {
         return this->riscVTranslator.writeCpuRegisters(registers);
     }
 
-    Targets::TargetMemoryBuffer WchLinkDebugInterface::readMemory(
+    TargetMemoryBuffer WchLinkDebugInterface::readMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
-        Targets::TargetMemoryAddress startAddress,
-        Targets::TargetMemorySize bytes,
-        const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
+        TargetMemoryAddress startAddress,
+        TargetMemorySize bytes,
+        const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
         return this->riscVTranslator.readMemory(
             addressSpaceDescriptor,
@@ -216,8 +218,8 @@ namespace DebugToolDrivers::Wch
     void WchLinkDebugInterface::writeMemory(
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor,
         const TargetMemorySegmentDescriptor& memorySegmentDescriptor,
-        Targets::TargetMemoryAddress startAddress,
-        Targets::TargetMemoryBufferSpan buffer
+        TargetMemoryAddress startAddress,
+        TargetMemoryBufferSpan buffer
     ) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             /*
@@ -293,8 +295,8 @@ namespace DebugToolDrivers::Wch
          *   The erase operation will silently fail, and the target will be left in a bad state, causing the subsequent
          *   full block write to corrupt the target's program memory
          *
-         * - The reset is what causes the erase operation to fail. But I have no idea why. I've inspected the relevant
-         *   registers, at the relevant times, but have found nothing significant that could explain this
+         * - The reset is what causes the erase operation to fail, but I have no idea why. I've inspected the relevant
+         *   registers, at the relevant times, but found nothing significant that could explain this
          *
          * - Subsequent resets do not fix the issue, but another full block write does. My guess is that the first full
          *   block write (which corrupted program memory) corrected the target state, cleaning the mess made by the
@@ -304,11 +306,11 @@ namespace DebugToolDrivers::Wch
     }
 
     void WchLinkDebugInterface::enableProgrammingMode() {
+        // TODO: Move this to target driver. After v2.0.0.
+        this->clearAllBreakpoints();
     }
 
-    void WchLinkDebugInterface::disableProgrammingMode() {
-        this->softwareBreakpointRegistry.clear();
-    }
+    void WchLinkDebugInterface::disableProgrammingMode() {}
 
     void WchLinkDebugInterface::applyAccessRestrictions(TargetMemorySegmentDescriptor& memorySegmentDescriptor) {
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
@@ -320,7 +322,7 @@ namespace DebugToolDrivers::Wch
         }
     }
 
-    void WchLinkDebugInterface::applyAccessRestrictions(Targets::TargetRegisterDescriptor& registerDescriptor) {
+    void WchLinkDebugInterface::applyAccessRestrictions(TargetRegisterDescriptor& registerDescriptor) {
         // I don't believe any further access restrictions are required for registers. TODO: Review after v2.0.0.
     }
 
@@ -328,23 +330,6 @@ namespace DebugToolDrivers::Wch
         if (breakpoint.size != 2 && breakpoint.size != 4) {
             throw Exception{"Invalid software breakpoint size (" + std::to_string(breakpoint.size) + ")"};
         }
-
-        const auto originalData = this->readMemory(
-            breakpoint.addressSpaceDescriptor,
-            breakpoint.memorySegmentDescriptor,
-            breakpoint.address,
-            breakpoint.size,
-            {}
-        );
-
-        const auto softwareBreakpoint = ::Targets::RiscV::ProgramBreakpoint{
-            breakpoint,
-            static_cast<::Targets::RiscV::Opcodes::Opcode>(
-                breakpoint.size == 2
-                    ? (originalData[1] << 8) | originalData[0]
-                    : (originalData[3] << 24) | (originalData[2] << 16) | (originalData[1] << 8) | originalData[0]
-            )
-        };
 
         static constexpr auto EBREAK_OPCODE = std::to_array<unsigned char>({
             static_cast<unsigned char>(::Targets::RiscV::Opcodes::Ebreak),
@@ -359,15 +344,15 @@ namespace DebugToolDrivers::Wch
         });
 
         this->writeMemory(
-            softwareBreakpoint.addressSpaceDescriptor,
-            softwareBreakpoint.memorySegmentDescriptor,
-            softwareBreakpoint.address,
-            softwareBreakpoint.size == 2
+            breakpoint.addressSpaceDescriptor,
+            breakpoint.memorySegmentDescriptor,
+            breakpoint.address,
+            breakpoint.size == 2
                 ? TargetMemoryBufferSpan{COMPRESSED_EBREAK_OPCODE}
                 : TargetMemoryBufferSpan{EBREAK_OPCODE}
         );
 
-        this->softwareBreakpointRegistry.insert(softwareBreakpoint);
+        this->softwareBreakpointRegistry.insert(breakpoint);
     }
 
     void WchLinkDebugInterface::clearSoftwareBreakpoint(const TargetProgramBreakpoint& breakpoint) {
@@ -375,37 +360,26 @@ namespace DebugToolDrivers::Wch
             throw Exception{"Invalid software breakpoint size (" + std::to_string(breakpoint.size) + ")"};
         }
 
-        const auto softwareBreakpointOpt = this->softwareBreakpointRegistry.find(breakpoint);
-        if (!softwareBreakpointOpt.has_value()) {
-            throw TargetOperationFailure{
-                "Unknown software breakpoint (byte address: 0x" + Services::StringService::toHex(breakpoint.address)
-                    + ")"
-            };
-        }
-
-        const auto& softwareBreakpoint = softwareBreakpointOpt->get();
-        if (!softwareBreakpoint.originalInstruction.has_value()) {
-            throw InternalFatalErrorException{"Missing original opcode"};
-        }
-
         this->writeMemory(
-            softwareBreakpoint.addressSpaceDescriptor,
-            softwareBreakpoint.memorySegmentDescriptor,
-            softwareBreakpoint.address,
-            softwareBreakpoint.size == 2
-                ? TargetMemoryBuffer{
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction)),
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 8)
-                }
-                : TargetMemoryBuffer{
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction)),
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 8),
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 16),
-                    static_cast<unsigned char>(*(softwareBreakpoint.originalInstruction) >> 24)
-                }
+            breakpoint.addressSpaceDescriptor,
+            breakpoint.memorySegmentDescriptor,
+            breakpoint.address,
+            TargetMemoryBufferSpan{
+                breakpoint.originalData.begin(),
+                breakpoint.originalData.begin() + breakpoint.size
+            }
         );
 
-        this->softwareBreakpointRegistry.remove(softwareBreakpoint);
+        this->softwareBreakpointRegistry.remove(breakpoint);
+    }
+
+    void WchLinkDebugInterface::clearAllBreakpoints() {
+        this->riscVTranslator.clearAllTriggers();
+        for (const auto [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
+            for (const auto& [address, breakpoint] : breakpointsByAddress) {
+                this->clearSoftwareBreakpoint(breakpoint);
+            }
+        }
     }
 
     void WchLinkDebugInterface::writeProgramMemoryPartialBlock(

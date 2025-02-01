@@ -113,8 +113,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         Targets::Microchip::Avr8::TargetSignature getDeviceId() override;
 
-        virtual void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
-        virtual void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
+        void setProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
+        void removeProgramBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint) override;
+        void clearAllBreakpoints() override;
 
         Targets::TargetRegisterDescriptorAndValuePairs readRegisters(
             const Targets::TargetRegisterDescriptors& descriptors
@@ -247,7 +248,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         void setHardwareBreakpoint(Targets::TargetMemoryAddress address);
         void clearHardwareBreakpoint(Targets::TargetMemoryAddress address);
         void clearAllSoftwareBreakpoints();
-        void clearAllBreakpoints();
         void injectActiveBreakpoints(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,
             const Targets::TargetMemorySegmentDescriptor& memorySegmentDescriptor,

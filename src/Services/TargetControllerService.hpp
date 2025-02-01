@@ -288,7 +288,7 @@ namespace Services
 
         std::optional<TargetController::AtomicSessionIdType> activeAtomicSessionId = std::nullopt;
 
-        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds{30000};
+        std::chrono::milliseconds defaultTimeout = std::chrono::milliseconds{90000};
 
         TargetController::AtomicSessionIdType startAtomicSession();
         void endAtomicSession(TargetController::AtomicSessionIdType sessionId);

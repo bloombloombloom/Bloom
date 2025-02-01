@@ -17,7 +17,6 @@
 #include "src/Targets/ProgramBreakpointRegistry.hpp"
 
 #include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
-#include "src/Targets/RiscV/ProgramBreakpoint.hpp"
 
 namespace DebugToolDrivers::Wch
 {
@@ -96,6 +95,7 @@ namespace DebugToolDrivers::Wch
 
         const Targets::TargetAddressSpaceDescriptor sysAddressSpaceDescriptor;
         const Targets::TargetMemorySegmentDescriptor& mainProgramSegmentDescriptor;
+        const Targets::TargetMemorySegmentDescriptor& bootProgramSegmentDescriptor;
 
         /**
          * The 'target activation' command returns a payload of 5 bytes.
@@ -107,13 +107,14 @@ namespace DebugToolDrivers::Wch
         std::optional<WchTargetVariantId> cachedVariantId;
         std::optional<WchTargetId> cachedTargetId;
 
-        Targets::ProgramBreakpointRegistryGeneric<Targets::RiscV::ProgramBreakpoint> softwareBreakpointRegistry;
+        Targets::ProgramBreakpointRegistry softwareBreakpointRegistry;
 
         std::span<const unsigned char> flashProgramOpcodes;
         Targets::TargetMemorySize programmingBlockSize;
 
         void setSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
         void clearSoftwareBreakpoint(const Targets::TargetProgramBreakpoint& breakpoint);
+        void clearAllBreakpoints();
 
         void writeProgramMemoryPartialBlock(
             const Targets::TargetAddressSpaceDescriptor& addressSpaceDescriptor,

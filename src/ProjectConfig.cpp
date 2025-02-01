@@ -213,6 +213,10 @@ TargetConfig::TargetConfig(const YAML::Node& targetNode) {
         this->programMemoryCache = targetNode["program_memory_cache"].as<bool>(this->programMemoryCache);
     }
 
+    if (targetNode["delta_programming"]) {
+        this->deltaProgramming = targetNode["delta_programming"].as<bool>(this->deltaProgramming);
+    }
+
     if (targetNode["reserve_stepping_breakpoint"]) {
         this->reserveSteppingBreakpoint = targetNode["reserve_stepping_breakpoint"].as<bool>(false);
     }

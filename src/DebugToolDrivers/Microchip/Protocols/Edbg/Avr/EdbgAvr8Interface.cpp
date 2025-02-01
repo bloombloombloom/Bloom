@@ -397,6 +397,15 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
     }
 
+    void EdbgAvr8Interface::clearAllBreakpoints() {
+        this->clearAllSoftwareBreakpoints();
+
+        // Clear all hardware breakpoints
+        while (!this->hardwareBreakpointNumbersByAddress.empty()) {
+            this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
+        }
+    }
+
     TargetRegisterDescriptorAndValuePairs EdbgAvr8Interface::readRegisters(
         const Targets::TargetRegisterDescriptors& descriptors
     ) {
@@ -868,27 +877,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             return;
         }
 
-        /*
-         * When clearing individual software breakpoints via EDBG tools, the breakpoints are not actually removed
-         * until this next program flow command.
-         *
-         * This wouldn't be a problem, if the tool handled the stale breakpoint removals properly, when programming
-         * the target (overwriting the program memory at which the software breakpoints reside). But the tool
-         * doesn't handle this properly - it seems to completely ignore the fact that the program memory has been
-         * updated, and so it will corrupt the new program by overwriting the program memory where the old
-         * software breakpoints used to reside. The memory is overwritten with the old instruction - the one that
-         * was captured at the time the software breakpoint was inserted. So we end up with a corrupted program.
-         *
-         * To avoid this issue, we send the 'clear all software breakpoints' command to the tool, just before
-         * entering programming mode. That command will clear all breakpoints immediately, preventing program
-         * memory corruption at the next flow control command.
-         *
-         * The TargetController will reinsert all breakpoints at the end of a programming session, so the breakpoints
-         * that we clear here will be restored.
-         */
-        Logger::debug("Clearing all software breakpoints in preparation for programming mode");
-        this->clearAllSoftwareBreakpoints();
-
         const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
             EnterProgrammingMode{}
         );
@@ -1310,15 +1298,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         this->activeSoftwareBreakpoints.clear();
         this->pendingSoftwareBreakpointInsertions.clear();
         this->pendingSoftwareBreakpointDeletions.clear();
-    }
-
-    void EdbgAvr8Interface::clearAllBreakpoints() {
-        this->clearAllSoftwareBreakpoints();
-
-        // Clear all hardware breakpoints
-        while (!this->hardwareBreakpointNumbersByAddress.empty()) {
-            this->clearHardwareBreakpoint(this->hardwareBreakpointNumbersByAddress.begin()->first);
-        }
     }
 
     void EdbgAvr8Interface::injectActiveBreakpoints(

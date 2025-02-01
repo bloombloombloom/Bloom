@@ -59,7 +59,7 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
                 throw Exception{"Memory segment (\"" + segmentDescriptor.name + "\") not writable in programming mode"};
             }
 
-            Logger::warning("Erasing \"" + segmentDescriptor.name + "\" segment, in preparation for programming");
+            Logger::debug("Erase segment key: `" + segmentDescriptor.key + "`");
 
             targetControllerService.enableProgrammingMode();
 

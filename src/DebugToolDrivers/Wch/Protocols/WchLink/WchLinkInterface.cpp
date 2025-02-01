@@ -21,8 +21,6 @@
 #include "src/Helpers/BiMap.hpp"
 #include "src/Services/StringService.hpp"
 
-#include "src/Logger/Logger.hpp"
-
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink
