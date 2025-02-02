@@ -187,12 +187,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         DebugModule::MemoryAccessStrategy determineMemoryAccessStrategy();
 
-        Targets::TargetMemoryAddress alignMemoryAddress(
-            Targets::TargetMemoryAddress address,
-            Targets::TargetMemoryAddress alignTo
-        );
-        Targets::TargetMemorySize alignMemorySize(Targets::TargetMemorySize size, Targets::TargetMemorySize alignTo);
-
         Targets::TargetMemoryBuffer readMemoryViaAbstractCommand(
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemorySize bytes

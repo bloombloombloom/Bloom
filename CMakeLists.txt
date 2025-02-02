@@ -131,8 +131,8 @@ target_compile_options(
     PUBLIC -Wsuggest-override
     PUBLIC -Wreorder
     PUBLIC -fno-sized-deallocation
-    PUBLIC -ffile-prefix-map=${CMAKE_SOURCE_DIR}/./src/=
-    PUBLIC -ffile-prefix-map=${CMAKE_SOURCE_DIR}/src/=
+    PUBLIC $<$<CONFIG:RELEASE>:-ffile-prefix-map=${CMAKE_SOURCE_DIR}/./src/=>
+    PUBLIC $<$<CONFIG:RELEASE>:-ffile-prefix-map=${CMAKE_SOURCE_DIR}/src/=>
     PUBLIC $<$<CONFIG:DEBUG>:-g>
     # PUBLIC $<$<CONFIG:DEBUG>:-O0>
     PUBLIC $<$<CONFIG:DEBUG>:-Ofast>

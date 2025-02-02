@@ -25,6 +25,7 @@
 #include "TriggerModule/Registers/TriggerData1.hpp"
 #include "TriggerModule/Registers/MatchControl.hpp"
 
+#include "src/Services/AlignmentService.hpp"
 #include "src/Helpers/Array.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -137,7 +138,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
              * Attempt to read a single word from the start of the system address space, via a memory access abstract
              * command.
              */
-            constexpr auto probingMemoryAccessCommand = AbstractCommandRegister{
+            static constexpr auto PROBE_ACCESS_COMMAND = AbstractCommandRegister{
                 .control = MemoryAccessControlField{
                     .postIncrement = true,
                     .size = MemoryAccessControlField::MemorySize::SIZE_32,
@@ -150,7 +151,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 this->targetDescriptionFile.getSystemAddressSpace().startAddress
             );
 
-            if (this->tryExecuteAbstractCommand(probingMemoryAccessCommand) == AbstractCommandError::NONE) {
+            if (this->tryExecuteAbstractCommand(PROBE_ACCESS_COMMAND) == AbstractCommandError::NONE) {
                 this->debugModuleDescriptor.memoryAccessStrategies.insert(MemoryAccessStrategy::ABSTRACT_COMMAND);
             }
         }
@@ -443,18 +444,24 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddressRange>& excludedAddressRanges
     ) {
+        using Services::AlignmentService;
+
         if (addressSpaceDescriptor != this->sysAddressSpaceDescriptor) {
             throw Exceptions::TargetOperationFailure{"Unsupported address space"};
         }
 
         // TODO: excluded addresses
 
-        constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
-        if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
-            // Alignment required
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, alignTo);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), alignTo);
+        const auto alignedStartAddress = AlignmentService::alignMemoryAddress(
+            startAddress,
+            DebugTranslator::WORD_BYTE_SIZE
+        );
+        const auto alignedBytes = AlignmentService::alignMemorySize(
+            bytes + (startAddress - alignedStartAddress),
+            DebugTranslator::WORD_BYTE_SIZE
+        );
 
+        if (alignedStartAddress != startAddress || alignedBytes != bytes) {
             const auto memoryBuffer = this->readMemory(
                 addressSpaceDescriptor,
                 memorySegmentDescriptor,
@@ -484,22 +491,24 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         TargetMemoryAddress startAddress,
         TargetMemoryBufferSpan buffer
     ) {
+        using Services::AlignmentService;
+
         if (addressSpaceDescriptor != this->sysAddressSpaceDescriptor) {
             throw Exceptions::TargetOperationFailure{"Unsupported address space"};
         }
 
-        constexpr auto alignTo = DebugTranslator::WORD_BYTE_SIZE;
         const auto bytes = static_cast<TargetMemorySize>(buffer.size());
-        if ((startAddress % alignTo) != 0 || (bytes % alignTo) != 0) {
-            /*
-             * Alignment required
-             *
-             * To align the write operation, we read the front and back offset bytes and use them to construct an
-             * aligned buffer.
-             */
-            const auto alignedStartAddress = this->alignMemoryAddress(startAddress, alignTo);
-            const auto alignedBytes = this->alignMemorySize(bytes + (startAddress - alignedStartAddress), alignTo);
 
+        const auto alignedStartAddress = AlignmentService::alignMemoryAddress(
+            startAddress,
+            DebugTranslator::WORD_BYTE_SIZE
+        );
+        const auto alignedBytes = AlignmentService::alignMemorySize(
+            bytes + (startAddress - alignedStartAddress),
+            DebugTranslator::WORD_BYTE_SIZE
+        );
+
+        if (alignedStartAddress != startAddress || alignedBytes != bytes) {
             assert(alignedBytes > bytes);
 
             auto alignedBuffer = (alignedStartAddress < startAddress)
@@ -566,26 +575,28 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             return;
         }
 
-        static constexpr auto clearedBuffer = Array::repeat<DebugTranslator::MAX_PROGRAM_BUFFER_SIZE>(Opcodes::Ebreak);
+        static constexpr auto CLEARED_BUFFER = Array::repeat<DebugTranslator::MAX_PROGRAM_BUFFER_SIZE>(
+            Opcodes::Ebreak
+        );
 
         assert(this->debugModuleDescriptor.programBufferSize <= DebugTranslator::MAX_PROGRAM_BUFFER_SIZE);
-        this->writeProgramBuffer({clearedBuffer.begin(), this->debugModuleDescriptor.programBufferSize});
+        this->writeProgramBuffer({CLEARED_BUFFER.begin(), this->debugModuleDescriptor.programBufferSize});
     }
 
     void DebugTranslator::executeFenceProgram() {
-        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+        static constexpr auto PROGRAM_OPCODES = std::to_array<Opcodes::Opcode>({
             Opcodes::FenceI,
             Opcodes::Fence,
             Opcodes::Ebreak,
         });
 
-        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+        if (PROGRAM_OPCODES.size() > this->debugModuleDescriptor.programBufferSize) {
             throw Exceptions::TargetOperationFailure{
                 "Cannot execute fence program via RISC-V debug module program buffer - insufficient program buffer size"
             };
         }
 
-        this->writeProgramBuffer(programOpcodes);
+        this->writeProgramBuffer(PROGRAM_OPCODES);
         this->readCpuRegister(CpuRegisterNumber::GPR_X8, {.postExecute = true});
     }
 
@@ -634,7 +645,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
     > DebugTranslator::discoverTriggers() {
         auto output = std::unordered_map<TriggerModule::TriggerIndex, TriggerModule::TriggerDescriptor>{};
 
-        constexpr auto MAX_TRIGGER_INDEX = 10;
+        static constexpr auto MAX_TRIGGER_INDEX = 10;
         for (auto triggerIndex = TriggerModule::TriggerIndex{0}; triggerIndex <= MAX_TRIGGER_INDEX; ++triggerIndex) {
             const auto selectRegValue = TriggerModule::Registers::TriggerSelect{triggerIndex}.value();
 
@@ -943,16 +954,6 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             : *(this->debugModuleDescriptor.memoryAccessStrategies.begin());
     }
 
-    TargetMemoryAddress DebugTranslator::alignMemoryAddress(TargetMemoryAddress address, TargetMemoryAddress alignTo) {
-        return (address / alignTo) * alignTo;
-    }
-
-    TargetMemorySize DebugTranslator::alignMemorySize(TargetMemorySize size, TargetMemorySize alignTo) {
-        return static_cast<TargetMemorySize>(
-            std::ceil(static_cast<double>(size) / static_cast<double>(alignTo))
-        ) * alignTo;
-    }
-
     Targets::TargetMemoryBuffer DebugTranslator::readMemoryViaAbstractCommand(
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemorySize bytes
@@ -966,7 +967,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
          */
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
-        constexpr auto command = AbstractCommandRegister{
+        static constexpr auto COMMAND = AbstractCommandRegister{
             .control = MemoryAccessControlField{
                 .postIncrement = true,
                 .size = MemoryAccessControlField::MemorySize::SIZE_32,
@@ -978,7 +979,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         output.reserve(bytes);
 
         for (auto address = startAddress; address <= (startAddress + bytes - 1); address += 4) {
-            const auto commandError = this->tryExecuteAbstractCommand(command);
+            const auto commandError = this->tryExecuteAbstractCommand(COMMAND);
             if (commandError != AbstractCommandError::NONE) {
                 if (commandError == AbstractCommandError::EXCEPTION) {
                     throw Exceptions::IllegalMemoryAccess{};
@@ -1010,7 +1011,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         this->dtmInterface.writeDebugModuleRegister(RegisterAddress::ABSTRACT_DATA_1, startAddress);
 
-        static constexpr auto command = AbstractCommandRegister{
+        static constexpr auto COMMAND = AbstractCommandRegister{
             .control = MemoryAccessControlField{
                 .write = true,
                 .postIncrement = true,
@@ -1030,7 +1031,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
                 )
             );
 
-            const auto commandError = this->tryExecuteAbstractCommand(command);
+            const auto commandError = this->tryExecuteAbstractCommand(COMMAND);
             if (commandError != AbstractCommandError::NONE) {
                 if (commandError == AbstractCommandError::EXCEPTION) {
                     throw Exceptions::IllegalMemoryAccess{};
@@ -1051,7 +1052,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
 
-        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+        static constexpr auto PROGRAM_OPCODES = std::to_array<Opcodes::Opcode>({
             Opcodes::Lw{
                 .destinationRegister = Opcodes::GprNumber::X9,
                 .baseAddressRegister = Opcodes::GprNumber::X8,
@@ -1065,7 +1066,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Opcodes::Ebreak,
         });
 
-        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+        if (this->debugModuleDescriptor.programBufferSize < PROGRAM_OPCODES.size()) {
             throw Exceptions::TargetOperationFailure{
                 "Cannot read memory via RISC-V debug module program buffer - insufficient program buffer size"
             };
@@ -1075,7 +1076,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         auto preservedX9Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X9, *this};
 
         try {
-            this->writeProgramBuffer(programOpcodes);
+            this->writeProgramBuffer(PROGRAM_OPCODES);
 
             auto commandError = this->tryWriteCpuRegister(
                 CpuRegisterNumber::GPR_X8,
@@ -1188,7 +1189,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
 
-        static constexpr auto programOpcodes = std::to_array<Opcodes::Opcode>({
+        static constexpr auto PROGRAM_OPCODES = std::to_array<Opcodes::Opcode>({
             Opcodes::Sw{
                 .baseAddressRegister = Opcodes::GprNumber::X8,
                 .valueRegister = Opcodes::GprNumber::X9,
@@ -1202,7 +1203,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
             Opcodes::Ebreak,
         });
 
-        if (programOpcodes.size() > this->debugModuleDescriptor.programBufferSize) {
+        if (this->debugModuleDescriptor.programBufferSize < PROGRAM_OPCODES.size()) {
             throw Exceptions::TargetOperationFailure{
                 "Cannot write to memory via RISC-V debug module program buffer - insufficient program buffer size"
             };
@@ -1212,7 +1213,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
         auto preservedX9Register = PreservedCpuRegister{CpuRegisterNumber::GPR_X9, *this};
 
         try {
-            this->writeProgramBuffer(programOpcodes);
+            this->writeProgramBuffer(PROGRAM_OPCODES);
             this->writeCpuRegister(CpuRegisterNumber::GPR_X8, startAddress, {.postExecute = false});
 
             this->writeCpuRegister(
@@ -1347,7 +1348,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebugSpec
 
         } catch (const Exceptions::Exception& exception) {
             /*
-             * If we fail to restore the value of a CPU register, we must escalate this to a fatal error, as the target
+             * If we fail to restore a preserved CPU register, we must escalate this to a fatal error, as the target
              * will be left in an undefined state. More specifically, the state of the program running on the target
              * may be corrupted. We cannot recover from this.
              *

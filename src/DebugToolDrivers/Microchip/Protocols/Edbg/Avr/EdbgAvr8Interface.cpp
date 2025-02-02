@@ -7,6 +7,7 @@
 #include <array>
 
 #include "src/Services/PathService.hpp"
+#include "src/Services/AlignmentService.hpp"
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -1537,7 +1538,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         if ((address % alignTo) != 0) {
-            return (address / alignTo) * alignTo;
+            return Services::AlignmentService::alignMemoryAddress(address, alignTo);
         }
 
         return address;
@@ -1567,9 +1568,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         if ((bytes % alignTo) != 0) {
-            return static_cast<TargetMemorySize>(std::ceil(
-                static_cast<double>(bytes) / static_cast<double>(alignTo)
-            ) * alignTo);
+            return Services::AlignmentService::alignMemorySize(bytes, alignTo);
         }
 
         return bytes;

@@ -21,10 +21,10 @@
 namespace DebugToolDrivers::Wch
 {
     /**
-     * The RISC-V debug module cannot provide a complete implementation of the RiscVDebugInterface.
+     * The RISC-V debug translator cannot provide a complete implementation of the RiscVDebugInterface.
      *
-     * This class combines the functionality of the RISC-V debug module (via the RiscVDebugTranslator), with the
-     * WCH-Link-specific functionality, to provide a complete implementation.
+     * This class combines the functionality of the debug translator, with the WCH-Link-specific functionality, to
+     * provide a complete implementation.
      */
     class WchLinkDebugInterface
         : public TargetInterfaces::RiscV::RiscVDebugInterface
