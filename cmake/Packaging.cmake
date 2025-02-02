@@ -35,25 +35,6 @@ configure_file(
     @ONLY
 )
 
-# Generate the RPM spec file and packaging script
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/rpm")
-
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/rpm/bloom.spec.in"
-    "${CMAKE_BINARY_DIR}/packaging/rpm/bloom.spec"
-    @ONLY
-)
-
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/rpm/package-rpm.sh.in"
-    "${CMAKE_BINARY_DIR}/packaging/package-rpm.sh"
-    FILE_PERMISSIONS
-    OWNER_EXECUTE OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-    @ONLY
-)
-
 # Generate the PKGBUILD file and packaging script
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/pkgbuild")
 
