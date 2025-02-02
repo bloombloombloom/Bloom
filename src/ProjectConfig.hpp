@@ -30,57 +30,17 @@
  */
 struct TargetConfig
 {
-    /**
-     * The name of the selected target.
-     */
     std::string name;
-
-    /**
-     * The physical interface is the interface used for communication between the debug tool and the connected
-     * target.
-     */
     Targets::TargetPhysicalInterface physicalInterface;
-
-    /**
-     * Determines whether Bloom will resume target execution after activation.
-     */
     bool resumeOnStartup = false;
-
-    /**
-     * Determines whether Bloom will make use of the target's hardware breakpoint resources (if available).
-     */
     bool hardwareBreakpoints = true;
-
-    /**
-     * Determines whether Bloom will employ a cache for the target's program memory.
-     */
     bool programMemoryCache = true;
-
-    /**
-     * Determines whether Bloom will employ "delta programming" during programming sessions.
-     *
-     * Not all targets support delta programming.
-     */
     bool deltaProgramming = true;
-
-    /**
-     * Determines if Bloom will reserve a single hardware breakpoint for stepping operations.
-     */
     std::optional<bool> reserveSteppingBreakpoint = std::nullopt;
 
-    /**
-     * For extracting any target specific configuration. See Avr8TargetConfig::Avr8TargetConfig() for an example of
-     * this.
-     */
     YAML::Node targetNode;
 
     TargetConfig() = default;
-
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param targetNode
-     */
     explicit TargetConfig(const YAML::Node& targetNode);
 };
 
@@ -93,23 +53,11 @@ struct TargetConfig
  */
 struct DebugToolConfig
 {
-    /**
-     * The name of the selected debug tool.
-     */
     std::string name;
 
-    /**
-     * For extracting any debug tool specific configuration.
-     */
     YAML::Node toolNode;
 
     DebugToolConfig() = default;
-
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param toolNode
-     */
     explicit DebugToolConfig(const YAML::Node& toolNode);
 };
 
@@ -118,51 +66,21 @@ struct DebugToolConfig
  */
 struct DebugServerConfig
 {
-    /**
-     * The name of the selected debug server.
-     */
     std::string name;
 
-    /**
-     * For extracting any debug server specific configuration. See GdbDebugServerConfig::GdbDebugServerConfig() and
-     * GdbRspDebugServer::GdbRspDebugServer() for an example of this.
-     */
     YAML::Node debugServerNode;
 
     DebugServerConfig() = default;
-
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param debugServerNode
-     */
     explicit DebugServerConfig(const YAML::Node& debugServerNode);
 };
 
 struct InsightConfig
 {
-    /**
-     * If true, the Insight GUI will be activated immediately at startup.
-     */
     bool activateOnStartup = false;
-
-    /**
-     * If true, Bloom will shutdown when the user closes the Insight GUI.
-     */
     bool shutdownOnClose = false;
-
-    /**
-     * The key of the variant to select by default, in the Insight GUi.
-     */
-    std::optional<std::string> defaultVariantKey;
+    std::optional<std::string> defaultVariantKey = std::nullopt;
 
     InsightConfig() = default;
-
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param insightNode
-     */
     explicit InsightConfig(const YAML::Node& insightNode);
 };
 
@@ -174,49 +92,33 @@ struct InsightConfig
  */
 struct EnvironmentConfig
 {
-    /**
-     * The environment name is stored as the key to the YAML map containing the environment parameters.
-     *
-     * Environment names must be unique.
-     */
     std::string name;
-
-    /**
-     * Flag to determine whether Bloom should shutdown at the end of a debug session.
-     */
     bool shutdownPostDebugSession = false;
 
     /**
-     * Configuration for the environment's selected debug tool.
+     * CLion expects the debug server (in this case, Bloom) to shut down immediately upon receiving the detach command
+     * via GDB. It does not allow for any time to shut down after that - it just kills the process with a SIGKILL.
      *
-     * Each environment can select only one debug tool.
+     * I raised this with JetBrains, a number of years ago: https://youtrack.jetbrains.com/issue/CPP-28843
+     *
+     * They didn't seem to have any interest in fixing the issue, so I had to include some CLion-specific behaviour
+     * in Bloom, to prevent CLion from killing Bloom's process before we got a chance to shut down cleanly. It was a
+     * hacky solution, but it worked.
+     *
+     * Recently (in version 2024.3), CLion introduced "debug servers", which allows Bloom to remain running in the
+     * background, between debug sessions, reducing the time it takes to stop and start new debug sessions.
+     *
+     * This doesn't fix the issue described above - CLion still behaves like an aggressive dickhead, sending SIGKILL
+     * signals whenever it likes. However, Bloom's CLion-specific functionality may conflict with this new "debug server"
+     * functionality, so it's necessary to allow the user to disable it in their project config.
      */
+    bool clionAdaptation = true;
+
     DebugToolConfig debugToolConfig;
-
-    /**
-     * Configuration for the environment's selected target.
-     *
-     * Each environment can select only one target.
-     */
     TargetConfig targetConfig;
-
-    /**
-     * Configuration for the environment's debug server. Users can define this at the application level if
-     * they desire.
-     */
     std::optional<DebugServerConfig> debugServerConfig;
-
-    /**
-     * Insight configuration can be defined at an environment level as well as at an application level.
-     */
     std::optional<InsightConfig> insightConfig;
 
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param name
-     * @param environmentNode
-     */
     EnvironmentConfig(std::string name, const YAML::Node& environmentNode);
 };
 
@@ -225,33 +127,10 @@ struct EnvironmentConfig
  */
 struct ProjectConfig
 {
-    /**
-     * A mapping of environment names to EnvironmentConfig objects.
-     */
     std::map<std::string, EnvironmentConfig> environments;
-
-    /**
-     * Application level debug server configuration. We use this as a fallback if no debug server config is
-     * provided at the environment level.
-     */
     std::optional<DebugServerConfig> debugServerConfig;
-
-    /**
-     * Application level Insight configuration. We use this as a fallback if no Insight config is provided at
-     * the environment level.
-     *
-     * We don't use std::optional here because the InsightConfig has no mandatory parameters, so users may wish to
-     * omit the 'insight' node from their bloom.yaml file, entirely. In this case, Bloom should fall back to a default
-     * constructed, project-level, InsightConfig instance.
-     */
     InsightConfig insightConfig = {};
-
     bool debugLogging = false;
 
-    /**
-     * Obtains config parameters from YAML node.
-     *
-     * @param configNode
-     */
     explicit ProjectConfig(const YAML::Node& configNode);
 };

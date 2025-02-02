@@ -517,6 +517,7 @@ void Application::stopTargetController() {
 
 void Application::startDebugServer() {
     this->debugServer = std::make_unique<DebugServer::DebugServerComponent>(
+        this->environmentConfig.value(),
         this->debugServerConfig.value()
     );
     this->debugServerThread = std::thread{&DebugServer::DebugServerComponent::run, this->debugServer.get()};
@@ -637,7 +638,10 @@ void Application::onDebugServerThreadStateChanged(const Events::DebugServerThrea
 }
 
 void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
-    if (this->environmentConfig->shutdownPostDebugSession || Services::ProcessService::isManagedByClion()) {
+    if (
+        this->environmentConfig->shutdownPostDebugSession
+        || (this->environmentConfig->clionAdaptation && Services::ProcessService::isManagedByClion())
+    ) {
         this->triggerShutdown();
     }
 }

@@ -26,12 +26,14 @@ namespace DebugServer::Gdb::RiscVGdb
     using Targets::TargetRegisterType;
 
     RiscVGdbRsp::RiscVGdbRsp(
+        const EnvironmentConfig& environmentConfig,
         const DebugServerConfig& debugServerConfig,
         const Targets::TargetDescriptor& targetDescriptor,
         EventListener& eventListener,
         EventFdNotifier& eventNotifier
     )
         : GdbRspDebugServer(
+            environmentConfig,
             debugServerConfig,
             targetDescriptor,
             RiscVGdbTargetDescriptor{targetDescriptor},

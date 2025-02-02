@@ -16,8 +16,9 @@ namespace DebugServer::Gdb::CommandPackets
 
     using ::Exceptions::Exception;
 
-    Detach::Detach(const RawPacket& rawPacket)
+    Detach::Detach(const RawPacket& rawPacket, const EnvironmentConfig& environmentConfig)
         : CommandPacket(rawPacket)
+        , environmentConfig(environmentConfig)
     {}
 
     void Detach::handle(
@@ -29,7 +30,14 @@ namespace DebugServer::Gdb::CommandPackets
         Logger::info("Handling Detach packet");
 
         try {
-            if (Services::ProcessService::isManagedByClion()) {
+            if (this->environmentConfig.clionAdaptation && Services::ProcessService::isManagedByClion()) {
+                /*
+                 * CLion is about to kill Bloom's process. This is our last chance to detach from the target and
+                 * disconnect from the debug tool, cleanly.
+                 *
+                 * So we have to force the TC to shut down immediately, to prevent CLion from killing Bloom and leaving
+                 * the debug tool and target in an undefined state.
+                 */
                 targetControllerService.shutdown();
             }
 

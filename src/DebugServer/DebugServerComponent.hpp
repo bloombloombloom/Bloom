@@ -25,7 +25,10 @@ namespace DebugServer
     class DebugServerComponent: public Thread
     {
     public:
-        explicit DebugServerComponent(const DebugServerConfig& debugServerConfig);
+        explicit DebugServerComponent(
+            const EnvironmentConfig& environmentConfig,
+            const DebugServerConfig& debugServerConfig
+        );
 
         /**
          * Entry point for the DebugServer. This must called from a dedicated thread.
@@ -44,9 +47,7 @@ namespace DebugServer
          */
         EventListenerPointer eventListener = std::make_shared<EventListener>("DebugServerEventListener");
 
-        /**
-         * Project configuration for the debug server (extracted from the user project's bloom.yaml).
-         */
+        EnvironmentConfig environmentConfig;
         DebugServerConfig debugServerConfig;
 
         /**

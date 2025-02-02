@@ -29,12 +29,14 @@ namespace DebugServer::Gdb::AvrGdb
     using Targets::TargetRegisterType;
 
     AvrGdbRsp::AvrGdbRsp(
+        const EnvironmentConfig& environmentConfig,
         const DebugServerConfig& debugServerConfig,
         const Targets::TargetDescriptor& targetDescriptor,
         EventListener& eventListener,
         EventFdNotifier& eventNotifier
     )
         : GdbRspDebugServer(
+            environmentConfig,
             debugServerConfig,
             targetDescriptor,
             AvrGdbTargetDescriptor{targetDescriptor},

@@ -17,6 +17,7 @@ namespace DebugServer::Gdb::RiscVGdb
     {
     public:
         RiscVGdbRsp(
+            const EnvironmentConfig& environmentConfig,
             const DebugServerConfig& debugServerConfig,
             const Targets::TargetDescriptor& targetDescriptor,
             EventListener& eventListener,

@@ -86,13 +86,15 @@ namespace DebugServer::Gdb
     {
     public:
         explicit GdbRspDebugServer(
+            const EnvironmentConfig& environmentConfig,
             const DebugServerConfig& debugServerConfig,
             const Targets::TargetDescriptor& targetDescriptor,
             GdbTargetDescriptorType&& gdbTargetDescriptor,
             EventListener& eventListener,
             EventFdNotifier& eventNotifier
         )
-            : debugServerConfig(GdbDebugServerConfig{debugServerConfig})
+            : environmentConfig(environmentConfig)
+            , debugServerConfig(GdbDebugServerConfig{debugServerConfig})
             , targetDescriptor(targetDescriptor)
             , gdbTargetDescriptor(std::move(gdbTargetDescriptor))
             , eventListener(eventListener)
@@ -179,9 +181,10 @@ namespace DebugServer::Gdb
                 std::bind(&GdbRspDebugServer::onTargetStateChanged, this, std::placeholders::_1)
             );
 
-            if (Services::ProcessService::isManagedByClion()) {
+            if (this->environmentConfig.clionAdaptation && Services::ProcessService::isManagedByClion()) {
                 Logger::warning(
-                    "Bloom's process is being managed by CLion - Bloom will automatically shutdown upon detaching from GDB."
+                    "Bloom's process is being managed by CLion - Bloom will automatically shut down upon"
+                        " detaching from GDB."
                 );
             }
         }
@@ -286,6 +289,7 @@ namespace DebugServer::Gdb
         }
 
     protected:
+        const EnvironmentConfig& environmentConfig;
         GdbDebugServerConfig debugServerConfig;
         const Targets::TargetDescriptor& targetDescriptor;
         GdbTargetDescriptorType gdbTargetDescriptor;
@@ -434,7 +438,7 @@ namespace DebugServer::Gdb
             }
 
             if (rawPacket[1] == 'D') {
-                return std::make_unique<CommandPackets::Detach>(rawPacket);
+                return std::make_unique<CommandPackets::Detach>(rawPacket, this->environmentConfig);
             }
 
             const auto rawPacketString = std::string{rawPacket.begin() + 1, rawPacket.end()};

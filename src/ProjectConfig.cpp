@@ -152,6 +152,10 @@ EnvironmentConfig::EnvironmentConfig(std::string name, const YAML::Node& environ
             this->shutdownPostDebugSession
         );
     }
+
+    if (environmentNode["clion_adaptation"]) {
+        this->clionAdaptation = environmentNode["clion_adaptation"].as<bool>(this->clionAdaptation);
+    }
 }
 
 TargetConfig::TargetConfig(const YAML::Node& targetNode) {

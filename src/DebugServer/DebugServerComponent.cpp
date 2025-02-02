@@ -13,8 +13,12 @@ namespace DebugServer
 {
     using namespace Events;
 
-    DebugServerComponent::DebugServerComponent(const DebugServerConfig& debugServerConfig)
-        : debugServerConfig(debugServerConfig)
+    DebugServerComponent::DebugServerComponent(
+        const EnvironmentConfig& environmentConfig,
+        const DebugServerConfig& debugServerConfig
+    )
+        : environmentConfig(environmentConfig)
+        , debugServerConfig(debugServerConfig)
         , targetDescriptor((Services::TargetControllerService()).getTargetDescriptor())
     {}
 
@@ -49,6 +53,7 @@ namespace DebugServer
                     }
 
                     return std::make_unique<DebugServer::Gdb::AvrGdb::AvrGdbRsp>(
+                        this->environmentConfig,
                         this->debugServerConfig,
                         this->targetDescriptor,
                         *(this->eventListener.get()),
@@ -64,6 +69,7 @@ namespace DebugServer
                     }
 
                     return std::make_unique<DebugServer::Gdb::RiscVGdb::RiscVGdbRsp>(
+                        this->environmentConfig,
                         this->debugServerConfig,
                         this->targetDescriptor,
                         *(this->eventListener.get()),
