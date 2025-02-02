@@ -348,13 +348,6 @@ namespace TargetController
          */
         void onShutdownTargetControllerEvent(const Events::ShutdownTargetController& event);
 
-        /**
-         * Will simply kick off execution on the target.
-         *
-         * @param event
-         */
-        void onDebugSessionFinishedEvent(const Events::DebugSessionFinished& event);
-
         // Command handlers
         std::unique_ptr<Responses::AtomicSessionId> handleStartAtomicSession(Commands::StartAtomicSession& command);
         std::unique_ptr<Responses::Response> handleEndAtomicSession(Commands::EndAtomicSession& command);

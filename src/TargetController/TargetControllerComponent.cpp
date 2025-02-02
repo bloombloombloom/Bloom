@@ -282,10 +282,6 @@ namespace TargetController
             std::bind(&TargetControllerComponent::onShutdownTargetControllerEvent, this, std::placeholders::_1)
         );
 
-        this->eventListener->registerCallbackForEventType<Events::DebugSessionFinished>(
-            std::bind(&TargetControllerComponent::onDebugSessionFinishedEvent, this, std::placeholders::_1)
-        );
-
         this->acquireHardware();
 
         this->targetState = std::make_unique<TargetState>(
@@ -1191,17 +1187,6 @@ namespace TargetController
 
     void TargetControllerComponent::onShutdownTargetControllerEvent(const Events::ShutdownTargetController&) {
         this->shutdown();
-    }
-
-    void TargetControllerComponent::onDebugSessionFinishedEvent(const DebugSessionFinished&) {
-        if (this->state != TargetControllerState::ACTIVE) {
-            return;
-        }
-
-        if (this->target->getExecutionState() != TargetExecutionState::RUNNING) {
-            this->target->run(std::nullopt);
-            this->refreshExecutionState();
-        }
     }
 
     std::unique_ptr<AtomicSessionId> TargetControllerComponent::handleStartAtomicSession(StartAtomicSession& command) {
