@@ -15,6 +15,10 @@ namespace DebugToolDrivers::Wch
             return std::to_string(this->major) + "." + std::to_string(this->minor);
         }
 
+        [[nodiscard]] std::string toAlternativeString() const {
+            return "v" + std::to_string(this->major * 10 + this->minor);
+        }
+
         bool operator == (const WchFirmwareVersion& other) const {
             return this->major == other.major && this->minor == other.minor;
         }

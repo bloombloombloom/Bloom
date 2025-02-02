@@ -92,7 +92,10 @@ namespace DebugToolDrivers::Wch
             );
         }
 
-        Logger::info("WCH-Link firmware version: " + deviceInfo.firmwareVersion.toString());
+        Logger::info(
+            "WCH-Link firmware version: " + deviceInfo.firmwareVersion.toString() + " ("
+                + deviceInfo.firmwareVersion.toAlternativeString() + ")"
+        );
     }
 
     bool WchLinkBase::isInitialised() const {
