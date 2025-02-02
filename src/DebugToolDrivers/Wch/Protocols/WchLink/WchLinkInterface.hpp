@@ -7,7 +7,7 @@
 #include <span>
 #include <utility>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTransportModuleInterface.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugTransportModuleInterface.hpp"
 
 #include "src/DebugToolDrivers/Usb/UsbInterface.hpp"
 #include "src/DebugToolDrivers/Usb/UsbDevice.hpp"
@@ -27,7 +27,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
      * Implementation of the WCH-Link protocol, which provides an implementation of a RISC-V DTM interface.
      */
     class WchLinkInterface
-        : public ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTransportModuleInterface
+        : public ::DebugToolDrivers::Protocols::RiscVDebug::DebugTransportModuleInterface
     {
     public:
         static constexpr auto MAX_PARTIAL_BLOCK_WRITE_SIZE = Targets::TargetMemorySize{64};
@@ -37,12 +37,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         DeviceInfo getDeviceInfo();
         void setClockSpeed(WchLinkTargetClockSpeed speed, WchTargetId targetId);
 
-        ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue readDebugModuleRegister(
-            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address
+        ::DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterValue readDebugModuleRegister(
+            ::DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterAddress address
         ) override;
         void writeDebugModuleRegister(
-            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address,
-            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue value
+            ::DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterAddress address,
+            ::DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterValue value
         ) override;
 
         void writeFlashPartialBlock(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);

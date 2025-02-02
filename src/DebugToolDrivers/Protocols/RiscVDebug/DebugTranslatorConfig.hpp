@@ -6,7 +6,7 @@
 
 #include "DebugModule/DebugModule.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     struct DebugTranslatorConfig
     {

@@ -4,9 +4,9 @@
 #include <set>
 #include <array>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/TriggerModule/TriggerModule.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/TriggerModule/TriggerModule.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
+namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule::Registers
 {
     struct TriggerInfo
     {

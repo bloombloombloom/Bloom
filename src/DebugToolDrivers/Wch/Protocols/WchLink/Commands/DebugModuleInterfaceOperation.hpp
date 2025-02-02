@@ -6,7 +6,7 @@
 #include "src/DebugToolDrivers/Wch/Protocols/WchLink/Commands/Command.hpp"
 #include "src/DebugToolDrivers/Wch/Protocols/WchLink/Responses/DebugModuleInterfaceOperationResponse.hpp"
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugModule/DebugModule.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugModule/DebugModule.hpp"
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
 {
@@ -16,9 +16,9 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
         using ExpectedResponseType = Responses::DebugModuleInterfaceOperationResponse;
 
         DebugModuleInterfaceOperation(
-            DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::DmiOperation operation,
-            DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address,
-            std::optional<DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue> value = std::nullopt
+            DebugToolDrivers::Protocols::RiscVDebug::DebugModule::DmiOperation operation,
+            DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterAddress address,
+            std::optional<DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterValue> value = std::nullopt
         )
             : Command(0x08)
         {

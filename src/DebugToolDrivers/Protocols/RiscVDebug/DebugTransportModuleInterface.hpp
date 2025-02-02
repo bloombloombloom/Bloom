@@ -7,7 +7,7 @@
 #include "DebugModule/DebugModule.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     /**
      * Provides access to the RISC-V target's debug transport module (DTM).

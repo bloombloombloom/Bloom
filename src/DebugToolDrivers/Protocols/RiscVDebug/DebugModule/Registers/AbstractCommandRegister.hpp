@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <cassert>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugModule/DebugModule.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugModule/DebugModule.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::Registers
+namespace DebugToolDrivers::Protocols::RiscVDebug::DebugModule::Registers
 {
     struct AbstractCommandRegister
     {

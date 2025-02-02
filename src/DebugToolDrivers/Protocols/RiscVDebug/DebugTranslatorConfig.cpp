@@ -5,7 +5,7 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     DebugTranslatorConfig::DebugTranslatorConfig(const YAML::Node& configNode) {
         if (configNode["target_response_timeout"]) {

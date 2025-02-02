@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule
+namespace DebugToolDrivers::Protocols::RiscVDebug::DebugModule
 {
     using RegisterAddress = std::uint8_t;
     using RegisterValue = std::uint32_t;

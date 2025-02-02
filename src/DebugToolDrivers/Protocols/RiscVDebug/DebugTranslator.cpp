@@ -37,7 +37,7 @@
 
 #include "src/Logger/Logger.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     using Registers::DebugControlStatusRegister;
 

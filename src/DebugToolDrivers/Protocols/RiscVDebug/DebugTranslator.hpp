@@ -39,7 +39,7 @@
 
 #include "src/Helpers/Expected.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     /**
      * Implementation of a RISC-V debug translator

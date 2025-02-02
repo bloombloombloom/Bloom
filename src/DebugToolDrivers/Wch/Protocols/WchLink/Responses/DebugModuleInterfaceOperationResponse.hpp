@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugModule/DebugModule.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugModule/DebugModule.hpp"
 #include "src/Services/StringService.hpp"
 
 #include "src/TargetController/Exceptions/DeviceCommunicationFailure.hpp"
@@ -12,12 +12,12 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Responses
     class DebugModuleInterfaceOperationResponse
     {
     public:
-        DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::DmiOperationStatus operationStatus;
-        DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterAddress address;
-        DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue value;
+        DebugToolDrivers::Protocols::RiscVDebug::DebugModule::DmiOperationStatus operationStatus;
+        DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterAddress address;
+        DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterValue value;
 
         explicit DebugModuleInterfaceOperationResponse(const std::vector<unsigned char>& payload) {
-            using DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::DmiOperationStatus;
+            using DebugToolDrivers::Protocols::RiscVDebug::DebugModule::DmiOperationStatus;
 
             if (payload.size() != 6) {
                 throw Exceptions::DeviceCommunicationFailure{
@@ -38,7 +38,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Responses
 
             this->operationStatus = static_cast<DmiOperationStatus>(status);
             this->address = payload[0];
-            this->value = static_cast<DebugToolDrivers::Protocols::RiscVDebugSpec::DebugModule::RegisterValue>(
+            this->value = static_cast<DebugToolDrivers::Protocols::RiscVDebug::DebugModule::RegisterValue>(
                 (payload[1] << 24) | (payload[2] << 16) | (payload[3] << 8) | (payload[4])
             );
         }

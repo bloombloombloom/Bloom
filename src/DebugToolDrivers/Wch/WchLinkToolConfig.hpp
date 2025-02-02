@@ -3,7 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "src/ProjectConfig.hpp"
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslatorConfig.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugTranslatorConfig.hpp"
 
 namespace DebugToolDrivers::Wch
 {
@@ -13,7 +13,7 @@ namespace DebugToolDrivers::Wch
     struct WchLinkToolConfig: public DebugToolConfig
     {
         bool exitIapMode = true;
-        ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslatorConfig riscVDebugTranslatorConfig = {};
+        ::DebugToolDrivers::Protocols::RiscVDebug::DebugTranslatorConfig riscVDebugTranslatorConfig = {};
 
         explicit WchLinkToolConfig(const DebugToolConfig& toolConfig);
     };

@@ -12,7 +12,7 @@
 
 #include "src/Targets/TargetMemory.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec
+namespace DebugToolDrivers::Protocols::RiscVDebug
 {
     struct DebugModuleDescriptor
     {

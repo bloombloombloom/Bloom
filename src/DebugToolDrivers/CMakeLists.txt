@@ -51,6 +51,6 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Wch/WchLinkE/WchLinkE.cpp
 
         # RISC-V Debug Translator implementation
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/RiscVDebugSpec/DebugTranslatorConfig.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/RiscVDebugSpec/DebugTranslator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/RiscVDebug/DebugTranslatorConfig.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Protocols/RiscVDebug/DebugTranslator.cpp
 )

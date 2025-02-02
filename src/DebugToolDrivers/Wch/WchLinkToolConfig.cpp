@@ -12,7 +12,7 @@ namespace DebugToolDrivers::Wch
         }
 
         if (toolNode["riscv_debug_translator"]) {
-            this->riscVDebugTranslatorConfig = ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslatorConfig{
+            this->riscVDebugTranslatorConfig = ::DebugToolDrivers::Protocols::RiscVDebug::DebugTranslatorConfig{
                 toolNode["riscv_debug_translator"]
             };
         }

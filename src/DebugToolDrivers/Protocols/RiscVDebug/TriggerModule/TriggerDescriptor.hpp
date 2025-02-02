@@ -5,7 +5,7 @@
 
 #include "TriggerModule.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule
+namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule
 {
     struct TriggerDescriptor
     {

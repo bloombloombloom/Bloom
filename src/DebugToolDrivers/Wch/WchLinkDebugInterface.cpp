@@ -54,7 +54,7 @@ namespace DebugToolDrivers::Wch
         , targetDescriptionFile(targetDescriptionFile)
         , wchLinkInterface(wchLinkInterface)
         , riscVTranslator(
-            ::DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator{
+            ::DebugToolDrivers::Protocols::RiscVDebug::DebugTranslator{
                 this->wchLinkInterface,
                 this->toolConfig.riscVDebugTranslatorConfig,
                 this->targetDescriptionFile,
@@ -389,7 +389,7 @@ namespace DebugToolDrivers::Wch
         Targets::TargetMemoryBufferSpan buffer
     ) {
         using Services::AlignmentService;
-        using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+        using namespace ::DebugToolDrivers::Protocols::RiscVDebug;
 
         if (buffer.empty()) {
             return;
@@ -527,7 +527,7 @@ namespace DebugToolDrivers::Wch
     ) {
         using Services::AlignmentService;
         using Services::StringService;
-        using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+        using namespace ::DebugToolDrivers::Protocols::RiscVDebug;
 
         if (buffer.empty()) {
             return;

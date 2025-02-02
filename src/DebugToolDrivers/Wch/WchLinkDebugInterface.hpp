@@ -9,7 +9,7 @@
 #include "Protocols/WchLink/WchLinkInterface.hpp"
 
 #include "WchLinkToolConfig.hpp"
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/DebugTranslator.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/DebugTranslator.hpp"
 
 #include "src/Targets/TargetMemory.hpp"
 #include "src/Targets/TargetAddressSpaceDescriptor.hpp"
@@ -89,7 +89,7 @@ namespace DebugToolDrivers::Wch
         const Targets::RiscV::TargetDescriptionFile& targetDescriptionFile;
 
         Protocols::WchLink::WchLinkInterface& wchLinkInterface;
-        DebugToolDrivers::Protocols::RiscVDebugSpec::DebugTranslator riscVTranslator;
+        DebugToolDrivers::Protocols::RiscVDebug::DebugTranslator riscVTranslator;
 
         DeviceInfo toolInfo;
 

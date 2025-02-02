@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/Common.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/Common.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::Registers
+namespace DebugToolDrivers::Protocols::RiscVDebug::Registers
 {
     struct DebugControlStatusRegister
     {

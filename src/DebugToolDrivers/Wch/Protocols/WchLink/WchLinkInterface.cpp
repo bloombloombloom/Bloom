@@ -25,7 +25,7 @@
 
 namespace DebugToolDrivers::Wch::Protocols::WchLink
 {
-    using namespace ::DebugToolDrivers::Protocols::RiscVDebugSpec;
+    using namespace ::DebugToolDrivers::Protocols::RiscVDebug;
     using namespace Exceptions;
 
     using DebugModule::DmiOperation;

@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include "src/DebugToolDrivers/Protocols/RiscVDebugSpec/TriggerModule/TriggerModule.hpp"
+#include "src/DebugToolDrivers/Protocols/RiscVDebug/TriggerModule/TriggerModule.hpp"
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule::Registers
+namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule::Registers
 {
     /**
      * TODO: Given the single, full width bit field, is this struct really necessary? Review.

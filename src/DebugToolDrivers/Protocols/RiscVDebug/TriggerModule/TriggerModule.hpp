@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace DebugToolDrivers::Protocols::RiscVDebugSpec::TriggerModule
+namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule
 {
     using RegisterValue = std::uint32_t;
     using TriggerIndex = std::uint32_t;
