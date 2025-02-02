@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "src/Services/PathService.hpp"
+#include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
 #include "src/Exceptions/Exception.hpp"
@@ -49,6 +50,8 @@ void RetrieveMemorySnapshots::run(TargetControllerService& targetControllerServi
 }
 
 std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots() {
+    using Services::StringService;
+
     constexpr auto MAX_SNAPSHOTS = 30;
 
     const auto snapshotDir = QDir{QString::fromStdString(Services::PathService::memorySnapshotsPath())};
@@ -68,8 +71,8 @@ std::vector<MemorySnapshot> RetrieveMemorySnapshots::getSnapshots() {
 
         if (snapshots.size() >= MAX_SNAPSHOTS) {
             Logger::warning(
-                "The total number of \"" + this->memorySegmentDescriptor.key
-                    + "\" snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
+                "The total number of `" +this->memorySegmentDescriptor.key
+                    + "` snapshots exceeds the hard limit of " + std::to_string(MAX_SNAPSHOTS)
                     + ". Only the most recent " + std::to_string(MAX_SNAPSHOTS) + " snapshots will be loaded."
             );
             break;

@@ -1151,8 +1151,8 @@ namespace TargetController
             auto& segmentCache = this->getProgramMemoryCache(operation.memorySegmentDescriptor);
 
             Logger::info(
-                std::to_string(operation.deltaSegments.size()) + " delta segment(s) to be flushed to `"
-                    + operation.memorySegmentDescriptor.key + "`"
+                std::to_string(operation.deltaSegments.size()) + " delta segment(s) to be flushed to "
+                    + StringService::formatKey(operation.memorySegmentDescriptor.key)
             );
             for (const auto& deltaSegment : operation.deltaSegments) {
                 Logger::info(

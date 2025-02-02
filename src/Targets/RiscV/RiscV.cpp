@@ -81,6 +81,8 @@ namespace Targets::RiscV
     }
 
     TargetRegisterDescriptorAndValuePairs RiscV::readRegisters(const TargetRegisterDescriptors& descriptors) {
+        using Services::StringService;
+
         auto output = TargetRegisterDescriptorAndValuePairs{};
 
         /*
@@ -101,7 +103,7 @@ namespace Targets::RiscV
                     && !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
                 ) {
                     throw Exceptions::Exception{
-                        "Cannot access CPU CSR `" + descriptor->key + "` - unknown memory segment"
+                        "Cannot access CPU CSR " + StringService::formatKey(descriptor->key) + " - unknown memory segment"
                     };
                 }
 
@@ -110,7 +112,7 @@ namespace Targets::RiscV
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor->startAddress)
                 ) {
                     throw Exceptions::Exception{
-                        "Cannot access CPU GPR `" + descriptor->key + "` - unknown memory segment"
+                        "Cannot access CPU GPR " + StringService::formatKey(descriptor->key) + " - unknown memory segment"
                     };
                 }
 
@@ -120,7 +122,7 @@ namespace Targets::RiscV
 
             if (descriptor->addressSpaceId != this->sysAddressSpaceDescriptor.id) {
                 throw Exceptions::Exception{
-                    "Cannot access register `" + descriptor->key + "` - unknown address space"
+                    "Cannot access register " + StringService::formatKey(descriptor->key) + " - unknown address space"
                 };
             }
 
@@ -148,6 +150,8 @@ namespace Targets::RiscV
     }
 
     void RiscV::writeRegisters(const TargetRegisterDescriptorAndValuePairs& registers) {
+        using Services::StringService;
+
         for (const auto& pair : registers) {
             const auto& descriptor = pair.first;
 
@@ -160,7 +164,7 @@ namespace Targets::RiscV
                     && !this->csrMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
                 ) {
                     throw Exceptions::Exception{
-                        "Cannot access CPU CSR `" + descriptor.key + "` - unknown memory segment"
+                        "Cannot access CPU CSR " + StringService::formatKey(descriptor.key) + " - unknown memory segment"
                     };
                 }
 
@@ -169,7 +173,8 @@ namespace Targets::RiscV
                     && !this->gprMemorySegmentDescriptor.addressRange.contains(descriptor.startAddress)
                 ) {
                     throw Exceptions::Exception{
-                        "Cannot access CPU GPR `" + descriptor.key + "` - unknown memory segment"
+                        "Cannot access CPU GPR " + StringService::formatKey(descriptor.key)
+                            + " - unknown memory segment"
                     };
                 }
 
@@ -178,7 +183,10 @@ namespace Targets::RiscV
             }
 
             if (descriptor.addressSpaceId != this->sysAddressSpaceDescriptor.id) {
-                throw Exceptions::Exception{"Cannot access register `" + descriptor.key + "` - unknown address space"};
+                throw Exceptions::Exception{
+                    "Cannot access register " + StringService::formatKey(descriptor.key)
+                        + " - unknown address space"
+                };
             }
 
             auto value = pair.second;
@@ -385,6 +393,8 @@ namespace Targets::RiscV
         const TargetRegisterDescriptor& regDescriptor,
         const TargetAddressSpaceDescriptor& addressSpaceDescriptor
     ) {
+        using Services::StringService;
+
         const auto segmentDescriptors = addressSpaceDescriptor.getIntersectingMemorySegmentDescriptors(
             TargetMemoryAddressRange{
                 regDescriptor.startAddress,
@@ -394,13 +404,15 @@ namespace Targets::RiscV
 
         if (segmentDescriptors.empty()) {
             throw Exceptions::Exception{
-                "Cannot access system register `" + regDescriptor.key + "` - unknown memory segment"
+                "Cannot access system register " + StringService::formatKey(regDescriptor.key)
+                    + " - unknown memory segment"
             };
         }
 
         if (segmentDescriptors.size() != 1) {
             throw Exceptions::Exception{
-                "Cannot access system register `" + regDescriptor.key + "` - register spans multiple memory segments"
+                "Cannot access system register " + StringService::formatKey(regDescriptor.key)
+                    + " - register spans multiple memory segments"
             };
         }
 

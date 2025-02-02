@@ -91,6 +91,8 @@ namespace Services
             WHITE,
         };
 
+        static std::string_view colorCode(TerminalColor color);
         static std::string applyTerminalColor(const std::string& string, TerminalColor color);
+        static std::string formatKey(std::string_view key);
     };
 }

@@ -47,7 +47,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto peripheralDescriptorOpt = targetDescriptor.tryGetPeripheralDescriptor(peripheralKey);
 
             if (!peripheralDescriptorOpt.has_value()) {
-                throw Exception{"Unknown peripheral key \"" + peripheralKey + "\""};
+                throw Exception{"Unknown peripheral key `" + peripheralKey + "`"};
             }
 
             const auto& peripheralDescriptor = peripheralDescriptorOpt->get();
@@ -67,7 +67,7 @@ namespace DebugServer::Gdb::CommandPackets
 
             if (!registerGroupDescriptorOpt.has_value()) {
                 if (peripheralDescriptor.registerGroupDescriptorsByKey.size() != 1 || argCount >= 4) {
-                    throw Exception{"Unknown register group key \"" + registerGroupKey + "\""};
+                    throw Exception{"Unknown register group key `" + registerGroupKey + "`"};
                 }
 
                 registerGroupDescriptorOpt = peripheralDescriptor.registerGroupDescriptorsByKey.begin()->second;
@@ -89,7 +89,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto registerDescriptorOpt = registerGroupDescriptor.tryGetRegisterDescriptor(*registerKey);
 
             if (!registerDescriptorOpt.has_value()) {
-                throw Exception{"Unknown register key \"" + *registerKey + "\""};
+                throw Exception{"Unknown register key `" + *registerKey + "`"};
             }
 
             this->handleSingleRegisterOutput(registerDescriptorOpt->get(), debugSession, targetControllerService);
@@ -112,10 +112,8 @@ namespace DebugServer::Gdb::CommandPackets
         TargetControllerService& targetControllerService
     ) {
         auto output = std::string{"\nName: \"" + registerDescriptor.name + "\"\n"};
-        output += "Address: " + StringService::applyTerminalColor(
-            "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress)),
-            StringService::TerminalColor::BLUE
-        ) + "\n";
+        output += "Address: 0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor.startAddress))
+            + "\n";
         output += "Width: " + std::to_string(registerDescriptor.size * 8) + "-bit\n\n";
 
         output += "----------- Value -----------\n";
@@ -177,13 +175,11 @@ namespace DebugServer::Gdb::CommandPackets
         TargetControllerService& targetControllerService
     ) {
         for (const auto* registerDescriptor : this->sortRegisterDescriptors(groupDescriptor.registerDescriptorsByKey)) {
-            auto output = std::string{"`" + registerDescriptor->absoluteGroupKey + "`, "};
-            output += "`" + registerDescriptor->key + "`, ";
+            auto output = StringService::formatKey(registerDescriptor->absoluteGroupKey) + ", ";
+            output += StringService::formatKey(registerDescriptor->key) + ", ";
             output += "\"" + registerDescriptor->name + "\", ";
-            output += StringService::applyTerminalColor(
-                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress)),
-                StringService::TerminalColor::BLUE
-            ) + ", ";
+            output += "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress))
+                + ", ";
             output += std::to_string(registerDescriptor->size * 8) + "-bit | ";
 
             if (registerDescriptor->access.readable) {

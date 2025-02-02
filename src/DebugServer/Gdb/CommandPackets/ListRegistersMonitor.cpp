@@ -48,7 +48,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto peripheralDescriptorOpt = targetDescriptor.tryGetPeripheralDescriptor(peripheralKey);
 
             if (!peripheralDescriptorOpt.has_value()) {
-                throw Exception{"Unknown peripheral key \"" + peripheralKey + "\""};
+                throw Exception{"Unknown peripheral key `" + peripheralKey + "`"};
             }
 
             const auto& peripheralDescriptor = peripheralDescriptorOpt->get();
@@ -67,7 +67,7 @@ namespace DebugServer::Gdb::CommandPackets
             );
 
             if (!registerGroupDescriptorOpt.has_value()) {
-                throw Exception{"Unknown register group key \"" + registerGroupKey + "\""};
+                throw Exception{"Unknown register group key `" + registerGroupKey + "`"};
             }
 
             const auto& registerGroupDescriptor = registerGroupDescriptorOpt->get();
@@ -99,10 +99,8 @@ namespace DebugServer::Gdb::CommandPackets
             "---------- \"" + StringService::applyTerminalColor(
                 peripheralDescriptor.name,
                 StringService::TerminalColor::DARK_GREEN
-            ) + "\" (`" + StringService::applyTerminalColor(
-                peripheralDescriptor.key,
-                StringService::TerminalColor::DARK_YELLOW
-            ) + "`) peripheral registers ----------\n\n"
+            ) + "\" (" + StringService::formatKey(peripheralDescriptor.key)
+            + ") peripheral registers ----------\n\n"
         )});
 
         for (const auto& [groupKey, groupDescriptor] : peripheralDescriptor.registerGroupDescriptorsByKey) {
@@ -115,13 +113,11 @@ namespace DebugServer::Gdb::CommandPackets
         DebugSession& debugSession
     ) {
         for (const auto* registerDescriptor : this->sortRegisterDescriptors(groupDescriptor.registerDescriptorsByKey)) {
-            auto output = std::string{"`" + registerDescriptor->absoluteGroupKey + "`, "};
-            output += "`" + registerDescriptor->key + "`, ";
+            auto output = StringService::formatKey(registerDescriptor->absoluteGroupKey) + ", ";
+            output += StringService::formatKey(registerDescriptor->key) + ", ";
             output += "\"" + registerDescriptor->name + "\", ";
-            output += StringService::applyTerminalColor(
-                "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress)),
-                StringService::TerminalColor::BLUE
-            ) + ", ";
+            output += "0x" + StringService::asciiToUpper(StringService::toHex(registerDescriptor->startAddress))
+                + ", ";
             output += std::to_string(registerDescriptor->size * 8) + "-bit";
 
             if (registerDescriptor->description.has_value()) {

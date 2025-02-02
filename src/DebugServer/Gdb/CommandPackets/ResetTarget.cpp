@@ -38,13 +38,9 @@ namespace DebugServer::Gdb::CommandPackets
 
             debugSession.connection.writePacket(ResponsePacket{Services::StringService::toHex(
                 "Target reset complete\n"
-                "Current PC: " + StringService::applyTerminalColor(
-                    "0x" + StringService::asciiToUpper(
-                        StringService::toHex(targetControllerService.getProgramCounter())
-                    ),
-                    StringService::TerminalColor::BLUE
-                ) + "\n"
-                "Use the 'continue' command to begin execution\n"
+                "Current PC: 0x" + StringService::asciiToUpper(
+                    StringService::toHex(targetControllerService.getProgramCounter())
+                ) + "\nUse the 'continue' command to begin execution\n"
             )});
 
         } catch (const Exception& exception) {

@@ -176,76 +176,65 @@ namespace Services
         return {std::ranges::begin(range), std::ranges::end(range)};
     }
 
-    std::string StringService::applyTerminalColor(const std::string& string, TerminalColor color) {
-        auto colorCode = std::string{};
-
+    std::string_view StringService::colorCode(const TerminalColor color) {
         switch (color) {
             case TerminalColor::BLACK: {
-                colorCode = "\033[30m";
-                break;
+                return "\033[30m";
             }
             case TerminalColor::DARK_RED: {
-                colorCode = "\033[31m";
-                break;
+                return "\033[31m";
             }
             case TerminalColor::DARK_GREEN: {
-                colorCode = "\033[32m";
-                break;
+                return "\033[32m";
             }
             case TerminalColor::DARK_YELLOW: {
-                colorCode = "\033[33m";
-                break;
+                return "\033[33m";
             }
             case TerminalColor::DARK_BLUE: {
-                colorCode = "\033[34m";
-                break;
+                return "\033[34m";
             }
             case TerminalColor::DARK_MAGENTA: {
-                colorCode = "\033[35m";
-                break;
+                return "\033[35m";
             }
             case TerminalColor::DARK_CYAN: {
-                colorCode = "\033[36m";
-                break;
+                return "\033[36m";
             }
             case TerminalColor::LIGHT_GRAY: {
-                colorCode = "\033[37m";
-                break;
+                return "\033[37m";
             }
             case TerminalColor::DARK_GRAY: {
-                colorCode = "\033[90m";
-                break;
+                return "\033[90m";
             }
             case TerminalColor::RED: {
-                colorCode = "\033[91m";
-                break;
+                return "\033[91m";
             }
             case TerminalColor::GREEN: {
-                colorCode = "\033[92m";
-                break;
+                return "\033[92m";
             }
             case TerminalColor::ORANGE: {
-                colorCode = "\033[93m";
-                break;
+                return "\033[93m";
             }
             case TerminalColor::BLUE: {
-                colorCode = "\033[94m";
-                break;
+                return "\033[94m";
             }
             case TerminalColor::MAGENTA: {
-                colorCode = "\033[95m";
-                break;
+                return "\033[95m";
             }
             case TerminalColor::CYAN: {
-                colorCode = "\033[96m";
-                break;
+                return "\033[96m";
             }
-            case TerminalColor::WHITE: {
-                colorCode = "\033[97m";
-                break;
+            case TerminalColor::WHITE:
+            default: {
+                return "\033[97m";
             }
         }
+    }
 
-        return colorCode + string + "\033[0m";
+    std::string StringService::applyTerminalColor(const std::string& string, TerminalColor color) {
+        return std::string{StringService::colorCode(color)} + string + "\033[0m";
+    }
+
+    std::string StringService::formatKey(const std::string_view key) {
+        return "`" + StringService::applyTerminalColor(std::string{key}, StringService::TerminalColor::BLUE) + "`";
     }
 }

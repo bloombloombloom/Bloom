@@ -397,8 +397,8 @@ void InsightWindow::selectDefaultVariant() {
 
         } else {
             Logger::error(
-                "Invalid target variant key \"" + *(this->insightConfig.defaultVariantKey)
-                    + "\" - no such variant with the given key was found"
+                "Invalid target variant key `" + *(this->insightConfig.defaultVariantKey)
+                    + "` - no such variant with the given key was found"
             );
         }
     }

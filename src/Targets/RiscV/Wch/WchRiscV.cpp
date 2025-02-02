@@ -87,8 +87,8 @@ namespace Targets::RiscV::Wch
         }
 
         Logger::info(
-            "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" (`"
-                + this->selectedProgramSegmentDescriptor.key + "`)"
+            "Selected program memory segment: \"" + this->selectedProgramSegmentDescriptor.name + "\" ("
+                + Services::StringService::formatKey(this->selectedProgramSegmentDescriptor.key) + ")"
         );
 
         if (
@@ -198,8 +198,9 @@ namespace Targets::RiscV::Wch
         ) {
             if (!this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (`" + this->selectedProgramSegmentDescriptor.key
-                        + "`) is not writable - cannot insert software breakpoint"
+                    "The selected program memory segment ("
+                        + Services::StringService::formatKey(this->selectedProgramSegmentDescriptor.key)
+                        + ") is not writable - cannot insert software breakpoint"
                 };
             }
 
@@ -225,8 +226,9 @@ namespace Targets::RiscV::Wch
         ) {
             if (!this->selectedProgramSegmentDescriptor.programmingModeAccess.writeable) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (`" + this->selectedProgramSegmentDescriptor.key
-                        + "`) is not writable - cannot remove software breakpoint"
+                    "The selected program memory segment ("
+                        + Services::StringService::formatKey(this->selectedProgramSegmentDescriptor.key)
+                        + ") is not writable - cannot remove software breakpoint"
                 };
             }
 
@@ -267,8 +269,9 @@ namespace Targets::RiscV::Wch
                 throw Exceptions::Exception{
                     "Read access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
-                        + " bytes) exceeds the boundary of the selected program segment `" + aliasedSegment.key
-                        + "` (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + " bytes) exceeds the boundary of the selected program segment "
+                        + StringService::formatKey(aliasedSegment.key) + " (0x"
+                        + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
                         + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
                 };
@@ -308,7 +311,8 @@ namespace Targets::RiscV::Wch
                 && (!this->programmingMode || !aliasedSegment.programmingModeAccess.writeable)
             ) {
                 throw Exceptions::Exception{
-                    "The selected program memory segment (`" + aliasedSegment.key + "`) is not writable"
+                    "The selected program memory segment (" + StringService::formatKey(aliasedSegment.key)
+                        + ") is not writable"
                 };
             }
 
@@ -323,8 +327,9 @@ namespace Targets::RiscV::Wch
                 throw Exceptions::Exception{
                     "Write access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
-                        + " bytes) exceeds the boundary of the selected program segment `" + aliasedSegment.key
-                        + "` (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
+                        + " bytes) exceeds the boundary of the selected program segment "
+                        + StringService::formatKey(aliasedSegment.key) + " (0x"
+                        + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
                         + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
                 };
@@ -350,7 +355,10 @@ namespace Targets::RiscV::Wch
             return this->eraseMainFlashSegment();
         }
 
-        Logger::debug("Ignoring erase operation on `" + memorySegmentDescriptor.key + "` segment - not supported");
+        Logger::debug(
+            "Ignoring erase operation on " + Services::StringService::formatKey(memorySegmentDescriptor.key)
+                + " segment - not supported"
+        );
     }
 
     TargetMemoryAddress WchRiscV::getProgramCounter() {
@@ -385,8 +393,8 @@ namespace Targets::RiscV::Wch
                  */
                 const auto deAliasedAddress = this->deAliasMappedAddress(programCounter, actualAliasedSegment);
                 Logger::warning(
-                    "The mapped program memory segment is currently aliasing the `" + actualAliasedSegment.key
-                        + "` segment - the program counter (0x" + StringService::toHex(programCounter)
+                    "The mapped program memory segment is currently aliasing the " + actualAliasedSegment.key
+                        + " segment - the program counter (0x" + StringService::toHex(programCounter)
                         + ") has been de-aliased to 0x" + StringService::toHex(deAliasedAddress)
                 );
                 return deAliasedAddress;
@@ -518,11 +526,11 @@ namespace Targets::RiscV::Wch
         output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
             + StringService::applyTerminalColor("boot", PARAM_COLOR) + "\n";
         output += leftPadding + "  To switch to boot mode, where the mapped program memory segment aliases the boot"
-            " segment (`" + this->bootProgramSegmentDescriptor.key + "`).\n\n";
+            " segment (" + StringService::formatKey(this->bootProgramSegmentDescriptor.key) + ").\n\n";
         output += leftPadding + "mon " + StringService::applyTerminalColor("program_mode", CMD_COLOR) + " "
             + StringService::applyTerminalColor("user", PARAM_COLOR) + "\n";
         output += leftPadding + "  To switch to user mode, where the mapped program memory segment aliases the main"
-            " program segment (`" + this->mainProgramSegmentDescriptor.key + "`).\n";
+            " program segment (" + StringService::formatKey(this->mainProgramSegmentDescriptor.key) + ").\n";
 
         return output;
     }
@@ -546,25 +554,15 @@ namespace Targets::RiscV::Wch
                         actualAliasedSegment == this->bootProgramSegmentDescriptor ? "boot mode" : "user mode",
                         StringService::TerminalColor::DARK_YELLOW
                     ) + "\"\n";
-                    response.output += "Aliased memory segment key: `"
-                        + StringService::applyTerminalColor(
-                            actualAliasedSegment.key,
-                            StringService::TerminalColor::DARK_YELLOW
-                        ) + "`\n";
-                    response.output += "Mapped address -> aliased address: " + StringService::applyTerminalColor(
-                        "0x" + StringService::asciiToUpper(
-                            StringService::toHex(this->mappedSegmentDescriptor.addressRange.startAddress)
-                        ),
-                        StringService::TerminalColor::BLUE
-                    ) + " -> " + StringService::applyTerminalColor(
-                        "0x" + StringService::asciiToUpper(
-                            StringService::toHex(actualAliasedSegment.addressRange.startAddress)
-                        ),
-                        StringService::TerminalColor::BLUE
+                    response.output += "Aliased memory segment key: "
+                        + StringService::formatKey(actualAliasedSegment.key) + "\n";
+                    response.output += "Mapped address -> aliased address: 0x" + StringService::asciiToUpper(
+                        StringService::toHex(this->mappedSegmentDescriptor.addressRange.startAddress)
+                    ) + " -> 0x" + StringService::asciiToUpper(
+                        StringService::toHex(actualAliasedSegment.addressRange.startAddress)
                     ) + "\n";
-                    response.output += "Program counter: " + StringService::applyTerminalColor(
-                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
-                        StringService::TerminalColor::BLUE
+                    response.output += "Program counter: 0x" + StringService::asciiToUpper(
+                        StringService::toHex(this->getProgramCounter())
                     ) + "\n";
 
                     return response;
@@ -580,9 +578,8 @@ namespace Targets::RiscV::Wch
                     EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
 
                     response.output += "Boot mode has been enabled\n";
-                    response.output += "Program counter: " + StringService::applyTerminalColor(
-                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
-                        StringService::TerminalColor::BLUE
+                    response.output += "Program counter: 0x" + StringService::asciiToUpper(
+                        StringService::toHex(this->getProgramCounter())
                     ) + "\n";
 
                     return response;
@@ -598,9 +595,8 @@ namespace Targets::RiscV::Wch
                     EventManager::triggerEvent(std::make_shared<Events::TargetReset>());
 
                     response.output += "User mode has been enabled\n";
-                    response.output += "Program counter: " + StringService::applyTerminalColor(
-                        "0x" + StringService::asciiToUpper(StringService::toHex(this->getProgramCounter())),
-                        StringService::TerminalColor::BLUE
+                    response.output += "Program counter: 0x" + StringService::asciiToUpper(
+                        StringService::toHex(this->getProgramCounter())
                     ) + "\n";
 
                     return response;
@@ -687,7 +683,7 @@ namespace Targets::RiscV::Wch
             probeAddress
         ) ? this->mainProgramSegmentDescriptor : this->bootProgramSegmentDescriptor;
 
-        Logger::debug("Aliased program memory segment: `" + segment.key + "`");
+        Logger::debug("Aliased program memory segment: " + Services::StringService::formatKey(segment.key));
         return segment;
     }
 
@@ -702,7 +698,8 @@ namespace Targets::RiscV::Wch
 
         Logger::debug(
             "De-aliased mapped program memory address 0x" + StringService::toHex(address) + " to 0x"
-                + StringService::toHex(deAliasedAddress) + " (segment: `" + aliasedSegmentDescriptor.key + "`)"
+                + StringService::toHex(deAliasedAddress) + " (segment: "
+                + StringService::formatKey(aliasedSegmentDescriptor.key) + ")"
         );
 
         return deAliasedAddress;

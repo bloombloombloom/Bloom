@@ -52,7 +52,7 @@ namespace Targets
         if (!descriptor.has_value()) {
             throw Exceptions::InternalFatalErrorException{
                 "Failed to get register group descriptor \"" + std::string{key}
-                    + "\" from peripheral \"" + this->key + "\" - register group descriptor not found"
+                    + "\" from peripheral `" + this->key + "` - register group descriptor not found"
             };
         }
 

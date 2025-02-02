@@ -65,8 +65,8 @@ namespace Targets
         const auto segment = this->tryGetMemorySegmentDescriptor(key);
         if (!segment.has_value()) {
             throw Exceptions::InternalFatalErrorException{
-                "Failed to get memory segment descriptor \"" + key + "\" from address space \"" + this->key
-                    + "\" - segment not found"
+                "Failed to get memory segment descriptor `" + key + "` from address space `" + this->key
+                    + "` - segment not found"
             };
         }
 

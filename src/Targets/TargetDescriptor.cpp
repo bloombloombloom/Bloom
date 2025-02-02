@@ -99,8 +99,8 @@ namespace Targets
         }
 
         throw Exceptions::InternalFatalErrorException{
-            "Failed to get address space descriptor from target descriptor - descriptor containing memory segment \""
-                + memorySegmentKey + "\" not found"
+            "Failed to get address space descriptor from target descriptor - descriptor containing memory segment `"
+                + memorySegmentKey + "` not found"
         };
     }
 

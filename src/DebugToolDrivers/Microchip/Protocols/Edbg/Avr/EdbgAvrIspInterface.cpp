@@ -1,9 +1,5 @@
 #include "EdbgAvrIspInterface.hpp"
 
-#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
-#include "src/Exceptions/InternalFatalErrorException.hpp"
-#include "src/Logger/Logger.hpp"
-
 // Command frames
 #include "CommandFrames/AvrIsp/EnterProgrammingMode.hpp"
 #include "CommandFrames/AvrIsp/LeaveProgrammingMode.hpp"
@@ -11,6 +7,11 @@
 #include "CommandFrames/AvrIsp/ReadFuse.hpp"
 #include "CommandFrames/AvrIsp/ReadLock.hpp"
 #include "CommandFrames/AvrIsp/ProgramFuse.hpp"
+
+#include "src/Services/StringService.hpp"
+
+#include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
+#include "src/Exceptions/InternalFatalErrorException.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 {
@@ -155,7 +156,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         }
 
         throw Exceptions::InternalFatalErrorException{
-            "Could not resolve fuse type from register descriptor (key: \"" + fuseRegisterDescriptor.key + "\")"
+            "Could not resolve fuse type from register descriptor (key: "
+                + Services::StringService::formatKey(fuseRegisterDescriptor.key) + ")"
         };
     }
 }

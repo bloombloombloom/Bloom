@@ -49,7 +49,7 @@ namespace DebugServer::Gdb::CommandPackets
 
             const auto peripheralDescriptorOpt = targetDescriptor.tryGetPeripheralDescriptor(peripheralKey);
             if (!peripheralDescriptorOpt.has_value()) {
-                throw Exception{"Unknown peripheral key \"" + peripheralKey + "\""};
+                throw Exception{"Unknown peripheral key `" + peripheralKey + "`"};
             }
 
             const auto& peripheralDescriptor = peripheralDescriptorOpt->get();
@@ -63,7 +63,7 @@ namespace DebugServer::Gdb::CommandPackets
                 const auto& registerGroupKey = this->commandArguments[2];
                 registerGroupDescriptorOpt = peripheralDescriptor.tryGetRegisterGroupDescriptor(registerGroupKey);
                 if (!registerGroupDescriptorOpt.has_value()) {
-                    throw Exception{"Unknown absolute register group key \"" + registerGroupKey + "\""};
+                    throw Exception{"Unknown absolute register group key `" + registerGroupKey + "`"};
                 }
 
             } else {
@@ -83,7 +83,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto& registerKey = registerGroupKeyProvided ? this->commandArguments[3] : this->commandArguments[2];
             const auto registerDescriptorOpt = registerGroupDescriptor.tryGetRegisterDescriptor(registerKey);
             if (!registerDescriptorOpt.has_value()) {
-                throw Exception{"Unknown register key \"" + registerKey + "\""};
+                throw Exception{"Unknown register key `" + registerKey + "`"};
             }
 
             const auto& registerDescriptor = registerDescriptorOpt->get();
@@ -103,7 +103,7 @@ namespace DebugServer::Gdb::CommandPackets
             const auto& bitFieldKey = registerGroupKeyProvided ? this->commandArguments[4] : this->commandArguments[3];
             const auto bitFieldDescriptorOpt = registerDescriptor.tryGetBitFieldDescriptor(bitFieldKey);
             if (!bitFieldDescriptorOpt.has_value()) {
-                throw Exception{"Unknown bit field key \"" + bitFieldKey + "\""};
+                throw Exception{"Unknown bit field key `" + bitFieldKey + "`"};
             }
 
             const auto& bitFieldDescriptor = bitFieldDescriptorOpt->get();
@@ -181,10 +181,8 @@ namespace DebugServer::Gdb::CommandPackets
                     "0x" + newValueHex,
                     StringService::TerminalColor::DARK_YELLOW
                 ) + " (" +  std::to_string(registerDescriptor.size * 8) + "-bit"  + ") to \"" + registerDescriptor.name
-                + "\" register, at address " + StringService::applyTerminalColor(
-                    "0x" + StringService::toHex(registerDescriptor.startAddress),
-                    StringService::TerminalColor::BLUE
-                ) + ", via `" + registerDescriptor.addressSpaceKey + "` address space...\n"
+                + "\" register, at address 0x" + StringService::toHex(registerDescriptor.startAddress) + ", via "
+                + StringService::formatKey(registerDescriptor.addressSpaceKey) + " address space...\n"
             )});
 
             targetControllerService.writeRegister(registerDescriptor, dynamicValue.data());
