@@ -70,7 +70,13 @@ class ValidationService extends \Targets\TargetDescriptionFiles\Services\Validat
             }
         }
 
-        $wchLinkPartialWriteAlignmentSize = 2;
+        /*
+         * The partial block write alignment size is typically 2 bytes, but due to a bug in WCH-Link firmware 2.9, we
+         * sometimes have to use an alignment size of 64 bytes.
+         *
+         * See WchLinkDebugInterface::writeProgramMemoryPartialBlock() for more.
+         */
+        $wchLinkPartialWriteAlignmentSize = 64;
         if ($mainProgramSegment !== null) {
             if (
                 !$this->alignsWith(
