@@ -15,6 +15,7 @@
 
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
+#include "src/TargetController/Exceptions/TargetFailure.hpp"
 #include "src/TargetController/Exceptions/TargetOperationFailure.hpp"
 
 namespace Targets::RiscV::Wch
@@ -41,6 +42,7 @@ namespace Targets::RiscV::Wch
         , flashBootKeyRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "boot_modekeyr"))
         , flashStatusRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "statr"))
         , flashControlRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "ctrl"))
+        , flashOptionByteRegisterDescriptor(this->flashPeripheralDescriptor.getRegisterDescriptor("flash", "obr"))
         , flashControlRegisterFields(
             Peripherals::Flash::FlashControlRegisterFields{
                 .locked = this->flashControlRegisterDescriptor.getBitFieldDescriptor("lock"),
@@ -53,6 +55,11 @@ namespace Targets::RiscV::Wch
                 .busy = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("bsy"),
                 .bootLock = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_lock"),
                 .bootMode = this->flashStatusRegisterDescriptor.getBitFieldDescriptor("boot_mode"),
+            }
+        )
+        , flashOptionByteRegisterFields(
+            Peripherals::Flash::FlashOptionByteRegisterFields{
+                .readProtected = this->flashOptionByteRegisterDescriptor.getBitFieldDescriptor("rdprt"),
             }
         )
         , rccPeripheralDescriptor(this->targetDescriptionFile.getTargetPeripheralDescriptor("rcc"))
@@ -121,6 +128,11 @@ namespace Targets::RiscV::Wch
         }
 
         this->variant = *(variantIt->second);
+
+        const auto optionByteValue = this->readRegisterDynamicValue(this->flashOptionByteRegisterDescriptor);
+        if (optionByteValue.bitFieldAs<bool>(this->flashOptionByteRegisterFields.readProtected)) {
+            throw Exceptions::TargetFailure{"Program memory is currently \"read-protected\""};
+        }
     }
 
     void WchRiscV::postActivate() {

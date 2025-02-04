@@ -17,6 +17,7 @@
 #include "GpioPadDescriptor.hpp"
 #include "Peripherals/Flash/FlashControlRegisterFields.hpp"
 #include "Peripherals/Flash/FlashStatusRegisterFields.hpp"
+#include "Peripherals/Flash/FlashOptionByteRegisterFields.hpp"
 
 namespace Targets::RiscV::Wch
 {
@@ -106,9 +107,11 @@ namespace Targets::RiscV::Wch
         const TargetRegisterDescriptor& flashBootKeyRegisterDescriptor;
         const TargetRegisterDescriptor& flashStatusRegisterDescriptor;
         const TargetRegisterDescriptor& flashControlRegisterDescriptor;
+        const TargetRegisterDescriptor& flashOptionByteRegisterDescriptor;
 
         const Peripherals::Flash::FlashControlRegisterFields flashControlRegisterFields;
         const Peripherals::Flash::FlashStatusRegisterFields flashStatusRegisterFields;
+        const Peripherals::Flash::FlashOptionByteRegisterFields flashOptionByteRegisterFields;
 
         const TargetPeripheralDescriptor rccPeripheralDescriptor;
         const TargetRegisterDescriptor& portPeripheralClockEnableRegisterDescriptor;
