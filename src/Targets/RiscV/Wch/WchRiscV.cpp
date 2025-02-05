@@ -339,10 +339,9 @@ namespace Targets::RiscV::Wch
                 throw Exceptions::Exception{
                     "Write access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"
                         + StringService::toHex(addressRange.endAddress) + ", " + std::to_string(addressRange.size())
-                        + " bytes) exceeds the boundary of the selected program segment "
-                        + StringService::formatKey(aliasedSegment.key) + " (0x"
-                        + StringService::toHex(aliasedSegment.addressRange.startAddress) + " -> 0x"
-                        + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
+                        + " bytes) exceeds the boundary of the selected program segment `"
+                        + aliasedSegment.key + "` (0x" + StringService::toHex(aliasedSegment.addressRange.startAddress)
+                        + " -> 0x" + StringService::toHex(aliasedSegment.addressRange.endAddress) + ", "
                         + std::to_string(aliasedSegment.addressRange.size()) + " bytes)"
                 };
             }
