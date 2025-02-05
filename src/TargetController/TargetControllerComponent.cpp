@@ -957,8 +957,9 @@ namespace TargetController
 
     void TargetControllerComponent::disableProgrammingMode() {
         if (this->deltaProgrammingSession.has_value()) {
-            this->commitDeltaProgrammingSession(*(this->deltaProgrammingSession));
+            const auto session = std::move(*(this->deltaProgrammingSession));
             this->deltaProgrammingSession = std::nullopt;
+            this->commitDeltaProgrammingSession(session);
         }
 
         Logger::debug("Disabling programming mode");
