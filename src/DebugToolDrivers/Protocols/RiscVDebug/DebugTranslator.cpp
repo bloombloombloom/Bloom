@@ -529,18 +529,21 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
                 alignedBuffer.begin() + (startAddress - alignedStartAddress)
             );
 
-            const auto dataBack = this->readMemory(
-                addressSpaceDescriptor,
-                memorySegmentDescriptor,
-                startAddress + bytes,
-                alignedBytes - bytes - (startAddress - alignedStartAddress),
-                {}
-            );
-            std::copy(
-                dataBack.begin(),
-                dataBack.end(),
-                alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
-            );
+            const auto backAlignmentBytes = alignedBytes - bytes - (startAddress - alignedStartAddress);
+            if (backAlignmentBytes > 0) {
+                const auto dataBack = this->readMemory(
+                    addressSpaceDescriptor,
+                    memorySegmentDescriptor,
+                    startAddress + bytes,
+                    backAlignmentBytes,
+                    {}
+                );
+                std::copy(
+                    dataBack.begin(),
+                    dataBack.end(),
+                    alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
+                );
+            }
 
             return this->writeMemory(
                 addressSpaceDescriptor,
@@ -958,6 +961,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemorySize bytes
     ) {
+        assert(bytes > 0);
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
 
@@ -1006,6 +1010,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         Targets::TargetMemoryBufferSpan buffer
     ) {
         using DebugModule::Registers::MemoryAccessControlField;
+        assert(!buffer.empty());
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
 
@@ -1049,6 +1054,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemorySize bytes
     ) {
+        assert(bytes > 0);
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(bytes % DebugTranslator::WORD_BYTE_SIZE == 0);
 
@@ -1186,6 +1192,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
+        assert(!buffer.empty());
         assert(startAddress % DebugTranslator::WORD_BYTE_SIZE == 0);
         assert(buffer.size() % DebugTranslator::WORD_BYTE_SIZE == 0);
 

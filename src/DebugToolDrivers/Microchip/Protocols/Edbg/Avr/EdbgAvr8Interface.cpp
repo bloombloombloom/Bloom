@@ -605,6 +605,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         TargetMemorySize bytes,
         const std::set<Targets::TargetMemoryAddressRange>& excludedAddressRanges
     ) {
+        if (bytes == 0) {
+            return {};
+        }
+
         if (this->programmingModeEnabled && memorySegmentDescriptor.type == TargetMemorySegmentType::RAM) {
             throw Exception{"Cannot access RAM when programming mode is enabled"};
         }
@@ -742,6 +746,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
+        if (buffer.empty()) {
+            return;
+        }
+
         if (memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH) {
             if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
                 const auto bootSectionStartAddress = this->session.programBootSection.value().get().startAddress;
@@ -1614,6 +1622,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         TargetMemorySize bytes,
         const std::set<TargetMemoryAddress>& excludedAddresses
     ) {
+        assert(bytes > 0);
+
         if (type == Avr8MemoryType::FUSES && this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
             throw Exception{"Cannot access AVR fuses via the debugWIRE interface"};
         }
@@ -1732,6 +1742,8 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer
     ) {
+        assert(!buffer.empty());
+
         if (type == Avr8MemoryType::FUSES && this->session.configVariant == Avr8ConfigVariant::DEBUG_WIRE) {
             throw Exception{"Cannot access AVR fuses via the debugWIRE interface"};
         }
@@ -1770,17 +1782,20 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                     alignedBuffer.begin() + (startAddress - alignedStartAddress)
                 );
 
-                const auto dataBack = this->readMemory(
-                    readMemType,
-                    startAddress + bytes,
-                    alignedBytes - bytes - (startAddress - alignedStartAddress),
-                    {}
-                );
-                std::copy(
-                    dataBack.begin(),
-                    dataBack.end(),
-                    alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
-                );
+                const auto backAlignmentBytes = alignedBytes - bytes - (startAddress - alignedStartAddress);
+                if (backAlignmentBytes > 0) {
+                    const auto dataBack = this->readMemory(
+                        readMemType,
+                        startAddress + bytes,
+                        backAlignmentBytes,
+                        {}
+                    );
+                    std::copy(
+                        dataBack.begin(),
+                        dataBack.end(),
+                        alignedBuffer.begin() + (startAddress - alignedStartAddress) + bytes
+                    );
+                }
 
                 return this->writeMemory(type, alignedStartAddress, alignedBuffer);
             }
