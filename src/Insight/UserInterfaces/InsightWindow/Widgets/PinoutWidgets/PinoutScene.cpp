@@ -404,11 +404,6 @@ namespace Widgets::PinoutWidgets
             }
         );
 
-        QObject::connect(setPadStateTask.get(), &InsightWorkerTask::finished, this, [this] {
-            this->setDisabled(false);
-        });
-
-        this->setDisabled(true);
         InsightWorker::queueTask(setPadStateTask);
     }
 }
