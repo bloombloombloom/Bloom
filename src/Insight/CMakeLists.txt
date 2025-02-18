@@ -54,19 +54,23 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/Dialog/Dialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/ConfirmationDialog.cpp
 
-        # Target package widgets
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidgetContainer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPackageWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/TargetPinBodyWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/DualInlinePackageWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/PinBodyWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/BodyWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/PinBodyWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/BodyWidget.cpp
+        # Target pinouts
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/PinoutContainer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/PinoutScene.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/VerticalLabelGroup.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/VerticalLabelGroupSet.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/HorizontalLabelGroup.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/HorizontalLabelGroupSet.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/Label.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/PadLabels.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/PinNumberLabel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/PadNameLabel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/GpioDirectionLabel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/GpioStateLabel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/GpioDisabledLabel.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/Pin.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/Qfp/QfpPinout.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/PinoutWidgets/Dip/DipPinout.cpp
 
         # Target register side pane
         ${CMAKE_CURRENT_SOURCE_DIR}/UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/TargetRegistersPaneWidget.cpp
@@ -148,10 +152,6 @@ qt_add_resources(
         # Task window
         "./UserInterfaces/InsightWindow/Widgets/TaskWindow/UiFiles/TaskWindow.ui"
         "./UserInterfaces/InsightWindow/Widgets/TaskWindow/Stylesheets/TaskWindow.qss"
-
-        # Target package widgets
-        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/DIP/Stylesheets/DualInlinePackage.qss"
-        "./UserInterfaces/InsightWindow/Widgets/TargetWidgets/QFP/Stylesheets/QuadFlatPackage.qss"
 
         # Target registers pane
         "./UserInterfaces/InsightWindow/Widgets/TargetRegistersPane/UiFiles/TargetRegistersSidePane.ui"

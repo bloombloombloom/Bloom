@@ -180,6 +180,10 @@ QToolTip {
     border: none;
 }
 
+#pinout-widget-container {
+    background-color: transparent;
+}
+
 /* Bottom menu bar & panels */
 #bottom-menu-bar {
     background-color: transparent;

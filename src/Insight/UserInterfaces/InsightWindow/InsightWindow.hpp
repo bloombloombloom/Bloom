@@ -17,8 +17,8 @@
 
 #include "Widgets/Label.hpp"
 #include "Widgets/SvgToolButton.hpp"
-#include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
-#include "Widgets/TargetWidgets/TargetPackageWidget.hpp"
+#include "Widgets/PinoutWidgets/PinoutContainer.hpp"
+#include "Widgets/PinoutWidgets/PinoutScene.hpp"
 #include "Widgets/PanelWidget.hpp"
 #include "Widgets/TargetRegistersPane/TargetRegistersPaneWidget.hpp"
 #include "Widgets/TargetMemoryInspectionPane/TargetMemoryInspectionPane.hpp"
@@ -33,7 +33,7 @@ class InsightWindow: public QMainWindow
 
 public:
     InsightWindow(
-        InsightProjectSettings& insightProjectSettings,
+        InsightProjectSettings& settings,
         const InsightConfig& insightConfig,
         const EnvironmentConfig& environmentConfig,
         const Targets::TargetDescriptor& targetDescriptor,
@@ -46,7 +46,7 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private:
-    InsightProjectSettings& insightProjectSettings;
+    InsightProjectSettings& settings;
 
     InsightConfig insightConfig;
     EnvironmentConfig environmentConfig;
@@ -65,15 +65,18 @@ private:
     AboutWindow* aboutWindowWidget = nullptr;
 
     QWidget* header = nullptr;
+
     Widgets::SvgToolButton* refreshIoInspectionButton = nullptr;
+    QAction* refreshRegistersOnTargetStopAction = nullptr;
+    QAction* refreshGpioOnTargetStopAction = nullptr;
 
     QWidget* leftMenuBar = nullptr;
     Widgets::PanelWidget* leftPanel = nullptr;
     Widgets::TargetRegistersPaneWidget* targetRegistersSidePane = nullptr;
     QToolButton* targetRegistersButton = nullptr;
 
-    Widgets::InsightTargetWidgets::TargetPackageWidgetContainer* ioContainerWidget = nullptr;
-    Widgets::InsightTargetWidgets::TargetPackageWidget* targetPackageWidget = nullptr;
+    Widgets::PinoutWidgets::PinoutContainer* pinoutContainerWidget = nullptr;
+    Widgets::PinoutWidgets::PinoutScene* pinoutScene = nullptr;
 
     QWidget* bottomMenuBar = nullptr;
     QHBoxLayout* bottomMenuBarLayout = nullptr;
@@ -88,8 +91,6 @@ private:
     const Targets::TargetVariantDescriptor* selectedVariantDescriptor = nullptr;
     bool uiDisabled = false;
 
-    static bool isPinoutSupported(const Targets::TargetPinoutDescriptor& pinoutDescriptor);
-
     void setUiDisabled(bool disable);
 
     void populateVariantMenu();
@@ -101,7 +102,9 @@ private:
     void adjustMinimumSize();
 
     void onTargetStateUpdate(Targets::TargetState newState, Targets::TargetState previousState);
-    void refresh();
+    void setRefreshRegistersOnTargetStopped(bool enabled);
+    void setRefreshGpioOnTargetStopped(bool enabled);
+    void refresh(bool refreshRegisters, bool refreshGpio);
     void refreshPadStates();
     void openReportIssuesUrl();
     void openGettingStartedUrl();

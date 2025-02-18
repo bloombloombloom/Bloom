@@ -1186,7 +1186,7 @@ namespace Targets::TargetDescription
                 return TargetPadType::VCC;
             }
 
-            if (padNameLower.find("gnd") == 0 || padNameLower.find("agnd") == 0) {
+            if (padNameLower.find("gnd") == 0 || padNameLower.find("agnd") == 0 || padNameLower.find("vss") == 0) {
                 return TargetPadType::GND;
             }
 

@@ -7,9 +7,6 @@
 #include "UiLoader.hpp"
 #include "Widgets/RotatableLabel.hpp"
 
-#include "Widgets/TargetWidgets/DIP/DualInlinePackageWidget.hpp"
-#include "Widgets/TargetWidgets/QFP/QuadFlatPackageWidget.hpp"
-
 #include "Widgets/TargetMemoryInspectionPane/ToolButton.hpp"
 
 #include "src/Logger/Logger.hpp"
@@ -28,14 +25,14 @@ using Targets::TargetExecutionState;
 using Targets::TargetPinDescriptor;
 
 InsightWindow::InsightWindow(
-    InsightProjectSettings& insightProjectSettings,
+    InsightProjectSettings& settings,
     const InsightConfig& insightConfig,
     const EnvironmentConfig& environmentConfig,
     const TargetDescriptor& targetDescriptor,
     const TargetState& targetState
 )
     : QMainWindow(nullptr)
-    , insightProjectSettings(insightProjectSettings)
+    , settings(settings)
     , insightConfig(insightConfig)
     , environmentConfig(environmentConfig)
     , targetConfig(environmentConfig.targetConfig)
@@ -48,10 +45,10 @@ InsightWindow::InsightWindow(
 
     constexpr auto defaultWindowSize = QSize{1000, 500};
 
-    const auto windowSize = this->insightProjectSettings.mainWindowSize.has_value()
+    const auto windowSize = this->settings.mainWindowSize.has_value()
         ? QSize{
-            std::max(this->insightProjectSettings.mainWindowSize->width(), defaultWindowSize.width()),
-            std::max(this->insightProjectSettings.mainWindowSize->height(), defaultWindowSize.height())
+            std::max(this->settings.mainWindowSize->width(), defaultWindowSize.width()),
+            std::max(this->settings.mainWindowSize->height(), defaultWindowSize.height())
         }
         : defaultWindowSize;
 
@@ -95,9 +92,6 @@ InsightWindow::InsightWindow(
     this->mainMenuBar = this->windowContainer->findChild<QMenuBar*>("menu-bar");
     this->layoutContainer->layout()->setMenuBar(this->mainMenuBar);
     this->container = this->layoutContainer->findChild<QWidget*>("container");
-    this->ioContainerWidget = this->windowContainer->findChild<InsightTargetWidgets::TargetPackageWidgetContainer*>(
-        "io-container"
-    );
 
     auto* horizontalContentLayout = this->container->findChild<QHBoxLayout*>("horizontal-content-layout");
     auto* verticalContentLayout = this->container->findChild<QVBoxLayout*>("vertical-content-layout");
@@ -110,21 +104,27 @@ InsightWindow::InsightWindow(
     auto* openAboutWindowAction = helpMenu->findChild<QAction*>("open-about-dialogue");
 
     this->header = this->windowContainer->findChild<QWidget*>("header");
+
     this->refreshIoInspectionButton = this->header->findChild<SvgToolButton*>("refresh-io-inspection-btn");
+    this->refreshRegistersOnTargetStopAction = this->refreshIoInspectionButton->findChild<QAction*>("refresh-regs");
+    this->refreshGpioOnTargetStopAction = this->refreshIoInspectionButton->findChild<QAction*>("refresh-gpio");
+
+    this->setRefreshRegistersOnTargetStopped(this->settings.refreshRegistersOnTargetStopped);
+    this->setRefreshGpioOnTargetStopped(this->settings.refreshGpioOnTargetStopped);
 
     // Create panel states
-    if (!this->insightProjectSettings.leftPanelState.has_value()) {
-        this->insightProjectSettings.leftPanelState = PanelState{};
+    if (!this->settings.leftPanelState.has_value()) {
+        this->settings.leftPanelState = PanelState{};
     }
 
-    if (!this->insightProjectSettings.bottomPanelState.has_value()) {
-        this->insightProjectSettings.bottomPanelState = PanelState{};
+    if (!this->settings.bottomPanelState.has_value()) {
+        this->settings.bottomPanelState = PanelState{};
     }
 
     this->leftMenuBar = this->container->findChild<QWidget*>("left-side-menu-bar");
     this->leftPanel = new PanelWidget{
         PanelWidgetType::LEFT,
-        this->insightProjectSettings.leftPanelState.value(),
+        this->settings.leftPanelState.value(),
         this->container
     };
     this->leftPanel->setObjectName("left-panel");
@@ -139,11 +139,15 @@ InsightWindow::InsightWindow(
     registersBtnLabel->setContentsMargins(4, 4, 10, 2);
     targetRegisterButtonLayout->insertWidget(0, registersBtnLabel, 0, Qt::AlignTop);
 
+    this->pinoutContainerWidget = new PinoutWidgets::PinoutContainer{this->targetDescriptor, this};
+    this->pinoutScene = this->pinoutContainerWidget->pinoutScene;
+    horizontalContentLayout->insertWidget(1, this->pinoutContainerWidget);
+
     this->bottomMenuBar = this->container->findChild<QWidget*>("bottom-menu-bar");
     this->bottomMenuBarLayout = this->bottomMenuBar->findChild<QHBoxLayout*>();
     this->bottomPanel = new PanelWidget{
         PanelWidgetType::BOTTOM,
-        this->insightProjectSettings.bottomPanelState.value(),
+        this->settings.bottomPanelState.value(),
         this->container
     };
     this->bottomPanel->setObjectName("bottom-panel");
@@ -228,7 +232,27 @@ InsightWindow::InsightWindow(
         this->refreshIoInspectionButton,
         &QToolButton::clicked,
         this,
-        &InsightWindow::refresh
+        [this] () {
+            this->refresh(true, true);
+        }
+    );
+
+    QObject::connect(
+        this->refreshRegistersOnTargetStopAction,
+        &QAction::triggered,
+        this,
+        [this] (bool checked) {
+            this->setRefreshRegistersOnTargetStopped(checked);
+        }
+    );
+
+    QObject::connect(
+        this->refreshGpioOnTargetStopAction,
+        &QAction::triggered,
+        this,
+        [this] (bool checked) {
+            this->setRefreshGpioOnTargetStopped(checked);
+        }
     );
 
     // Panel connections
@@ -276,7 +300,7 @@ void InsightWindow::resizeEvent(QResizeEvent* event) {
 
     this->adjustPanels();
 
-    this->insightProjectSettings.mainWindowSize = windowSize;
+    this->settings.mainWindowSize = windowSize;
 }
 
 void InsightWindow::showEvent(QShowEvent* event) {
@@ -286,46 +310,6 @@ void InsightWindow::showEvent(QShowEvent* event) {
 
 void InsightWindow::closeEvent(QCloseEvent* event) {
     return QMainWindow::closeEvent(event);
-}
-
-bool InsightWindow::isPinoutSupported(const Targets::TargetPinoutDescriptor& pinoutDescriptor) {
-    using Targets::TargetPinoutType;
-
-    const auto pinCount = pinoutDescriptor.pinDescriptors.size();
-
-    if (pinCount > 100) {
-        return false;
-    }
-
-    if (
-        pinoutDescriptor.type != TargetPinoutType::DIP
-        && pinoutDescriptor.type != TargetPinoutType::SOIC
-        && pinoutDescriptor.type != TargetPinoutType::SSOP
-        && pinoutDescriptor.type != TargetPinoutType::QFP
-        && pinoutDescriptor.type != TargetPinoutType::QFN
-    ) {
-        return false;
-    }
-
-    if (
-        (
-            pinoutDescriptor.type == TargetPinoutType::DIP
-            || pinoutDescriptor.type == TargetPinoutType::SOIC
-            || pinoutDescriptor.type == TargetPinoutType::SSOP
-        )
-        && pinCount % 2 != 0
-    ) {
-        return false;
-    }
-
-    if (
-        (pinoutDescriptor.type == TargetPinoutType::QFP || pinoutDescriptor.type == TargetPinoutType::QFN)
-        && (pinCount % 4 != 0 || pinCount <= 4)
-    ) {
-        return false;
-    }
-
-    return true;
 }
 
 void InsightWindow::setUiDisabled(bool disable) {
@@ -346,7 +330,7 @@ void InsightWindow::populateVariantMenu() {
             QString::fromStdString(variantDescriptor.name + " (" + pinoutDescriptor.name + ")")
         );
 
-        if (InsightWindow::isPinoutSupported(pinoutDescriptor)) {
+        if (this->pinoutScene->isPinoutSupported(pinoutDescriptor)) {
             QObject::connect(
                 variantAction,
                 &QAction::triggered,
@@ -384,16 +368,14 @@ void InsightWindow::selectDefaultVariant() {
             const auto& descriptor = variantDescriptor->get();
             const auto& pinoutDescriptor = this->targetDescriptor.getPinoutDescriptor(descriptor.pinoutKey);
 
-            if (InsightWindow::isPinoutSupported(pinoutDescriptor)) {
+            if (this->pinoutScene->isPinoutSupported(pinoutDescriptor)) {
                 this->selectVariant(&descriptor);
                 return;
-
-            } else {
-                Logger::error(
-                    "Unsupported target variant (\"" + descriptor.name
-                        + "\") provided via 'defaultVariantKey' parameter"
-                );
             }
+
+            Logger::error(
+                "Unsupported target variant (\"" + descriptor.name + "\") provided via 'defaultVariantKey' parameter"
+            );
 
         } else {
             Logger::error(
@@ -404,16 +386,16 @@ void InsightWindow::selectDefaultVariant() {
     }
 
     // Try the previously selected variant
-    if (this->insightProjectSettings.selectedVariantKey.has_value()) {
+    if (this->settings.selectedVariantKey.has_value()) {
         const auto variantDescriptor = this->targetDescriptor.tryGetVariantDescriptor(
-            *(this->insightProjectSettings.selectedVariantKey)
+            *(this->settings.selectedVariantKey)
         );
 
         if (variantDescriptor.has_value()) {
             const auto& descriptor = variantDescriptor->get();
             const auto& pinoutDescriptor = this->targetDescriptor.getPinoutDescriptor(descriptor.pinoutKey);
 
-            if (InsightWindow::isPinoutSupported(pinoutDescriptor)) {
+            if (this->pinoutScene->isPinoutSupported(pinoutDescriptor)) {
                 this->selectVariant(&descriptor);
                 return;
             }
@@ -427,7 +409,7 @@ void InsightWindow::selectDefaultVariant() {
     for (const auto& [variantKey, variantDescriptor] : this->targetDescriptor.variantDescriptorsByKey) {
         const auto& pinoutDescriptor = this->targetDescriptor.getPinoutDescriptor(variantDescriptor.pinoutKey);
 
-        if (InsightWindow::isPinoutSupported(pinoutDescriptor)) {
+        if (this->pinoutScene->isPinoutSupported(pinoutDescriptor)) {
             this->selectVariant(&variantDescriptor);
             return;
         }
@@ -445,65 +427,26 @@ void InsightWindow::selectVariant(const Targets::TargetVariantDescriptor* varian
     }
 
     const auto& pinoutDescriptor = this->targetDescriptor.getPinoutDescriptor(variantDescriptor->pinoutKey);
-    if (!InsightWindow::isPinoutSupported(pinoutDescriptor)) {
-        Logger::error("Attempted to select unsupported target variant.");
-        return;
-    }
+    assert(this->pinoutScene->isPinoutSupported(pinoutDescriptor));
 
-    if (this->targetPackageWidget != nullptr) {
-        this->targetPackageWidget->hide();
-        this->targetPackageWidget->deleteLater();
-        this->targetPackageWidget = nullptr;
-        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
-    }
+    this->pinoutScene->setPinout(pinoutDescriptor);
 
     this->selectedVariantDescriptor = variantDescriptor;
-    this->insightProjectSettings.selectedVariantKey = variantDescriptor->key;
+    this->settings.selectedVariantKey = variantDescriptor->key;
     this->variantMenu->setTitle(QString::fromStdString(variantDescriptor->name + " (" + pinoutDescriptor.name + ")"));
-
-    if (
-        pinoutDescriptor.type == TargetPinoutType::DIP
-        || pinoutDescriptor.type == TargetPinoutType::SOIC
-        || pinoutDescriptor.type == TargetPinoutType::SSOP
-    ) {
-        this->targetPackageWidget = new InsightTargetWidgets::Dip::DualInlinePackageWidget{
-            *variantDescriptor,
-            pinoutDescriptor,
-            this->targetDescriptor,
-            this->targetState,
-            this->ioContainerWidget
-        };
-
-    } else if (pinoutDescriptor.type == TargetPinoutType::QFP || pinoutDescriptor.type == TargetPinoutType::QFN) {
-        this->targetPackageWidget = new InsightTargetWidgets::Qfp::QuadFlatPackageWidget{
-            *variantDescriptor,
-            pinoutDescriptor,
-            this->targetDescriptor,
-            this->targetState,
-            this->ioContainerWidget
-        };
-    }
-
-    if (this->targetPackageWidget != nullptr) {
-        this->ioContainerWidget->setPackageWidget(this->targetPackageWidget);
-
-        this->adjustPanels();
-        this->adjustMinimumSize();
-        this->targetPackageWidget->show();
-    }
 }
 
 void InsightWindow::createPanes() {
     // Target registers pane
-    if (!this->insightProjectSettings.registersPaneState.has_value()) {
-        this->insightProjectSettings.registersPaneState = PaneState{false, true, std::nullopt};
+    if (!this->settings.registersPaneState.has_value()) {
+        this->settings.registersPaneState = PaneState{false, true, std::nullopt};
     }
 
     auto* leftPanelLayout = this->leftPanel->layout();
     this->targetRegistersSidePane = new TargetRegistersPaneWidget{
         this->targetDescriptor,
         this->targetState,
-        *(this->insightProjectSettings.registersPaneState),
+        *(this->settings.registersPaneState),
         this->leftPanel
     };
     leftPanelLayout->addWidget(this->targetRegistersSidePane);
@@ -538,11 +481,11 @@ void InsightWindow::createPanes() {
                 segmentDescriptor,
                 this->targetDescriptor,
                 this->targetState,
-                this->insightProjectSettings.findOrCreateMemoryInspectionPaneSettings(
+                this->settings.findOrCreateMemoryInspectionPaneSettings(
                     QString::fromStdString(addressSpaceDescriptor.key),
                     QString::fromStdString(segmentDescriptor.key)
                 ),
-                this->insightProjectSettings.findOrCreateMemoryInspectionPaneState(
+                this->settings.findOrCreateMemoryInspectionPaneState(
                     QString::fromStdString(addressSpaceDescriptor.key),
                     QString::fromStdString(segmentDescriptor.key)
                 ),
@@ -598,29 +541,13 @@ void InsightWindow::createPanes() {
 }
 
 void InsightWindow::adjustPanels() {
-    const auto targetPackageWidgetSize = (this->targetPackageWidget != nullptr)
-        ? this->targetPackageWidget->size() : QSize{};
     const auto containerSize = this->size();
 
     if (!this->isVisible()) {
         return;
     }
 
-    /*
-     * The purpose of the -20 is to ensure there is some padding between the panel borders and the
-     * target package widget. Looks nicer with the padding.
-     */
-    this->leftPanel->setMaximumResize(
-        std::max(
-            this->leftPanel->getMinimumResize(),
-            containerSize.width() - targetPackageWidgetSize.width() - this->leftMenuBar->width() - 20
-        )
-    );
-
-    /*
-     * Allow the bottom panel to overlap the target package widget (because the target package widget can
-     * occupy a lot of space and become an annoyance if the bottom panel is restricted too much).
-     */
+    this->leftPanel->setMaximumResize(std::max(this->leftPanel->getMinimumResize(), containerSize.width() / 2));
     this->bottomPanel->setMaximumResize(
         std::max(
             this->bottomPanel->getMinimumResize(),
@@ -632,25 +559,9 @@ void InsightWindow::adjustPanels() {
 }
 
 void InsightWindow::adjustMinimumSize() {
-    static const auto absoluteMinimum = QSize{900, 400};
-
-    /*
-     * On X11, the QScreen::availableGeometry() function may return the full geometry of the screen, without
-     * accounting for reserved areas for window managers and other decorations.
-     *
-     * Because of this, we always use QScreen::geometry() and account for reserved areas ourselves. It's near
-     * impossible to do this accurately, so we just subtract 200 from the width and height, and hope that it's
-     * enough.
-     */
-    const auto screenSize = this->screen()->availableGeometry().size();
-    const auto absoluteMaximum = QSize{screenSize.width() - 200, screenSize.height() - 200};
+    static constexpr auto absoluteMinimum = QSize{900, 400};
 
     auto minSize = QSize{};
-
-    if (this->targetPackageWidget != nullptr) {
-        minSize.setWidth(this->targetPackageWidget->width() + 250);
-        minSize.setHeight(this->targetPackageWidget->height() + 150);
-    }
 
     if (this->leftPanel->isVisible()) {
         minSize.setWidth(minSize.width() + this->leftPanel->getMinimumResize());
@@ -661,8 +572,8 @@ void InsightWindow::adjustMinimumSize() {
     }
 
     this->setMinimumSize(
-        std::min(std::max(minSize.width(), absoluteMinimum.width()), absoluteMaximum.width()),
-        std::min(std::max(minSize.height(), absoluteMinimum.height()), absoluteMaximum.height())
+        std::max(minSize.width(), absoluteMinimum.width()),
+        std::max(minSize.height(), absoluteMinimum.height())
     );
 }
 
@@ -670,9 +581,14 @@ void InsightWindow::onTargetStateUpdate(TargetState newState, Targets::TargetSta
     const auto targetStopped = newState.executionState == TargetExecutionState::STOPPED;
     this->setUiDisabled(!targetStopped);
 
-    if (this->targetPackageWidget != nullptr) {
-        this->targetPackageWidget->setDisabled(!targetStopped);
+    if (targetStopped && (this->settings.refreshRegistersOnTargetStopped || this->settings.refreshGpioOnTargetStopped)) {
+        this->refresh(
+            this->settings.refreshRegistersOnTargetStopped,
+            this->settings.refreshGpioOnTargetStopped
+        );
     }
+
+    this->pinoutScene->setDisabled(!targetStopped);
 
     switch (newState.executionState) {
         case TargetExecutionState::STOPPED: {
@@ -698,8 +614,17 @@ void InsightWindow::onTargetStateUpdate(TargetState newState, Targets::TargetSta
     );
 }
 
+void InsightWindow::setRefreshRegistersOnTargetStopped(bool enabled) {
+    this->refreshRegistersOnTargetStopAction->setChecked(enabled);
+    this->settings.refreshRegistersOnTargetStopped = enabled;
+}
 
-void InsightWindow::refresh() {
+void InsightWindow::setRefreshGpioOnTargetStopped(bool enabled) {
+    this->refreshGpioOnTargetStopAction->setChecked(enabled);
+    this->settings.refreshGpioOnTargetStopped = enabled;
+}
+
+void InsightWindow::refresh(bool refreshRegisters, bool refreshGpio) {
     if (this->targetState.executionState != TargetExecutionState::STOPPED) {
         return;
     }
@@ -707,18 +632,18 @@ void InsightWindow::refresh() {
     this->refreshIoInspectionButton->startSpin();
     this->refreshIoInspectionButton->setDisabled(true);
 
-    if (this->targetPackageWidget != nullptr) {
+    if (refreshGpio) {
         this->refreshPadStates();
     }
 
     const auto callback = [this] {
         this->refreshIoInspectionButton->stopSpin();
         this->refreshIoInspectionButton->setDisabled(
-                this->targetState.executionState != TargetExecutionState::STOPPED
+            this->targetState.executionState != TargetExecutionState::STOPPED
         );
     };
 
-    if (this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->state.activated) {
+    if (refreshRegisters && this->targetRegistersSidePane != nullptr && this->targetRegistersSidePane->state.activated) {
         this->targetRegistersSidePane->refreshRegisterValues(std::nullopt, callback);
 
     } else {
@@ -727,11 +652,11 @@ void InsightWindow::refresh() {
 }
 
 void InsightWindow::refreshPadStates() {
-    this->targetPackageWidget->setDisabled(true);
+    this->pinoutScene->setDisabled(true);
 
-    this->targetPackageWidget->refreshPadStates([this] {
+    this->pinoutScene->refreshPadStates([this] {
         if (this->targetState.executionState == TargetExecutionState::STOPPED) {
-            this->targetPackageWidget->setDisabled(false);
+            this->pinoutScene->setDisabled(false);
         }
     });
 }

@@ -27,6 +27,9 @@ public:
     std::optional<Widgets::PanelState> bottomPanelState;
     std::optional<Widgets::PaneState> registersPaneState;
 
+    bool refreshRegistersOnTargetStopped = false;
+    bool refreshGpioOnTargetStopped = false;
+
     /**
      * The key of the previously selected variant
      */

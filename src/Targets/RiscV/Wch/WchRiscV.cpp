@@ -443,6 +443,14 @@ namespace Targets::RiscV::Wch
             const auto& portClockEnableRegisterValue = readGpioReg(this->portPeripheralClockEnableRegisterDescriptor);
             if (!portClockEnableRegisterValue.bitFieldAs<bool>(gpioPadDescriptor.peripheralClockEnableBitFieldDescriptor)) {
                 // The port peripheral is currently disabled. We cannot obtain any meaningful state for this pad
+                output.emplace_back(
+                    *padDescriptor,
+                    TargetGpioPadState{
+                        .disabled = true,
+                        .value = TargetGpioPadState::State::UNKNOWN,
+                        .direction = TargetGpioPadState::DataDirection::UNKNOWN
+                    }
+                );
                 continue;
             }
 
@@ -453,10 +461,10 @@ namespace Targets::RiscV::Wch
                 output.emplace_back(
                     *padDescriptor,
                     TargetGpioPadState{
-                        readGpioReg(gpioPadDescriptor.inputDataRegisterDescriptor).bitFieldAs<bool>(
+                        .value = readGpioReg(gpioPadDescriptor.inputDataRegisterDescriptor).bitFieldAs<bool>(
                             gpioPadDescriptor.inputDataBitFieldDescriptor
                         ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
-                        TargetGpioPadState::DataDirection::INPUT
+                        .direction = TargetGpioPadState::DataDirection::INPUT
                     }
                 );
 
@@ -466,10 +474,10 @@ namespace Targets::RiscV::Wch
             output.emplace_back(
                 *padDescriptor,
                 TargetGpioPadState{
-                    readGpioReg(gpioPadDescriptor.outputDataRegisterDescriptor).bitFieldAs<bool>(
+                    .value = readGpioReg(gpioPadDescriptor.outputDataRegisterDescriptor).bitFieldAs<bool>(
                         gpioPadDescriptor.outputDataBitFieldDescriptor
                     ) ? TargetGpioPadState::State::HIGH : TargetGpioPadState::State::LOW,
-                    TargetGpioPadState::DataDirection::OUTPUT
+                    .direction = TargetGpioPadState::DataDirection::OUTPUT
                 }
             );
         }

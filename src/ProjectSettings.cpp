@@ -50,6 +50,14 @@ InsightProjectSettings::InsightProjectSettings(const QJsonObject& jsonObject) {
         this->registersPaneState = this->paneStateFromJson(jsonObject.find("registersPaneState")->toObject());
     }
 
+    if (jsonObject.contains("refreshRegistersOnTargetStopped")) {
+        this->refreshRegistersOnTargetStopped = jsonObject.value("refreshRegistersOnTargetStopped").toBool();
+    }
+
+    if (jsonObject.contains("refreshGpioOnTargetStopped")) {
+        this->refreshGpioOnTargetStopped = jsonObject.value("refreshGpioOnTargetStopped").toBool();
+    }
+
     if (jsonObject.contains("selectedVariantKey")) {
         this->selectedVariantKey = jsonObject.find("selectedVariantKey")->toString().toStdString();
     }
@@ -98,6 +106,9 @@ QJsonObject InsightProjectSettings::toJson() const {
     if (this->registersPaneState.has_value()) {
         insightObj.insert("registersPaneState", this->paneStateToJson(this->registersPaneState.value()));
     }
+
+    insightObj.insert("refreshRegistersOnTargetStopped", this->refreshRegistersOnTargetStopped);
+    insightObj.insert("refreshGpioOnTargetStopped", this->refreshGpioOnTargetStopped);
 
     if (this->selectedVariantKey.has_value()) {
         insightObj.insert("selectedVariantKey", QString::fromStdString(this->selectedVariantKey.value()));

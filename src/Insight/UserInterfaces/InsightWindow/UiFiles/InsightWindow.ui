@@ -87,8 +87,34 @@
                                             <string>:/compiled/src/Insight/UserInterfaces/InsightWindow/Images/refresh-disabled.svg</string>
                                         </property>
                                         <property name="toolTip">
-                                            <string>Refresh Registers And GPIO Pin States</string>
+                                            <string>Refresh registers and GPIO pad states (right-click for auto-refresh options)</string>
                                         </property>
+                                        <property name="popupMode">
+                                            <enum>QToolButton::InstantPopup</enum>
+                                        </property>
+                                        <property name="contextMenuEnabled">
+                                            <bool>true</bool>
+                                        </property>
+                                        <widget class="QMenu" name="refresh-menu">
+                                            <addaction name="refresh-regs"/>
+                                            <addaction name="refresh-gpio"/>
+                                            <action name="refresh-regs">
+                                                <property name="text">
+                                                    <string>Refresh registers after target execution stops</string>
+                                                </property>
+                                                <property name="checkable">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </action>
+                                            <action name="refresh-gpio">
+                                                <property name="text">
+                                                    <string>Refresh GPIO pad states after target execution stops</string>
+                                                </property>
+                                                <property name="checkable">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </action>
+                                        </widget>
                                     </widget>
                                 </item>
                                 <item>
@@ -198,27 +224,7 @@
                                                     <property name="margin">
                                                         <number>0</number>
                                                     </property>
-                                                    <!-- The left panel is inserted here. See InsightWindow::InsightWindow() for more -->
-                                                    <item>
-                                                        <widget class="TargetPackageWidgetContainer" name="io-container">
-                                                            <property name="sizePolicy">
-                                                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding"/>
-                                                            </property>
-                                                            <layout class="QHBoxLayout">
-                                                                <item alignment="Qt::AlignHCenter">
-                                                                    <widget class="Label" name="io-inspection-unavailable">
-                                                                        <property name="visible"><bool>false</bool></property>
-                                                                        <property name="alignment">
-                                                                            <enum>Qt::AlignCenter</enum>
-                                                                        </property>
-                                                                        <property name="text">
-                                                                            <string>-</string>
-                                                                        </property>
-                                                                    </widget>
-                                                                </item>
-                                                            </layout>
-                                                        </widget>
-                                                    </item>
+                                                    <!-- The left panel, along with the pinout widget container, is inserted here. See InsightWindow::InsightWindow() for more -->
                                                 </layout>
                                             </item>
                                             <!-- The bottom panel is inserted here. See InsightWindow::InsightWindow() for more -->

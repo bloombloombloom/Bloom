@@ -15,24 +15,19 @@ namespace Targets
         {
             HIGH,
             LOW,
+            UNKNOWN,
         };
 
         enum class DataDirection: std::uint8_t
         {
             INPUT,
             OUTPUT,
+            UNKNOWN,
         };
 
-        State value;
-        DataDirection direction;
-
-        TargetGpioPadState(
-            State value,
-            DataDirection direction
-        )
-            : value(value)
-            , direction(direction)
-        {}
+        bool disabled = false;
+        State value = State::UNKNOWN;
+        DataDirection direction = DataDirection::UNKNOWN;
 
         bool operator == (const TargetGpioPadState& other) const {
             return this->value == other.value && this->direction == other.direction;

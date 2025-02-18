@@ -1,7 +1,0 @@
-#target-pin-number {
-    font-size: 13px;
-}
-
-#target-pin-body {
-    qproperty-disableAlphaLevel: 100;
-}

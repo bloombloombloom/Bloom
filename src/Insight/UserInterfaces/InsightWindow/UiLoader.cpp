@@ -12,7 +12,6 @@
 #include "Widgets/SvgWidget.hpp"
 #include "Widgets/SvgToolButton.hpp"
 #include "Widgets/ExpandingHeightScrollAreaWidget.hpp"
-#include "Widgets/TargetWidgets/TargetPackageWidgetContainer.hpp"
 
 using namespace Widgets;
 
@@ -96,15 +95,6 @@ UiLoader::UiLoader(QObject* parent)
             "SvgToolButton",
             [this] (QWidget* parent, const QString& name) {
                 auto* widget = new SvgToolButton{parent};
-                widget->setObjectName(name);
-                widget->setStyleSheet(parent->styleSheet());
-                return widget;
-            }
-        },
-        {
-            "TargetPackageWidgetContainer",
-            [this] (QWidget* parent, const QString& name) {
-                auto* widget = new InsightTargetWidgets::TargetPackageWidgetContainer{parent};
                 widget->setObjectName(name);
                 widget->setStyleSheet(parent->styleSheet());
                 return widget;
