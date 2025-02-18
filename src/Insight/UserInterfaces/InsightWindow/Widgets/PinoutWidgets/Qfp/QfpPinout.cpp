@@ -351,10 +351,10 @@ namespace Widgets::PinoutWidgets
 
         painter->setBrush(BG_COLOR);
         painter->drawEllipse(
-            this->packageBodyPosition.x() + 10,
-            this->packageBodyPosition.y() + 10,
-            14,
-            14
+            this->packageBodyPosition.x() + QfpPinout::P1_INDICATOR_MARGIN,
+            this->packageBodyPosition.y() + QfpPinout::P1_INDICATOR_MARGIN,
+            QfpPinout::P1_INDICATOR_DIAMETER,
+            QfpPinout::P1_INDICATOR_DIAMETER
         );
 
         painter->setRenderHints(QPainter::RenderHint::Antialiasing, false);

@@ -52,8 +52,6 @@ namespace Widgets::PinoutWidgets
 
         const auto pinCount = pinoutDescriptor.pinDescriptors.size();
 
-        // return pinoutDescriptor.type == TargetPinoutType::QFP || pinoutDescriptor.type == TargetPinoutType::QFN;
-
         if (pinCount > 100) {
             return false;
         }
