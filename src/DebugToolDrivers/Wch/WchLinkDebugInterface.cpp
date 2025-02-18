@@ -544,7 +544,7 @@ namespace DebugToolDrivers::Wch
              * to the block size could result in breaching the boundary of the segment.
              *
              * For example, the CH32X035 has a block size of 4096, but its main program segment (`main_program`) has a
-             * capacity of 62KiB (63488 bytes), which is not a multiple of 4096. This means we cannot access the final,
+             * capacity of 62 KiB (63488 bytes), which is not a multiple of 4096. This means we cannot access the final,
              * partial block of that segment, via a full block write.
              *
              * Some segments on some WCH RISC-V targets don't even have the capacity to accommodate the block size.

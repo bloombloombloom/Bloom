@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands::Control
     {
     public:
         AttachTarget()
-            : Command(0x0d)
+            : Command(0x0D)
         {
             this->payload = {
                 0x02

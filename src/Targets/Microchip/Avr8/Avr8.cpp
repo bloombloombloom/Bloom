@@ -243,11 +243,9 @@ namespace Targets::Microchip::Avr8
             ) {
                 Logger::debug("Attempting OCDEN fuse bit management");
                 this->updateOcdenFuseBit(false);
-
-            } else {
-                this->avr8DebugInterface->deactivate();
             }
 
+            this->avr8DebugInterface->deactivate();
             this->activated = false;
 
         } catch (const Exception& exception) {

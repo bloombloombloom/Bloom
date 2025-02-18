@@ -10,10 +10,10 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands::Control
     {
     public:
         DetachTarget()
-            : Command(0x0d)
+            : Command(0x0D)
         {
             this->payload = {
-                0xff
+                0xFF
             };
         }
     };

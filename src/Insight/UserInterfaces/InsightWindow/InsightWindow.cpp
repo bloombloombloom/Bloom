@@ -374,7 +374,7 @@ void InsightWindow::selectDefaultVariant() {
             }
 
             Logger::error(
-                "Unsupported target variant (\"" + descriptor.name + "\") provided via 'defaultVariantKey' parameter"
+                "Unsupported target variant (\"" + descriptor.name + "\") provided via 'default_variant_key' parameter"
             );
 
         } else {

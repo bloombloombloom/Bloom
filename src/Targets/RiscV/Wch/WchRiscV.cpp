@@ -272,11 +272,7 @@ namespace Targets::RiscV::Wch
             const auto& aliasedSegment = this->selectedProgramSegmentDescriptor;
             const auto transformedAddress = this->deAliasMappedAddress(startAddress, aliasedSegment);
 
-            const auto addressRange = TargetMemoryAddressRange{
-                transformedAddress,
-                static_cast<TargetMemoryAddress>(transformedAddress + bytes - 1)
-            };
-
+            const auto addressRange = TargetMemoryAddressRange{transformedAddress, transformedAddress + bytes - 1};
             if (!aliasedSegment.addressRange.contains(addressRange)) {
                 throw Exceptions::Exception{
                     "Read access range (0x" + StringService::toHex(addressRange.startAddress) + " -> 0x"

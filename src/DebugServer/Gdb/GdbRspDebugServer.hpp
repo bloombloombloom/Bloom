@@ -100,10 +100,10 @@ namespace DebugServer::Gdb
             , eventListener(eventListener)
             , interruptEventNotifier(eventNotifier)
             , targetState(this->targetControllerService.getTargetState())
-        {};
+        {}
 
         GdbRspDebugServer() = delete;
-        virtual ~GdbRspDebugServer() = default;
+        ~GdbRspDebugServer() override = default;
 
         GdbRspDebugServer(const GdbRspDebugServer& other) = delete;
         GdbRspDebugServer(GdbRspDebugServer&& other) = delete;
@@ -111,9 +111,6 @@ namespace DebugServer::Gdb
         GdbRspDebugServer& operator = (const GdbRspDebugServer& other) = delete;
         GdbRspDebugServer& operator = (GdbRspDebugServer&& other) = delete;
 
-        /**
-         * Prepares the GDB server for listing on the selected address and port.
-         */
         void init() override {
             this->socketAddress.sin_family = AF_INET;
             this->socketAddress.sin_port = htons(this->debugServerConfig.listeningPortNumber);
@@ -189,9 +186,6 @@ namespace DebugServer::Gdb
             }
         }
 
-        /**
-         * Terminates any active debug session and closes the listening socket.
-         */
         void close() override {
             this->endDebugSession();
 
@@ -200,11 +194,6 @@ namespace DebugServer::Gdb
             }
         }
 
-        /**
-         * Waits for a connection from a GDB client or services an active one.
-         *
-         * This function will return when any blocking operation is interrupted via this->interruptEventNotifier.
-         */
         void run() override {
             try {
                 if (!this->debugSession.has_value()) {
@@ -443,10 +432,6 @@ namespace DebugServer::Gdb
 
             const auto rawPacketString = std::string{rawPacket.begin() + 1, rawPacket.end()};
 
-            /*
-             * First byte of the raw packet will be 0x24 ('$'), so std::string::find() should return 1, not 0, when
-             * looking for a command identifier string.
-             */
             if (rawPacketString.find("qSupported") == 0) {
                 return std::make_unique<CommandPackets::SupportedFeaturesQuery>(rawPacket);
             }

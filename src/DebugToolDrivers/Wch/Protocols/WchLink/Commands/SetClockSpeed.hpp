@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink::Commands
     {
     public:
         SetClockSpeed(std::uint8_t targetGroupId, std::uint8_t speedId)
-            : Command(0x0c)
+            : Command(0x0C)
         {
             this->payload = {
                 targetGroupId,
