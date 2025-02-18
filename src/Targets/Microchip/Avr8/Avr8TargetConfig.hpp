@@ -83,7 +83,7 @@ namespace Targets::Microchip::Avr8
          * Determines whether Bloom will check for an AVR signature mismatch between the signature in the TDF and the
          * connected target signature.
          */
-        bool signatureValidation = true;
+        bool signatureVerification = true;
 
         /**
          * Determines whether Bloom will stop all timer peripherals on the target, when target execution is stopped.

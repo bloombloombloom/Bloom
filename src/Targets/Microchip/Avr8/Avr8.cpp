@@ -209,9 +209,9 @@ namespace Targets::Microchip::Avr8
 
         this->activated = true;
 
-        if (this->targetConfig.signatureValidation) {
+        if (this->targetConfig.signatureVerification) {
             /*
-             * Validate the target signature.
+             * Verify the target signature.
              *
              * The signature obtained from the device should match what we loaded from the target description file.
              */

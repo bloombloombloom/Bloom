@@ -39,8 +39,8 @@ namespace Targets::Microchip::Avr8
             this->preserveEeprom = targetNode["preserve_eeprom"].as<bool>(this->preserveEeprom);
         }
 
-        if (targetNode["signature_validation"]) {
-            this->signatureValidation = targetNode["signature_validation"].as<bool>(this->signatureValidation);
+        if (targetNode["signature_verification"]) {
+            this->signatureVerification = targetNode["signature_verification"].as<bool>(this->signatureVerification);
         }
 
         if (targetNode["stop_all_timers"]) {
