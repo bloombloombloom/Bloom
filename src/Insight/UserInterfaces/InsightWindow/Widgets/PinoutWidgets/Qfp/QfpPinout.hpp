@@ -32,7 +32,7 @@ namespace Widgets::PinoutWidgets
     public:
         static constexpr int PACKAGE_PADDING = 15;
         static constexpr int PIN_MARGIN = 2;
-        static constexpr int PIN_LINE_A_SPACING = 15;
+        static constexpr int PIN_LINE_A_SPACING = 13;
         static constexpr int PIN_LINE_MARGIN = 5;
         static constexpr int MIN_LINE_A_LENGTH = 10;
         static constexpr int P1_INDICATOR_DIAMETER = 12;
