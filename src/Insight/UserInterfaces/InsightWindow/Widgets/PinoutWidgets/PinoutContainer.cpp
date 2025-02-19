@@ -18,6 +18,7 @@ namespace Widgets::PinoutWidgets
         this->setMouseTracking(true);
 
         this->setScene(this->pinoutScene);
+        this->setMinimumWidth(1);
     }
 
     void PinoutContainer::resizeEvent(QResizeEvent* event) {
