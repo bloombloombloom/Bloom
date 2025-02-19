@@ -999,6 +999,12 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         Logger::debug("Setting OCD_REVISION AVR8 device parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_OCD_REVISION, parameters.ocdRevision);
 
+        Logger::debug("Setting DEVICE_PAGE_BUFFERS_PER_FLASH_BLOCK AVR8 device parameter");
+        this->setParameter(
+            Avr8EdbgParameters::DEVICE_PAGE_BUFFERS_PER_FLASH_BLOCK,
+            parameters.buffersPerFlashPage.value_or(0x01)
+        );
+
         Logger::debug("Setting OCD_DATA_REGISTER AVR8 device parameter");
         this->setParameter(Avr8EdbgParameters::DEVICE_OCD_DATA_REGISTER, parameters.ocdDataRegisterAddress);
 

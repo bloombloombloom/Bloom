@@ -23,6 +23,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint8_t eepromPageSize;
         std::uint8_t ocdRevision;
         std::uint8_t ocdDataRegisterAddress;
+        std::optional<std::uint8_t> buffersPerFlashPage;
         std::uint8_t eearAddressHigh;
         std::uint8_t eearAddressLow;
         std::uint8_t eedrAddress;

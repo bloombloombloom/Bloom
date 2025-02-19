@@ -22,9 +22,9 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
             "boot_section_options.boot_section_1"
         );
         if (firstBootSectionOptionGroup.has_value()) {
-            this->bootSectionStartWordAddress = static_cast<std::uint32_t>(
-                StringService::toUint32(firstBootSectionOptionGroup->get().getProperty("start_address").value) / 2
-            );
+            this->bootSectionStartWordAddress = StringService::toUint32(
+                firstBootSectionOptionGroup->get().getProperty("start_address").value
+            ) / 2;
         }
 
         this->ramStartAddress = static_cast<std::uint16_t>(ramMemorySegment.startAddress);
@@ -34,6 +34,11 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         const auto& ocdPropertyGroup = targetDescriptionFile.getPropertyGroup("ocd");
         this->ocdRevision = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_revision").value);
         this->ocdDataRegisterAddress = StringService::toUint8(ocdPropertyGroup.getProperty("ocd_datareg").value);
+
+        const auto buffersPerFlashPageProperty = ocdPropertyGroup.tryGetProperty("buffers_per_flash_page");
+        if (buffersPerFlashPageProperty.has_value()) {
+            this->buffersPerFlashPage = StringService::toUint8(buffersPerFlashPageProperty->get().value);
+        }
 
         const auto eepromPeripheralDescriptor = targetDescriptionFile.getTargetPeripheralDescriptor("eeprom");
         const auto& eepromRegisterGroupDescriptor = eepromPeripheralDescriptor.getRegisterGroupDescriptor("eeprom");

@@ -36,6 +36,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
         static constexpr Avr8EdbgParameter DEVICE_FLASH_PAGE_SIZE = {0x02, 0x00};
         static constexpr Avr8EdbgParameter DEVICE_FLASH_SIZE = {0x02, 0x02};
         static constexpr Avr8EdbgParameter DEVICE_OCD_REVISION = {0x02, 0x13};
+        static constexpr Avr8EdbgParameter DEVICE_PAGE_BUFFERS_PER_FLASH_BLOCK = {0x02, 0x14};
         static constexpr Avr8EdbgParameter DEVICE_OCD_DATA_REGISTER = {0x02, 0x18};
         static constexpr Avr8EdbgParameter DEVICE_SPMCR_REGISTER = {0x02, 0x1D};
         static constexpr Avr8EdbgParameter DEVICE_OSCCAL_ADDR = {0x02, 0x1E};
