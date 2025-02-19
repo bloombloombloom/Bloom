@@ -29,6 +29,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint16_t nvmModuleBaseAddress;
         std::uint16_t signaturesPdiOffset;
 
-        PdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
+        explicit PdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
     };
 }

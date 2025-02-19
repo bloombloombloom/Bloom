@@ -28,6 +28,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint16_t fuseSegmentStartAddress;
         std::uint16_t lockbitSegmentStartAddress;
 
-        UpdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
+        explicit UpdiParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
     };
 }

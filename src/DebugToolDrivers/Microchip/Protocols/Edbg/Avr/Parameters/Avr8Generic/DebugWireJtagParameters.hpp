@@ -31,6 +31,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::Parameters::Avr8Gen
         std::uint8_t spmcrAddress;
         std::uint8_t osccalAddress;
 
-        DebugWireJtagParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
+        explicit DebugWireJtagParameters(const Targets::Microchip::Avr8::TargetDescriptionFile& targetDescriptionFile);
     };
 }
