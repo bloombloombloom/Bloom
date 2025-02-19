@@ -50,4 +50,23 @@ namespace Widgets::PinoutWidgets
 
         QGraphicsView::keyReleaseEvent(event);
     }
+
+    void PinoutContainer::mousePressEvent(QMouseEvent* event) {
+        if (this->dragMode() == QGraphicsView::DragMode::ScrollHandDrag) {
+            return QGraphicsView::mousePressEvent(event);
+        }
+
+        const auto modifiers = event->modifiers();
+        if ((modifiers & Qt::KeyboardModifier::ControlModifier) != 0) {
+            const auto viewSize = this->size();
+            const auto sceneRect = this->pinoutScene->sceneRect();
+            this->setDragMode(
+                sceneRect.width() > viewSize.width() || sceneRect.height() > viewSize.height()
+                    ? QGraphicsView::DragMode::ScrollHandDrag
+                    : QGraphicsView::DragMode::NoDrag
+            );
+        }
+
+        return QGraphicsView::mousePressEvent(event);
+    }
 }

@@ -3,6 +3,7 @@
 #include <QGraphicsView>
 #include <QResizeEvent>
 #include <QKeyEvent>
+#include <QMouseEvent>
 
 #include "src/Targets/TargetDescriptor.hpp"
 
@@ -21,6 +22,7 @@ namespace Widgets::PinoutWidgets
         void resizeEvent(QResizeEvent* event) override;
         void keyPressEvent(QKeyEvent* event) override;
         void keyReleaseEvent(QKeyEvent* event) override;
+        void mousePressEvent(QMouseEvent* event) override;
 
     protected:
         const Targets::TargetDescriptor& targetDescriptor;
