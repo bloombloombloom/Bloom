@@ -33,8 +33,8 @@ namespace Widgets::PinoutWidgets
         static constexpr int PIN_LINE_A_SPACING = 13;
         static constexpr int PIN_LINE_MARGIN = 5;
         static constexpr int MIN_LINE_A_LENGTH = 10;
-        static constexpr int P1_INDICATOR_DIAMETER = 12;
-        static constexpr int P1_INDICATOR_MARGIN = 8;
+        static constexpr int P1_INDICATOR_DIAMETER = 14;
+        static constexpr int P1_INDICATOR_MARGIN = 12;
         static constexpr int P1_EDGE_INDICATOR_DIAMETER = 18;
 
         QSize size = {};
