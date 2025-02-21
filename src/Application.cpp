@@ -562,10 +562,19 @@ void Application::checkBloomVersion() {
     auto queryVersionEndpointUrl = QUrl{
         QString::fromStdString(Services::PathService::homeDomainName() + "/latest-version")
     };
+
+    auto urlQuery = QUrlQuery{
+        {"current", QString::fromStdString(currentVersionNumber.toString())}
+    };
+
+#ifndef EXCLUDE_INSIGHT
+    urlQuery.addQueryItem("build", "full");
+#else
+    urlQuery.addQueryItem("build", "headless");
+#endif
+
     queryVersionEndpointUrl.setScheme("http");
-    queryVersionEndpointUrl.setQuery(QUrlQuery{
-        {"currentVersionNumber", QString::fromStdString(currentVersionNumber.toString())}
-    });
+    queryVersionEndpointUrl.setQuery(urlQuery);
 
     QObject::connect(
         networkAccessManager,
@@ -573,7 +582,7 @@ void Application::checkBloomVersion() {
         this,
         [this, currentVersionNumber] (QNetworkReply* response) {
             const auto jsonResponseObject = QJsonDocument::fromJson(response->readAll()).object();
-            const auto latestVersionNumber = VersionNumber(jsonResponseObject.value("latestVersionNumber").toString());
+            const auto latestVersionNumber = VersionNumber{jsonResponseObject.value("latestVersionNumber").toString()};
 
             if (latestVersionNumber > currentVersionNumber) {
                 Logger::warning(
