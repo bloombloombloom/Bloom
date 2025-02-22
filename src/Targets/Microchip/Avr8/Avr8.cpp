@@ -236,6 +236,7 @@ namespace Targets::Microchip::Avr8
             }
 
             this->stop();
+            this->avr8DebugInterface->clearAllBreakpoints();
 
             if (
                 this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG

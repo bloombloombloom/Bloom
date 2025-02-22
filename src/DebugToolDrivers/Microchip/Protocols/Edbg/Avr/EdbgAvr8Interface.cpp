@@ -255,8 +255,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
     void EdbgAvr8Interface::deactivate() {
         if (this->targetAttached) {
-            this->clearAllBreakpoints();
-
             if (
                 this->session.targetConfig.physicalInterface == TargetPhysicalInterface::DEBUG_WIRE
                 && this->session.targetConfig.disableDebugWireOnDeactivate
