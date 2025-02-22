@@ -890,6 +890,8 @@ namespace Targets::Microchip::Avr8
     }
 
     void Avr8::updateDwenFuseBit(bool enable) {
+        using Services::StringService;
+
         if (this->avrIspInterface == nullptr) {
             throw Exception{
                 "Debug tool or driver does not provide access to an ISP interface - please confirm that the "
@@ -1027,23 +1029,34 @@ namespace Targets::Microchip::Avr8
 
             Logger::info("Cleared lock bits confirmed");
 
+            Logger::debug("DWEN fuse byte value (before update): 0x" + StringService::toHex(dwenFuseByte));
+
             const auto newFuseValue = this->setFuseEnabled(dwenBitFieldDescriptor, dwenFuseByte, enable);
+            Logger::debug("New DWEN fuse byte value (to be written): 0x" + StringService::toHex(newFuseValue));
 
             Logger::warning("Updating DWEN fuse bit");
             this->avrIspInterface->programFuse(dwenRegisterDescriptor, newFuseValue);
 
             Logger::debug("Verifying DWEN fuse bit");
-            if (this->avrIspInterface->readFuse(dwenRegisterDescriptor) != newFuseValue) {
-                throw Exception{"Failed to update DWEN fuse bit - post-update verification failed"};
+
+            // If we read back the newly-written value too quickly after writing, we get garbage data
+            std::this_thread::sleep_for(std::chrono::milliseconds{50});
+
+            const auto writtenValue = this->avrIspInterface->readFuse(dwenRegisterDescriptor);
+            if (writtenValue != newFuseValue) {
+                throw Exception{
+                    "Failed to update DWEN fuse bit - post-update verification failed (value read: 0x"
+                        + StringService::toHex(writtenValue) + ")"
+                };
             }
 
             Logger::info("DWEN fuse bit successfully updated");
 
             this->avrIspInterface->deactivate();
 
-        } catch (const Exception& exception) {
+        } catch (const Exception&) {
             this->avrIspInterface->deactivate();
-            throw exception;
+            throw;
         }
     }
 
