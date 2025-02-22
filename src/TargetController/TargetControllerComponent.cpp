@@ -344,6 +344,7 @@ namespace TargetController
                 try {
                     this->stopTarget();
                     this->clearAllBreakpoints();
+                    this->resumeTarget();
 
                 } catch (const Exception& exception) {
                     Logger::error("Target pre-deactivation cleanup failed: " + exception.getMessage());
