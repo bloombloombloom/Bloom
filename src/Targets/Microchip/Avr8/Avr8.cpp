@@ -196,9 +196,6 @@ namespace Targets::Microchip::Avr8
             this->avr8DebugInterface->activate();
         }
 
-        this->stop();
-        this->reset();
-
         if (
             this->targetConfig.physicalInterface == TargetPhysicalInterface::JTAG
             && this->targetConfig.manageOcdenFuseBit
@@ -206,6 +203,9 @@ namespace Targets::Microchip::Avr8
             Logger::debug("Attempting OCDEN fuse bit management");
             this->updateOcdenFuseBit(true);
         }
+
+        this->stop();
+        this->reset();
 
         this->activated = true;
 
