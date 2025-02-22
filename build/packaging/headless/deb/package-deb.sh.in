@@ -1,0 +1,56 @@
+#!/bin/sh
+
+PLAYGROUND_DIR=@CMAKE_BINARY_DIR@/packaging/deb/playground;
+DEBIAN_DIR=${PLAYGROUND_DIR}/DEBIAN
+BLOOM_INSTALLATION_PREFIX=@BLOOM_INSTALLATION_PREFIX@/
+BLOOM_INSTALLATION_DIR=${PLAYGROUND_DIR}/${BLOOM_INSTALLATION_PREFIX}
+BLOOM_PACKAGE_PATH=@CMAKE_BINARY_DIR@/packaging/@BLOOM_PACKAGE_FILE_NAME@.deb
+
+if [ ! -f @CMAKE_BINARY_DIR@/bin/bloom ]; then
+    echo "Build files not found. Did you forget to build?"
+    exit 1;
+fi
+
+echo "Preparing playground directory...";
+rm -fr ${PLAYGROUND_DIR};
+
+mkdir -p ${PLAYGROUND_DIR};
+mkdir -p ${DEBIAN_DIR};
+mkdir -p ${BLOOM_INSTALLATION_DIR};
+mkdir -p ${BLOOM_INSTALLATION_DIR}/bin;
+
+mkdir -p ${PLAYGROUND_DIR}/lib/udev/rules.d/;
+mkdir -p ${PLAYGROUND_DIR}/usr/bin/;
+
+echo "Copying Debian control file...";
+cp -a @CMAKE_BINARY_DIR@/packaging/deb/control ${DEBIAN_DIR}/;
+
+echo "Copying Bloom binary...";
+cp -a @CMAKE_BINARY_DIR@/bin/bloom ${BLOOM_INSTALLATION_DIR}/bin/;
+
+echo "Copying Bloom invocation script...";
+cp -a @CMAKE_BINARY_DIR@/packaging/bloom.sh ${BLOOM_INSTALLATION_DIR}/bin/;
+
+echo "Copying resources...";
+cp -a @CMAKE_BINARY_DIR@/resources ${BLOOM_INSTALLATION_DIR}/;
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/fonts ${BLOOM_INSTALLATION_DIR}/resources/;
+
+echo "Copying distributed binaries...";
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/bin/lib ${BLOOM_INSTALLATION_DIR}/;
+
+echo "Copying udev rules...";
+cp -a @CMAKE_CURRENT_SOURCE_DIR@/build/distributed/udevrules/99-bloom.rules ${PLAYGROUND_DIR}/lib/udev/rules.d/;
+
+echo "Adjusting permissions...";
+chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/bin/;
+chmod u=rwx,g=rx,o=rx -R ${BLOOM_INSTALLATION_DIR}/lib/;
+
+chmod u=rwX,g=rX,o=rX -R ${BLOOM_INSTALLATION_DIR}/resources/;
+
+chmod u=rw,g=r,o=r ${PLAYGROUND_DIR}/lib/udev/rules.d/99-bloom.rules;
+
+echo "Creating symbolic link for Bloom's invocation script..."
+ln -s -f ${BLOOM_INSTALLATION_PREFIX}./bin/bloom.sh ${PLAYGROUND_DIR}/usr/bin/bloom;
+
+echo "Building Debian package...";
+dpkg-deb --build ${PLAYGROUND_DIR} ${BLOOM_PACKAGE_PATH};

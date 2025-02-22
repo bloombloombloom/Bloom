@@ -130,10 +130,6 @@ void Application::startup() {
 
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
 
-#ifndef BLOOM_DEBUG_BUILD
-    QCoreApplication::addLibraryPath(QString::fromStdString(Services::PathService::applicationDirPath() + "/plugins")),
-#endif
-
 #ifndef EXCLUDE_INSIGHT
     this->qtApplication = std::make_unique<QApplication>(this->qtApplicationArgc, this->qtApplicationArgv.data());
 #else

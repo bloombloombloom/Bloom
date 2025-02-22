@@ -1,0 +1,20 @@
+Package: @BLOOM_PACKAGE_NAME_LOWER@
+Version: @CMAKE_PROJECT_VERSION@
+Architecture: amd64
+Description: @BLOOM_PACKAGE_DESCRIPTION@
+Section: devel
+Priority: optional
+Homepage: @CMAKE_PROJECT_HOMEPAGE_URL@
+Maintainer: @BLOOM_PACKAGE_CONTACT@
+Depends: libc6 (>= 2.18),
+ libudev1 (>= 183),
+ libgcc1 (>= 1:4.2),
+ libsystemd0,
+ libqt6core6,
+ libqt6network6,
+ libqt6xml6,
+ qt6-qpa-plugins,
+ libqt6gui6,
+ libqt6widgets6,
+ libqt6uitools6,
+ libqt6svg6

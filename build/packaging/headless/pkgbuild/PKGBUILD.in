@@ -1,0 +1,18 @@
+pkgname=@BLOOM_PACKAGE_NAME_LOWER@
+pkgver=@CMAKE_PROJECT_VERSION@
+pkgrel=1
+pkgdesc="@BLOOM_PACKAGE_DESCRIPTION@"
+arch=('i686' 'x86_64')
+url="@CMAKE_PROJECT_HOMEPAGE_URL@"
+license=('LGPLv3')
+
+package(){
+  depends=(
+    'gcc-libs>=13.2.0'
+    'glibc>=2.18'
+    'qt6-tools'
+  )
+
+  mkdir -p "${pkgdir}/"
+  cp -R @CMAKE_BINARY_DIR@/packaging/pkgbuild/playground/build_root/* "${pkgdir}/"
+}
