@@ -51,6 +51,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
         TargetControllerService& targetControllerService
     ) {
         using Targets::Microchip::Avr8::OpcodeDecoder::Decoder;
+        using Targets::Microchip::Avr8::OpcodeDecoder::Instruction;
         using Services::Avr8InstructionService;
         using Services::StringService;
 
@@ -111,12 +112,43 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                     "session"
             );
 
+            const Instruction* previousInstruction = nullptr;
             for (const auto& [instructionAddress, instruction] : instructionsByAddress) {
                 if (!instruction.has_value()) {
                     /*
                      * We weren't able to decode the opcode at this address. We have no idea what this instruction
                      * will do.
                      */
+
+                    if (
+                        previousInstruction != nullptr
+                        && previousInstruction->mnemonic == Instruction::Mnemonic::BREAK
+                    ) {
+                        /*
+                         * There is a software breakpoint at the previous instruction. AVR8 break instructions are
+                         * single-word instructions, so we could be attempting to decode a misaligned address, as a
+                         * result of a break instruction residing within a multi-word instruction. This could explain
+                         * our inability to decode this instruction.
+                         *
+                         * In this case, we'll just ignore the instruction at this address.
+                         *
+                         * I have little confidence that this is the right approach. We're just assuming that the
+                         * original instruction is a multi-word instruction. What if it isn't? We'll end up ignoring
+                         * an instruction that could jump out of the requested range. But this would only be a problem
+                         * if we failed to decode an instruction that proceeds a break instruction. Quite unlikely.
+                         * TODO: Review after v2.0.0
+                         */
+
+                        Logger::debug(
+                            "Failed to decode AVR8 opcode at byte address 0x" + StringService::toHex(instructionAddress)
+                                + " - the instruction proceeds a BREAK instruction, so the decode failure was "
+                                "ignored."
+                        );
+
+                        previousInstruction = nullptr;
+                        continue;
+                    }
+
                     Logger::error(
                         "Failed to decode AVR8 opcode at byte address 0x" + StringService::toHex(instructionAddress)
                             + " - the instruction will have to be intercepted. Please enable debug logging, reproduce "
@@ -129,8 +161,11 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
                      * what happens.
                      */
                     rangeSteppingSession.interceptedAddresses.insert(instructionAddress);
+                    previousInstruction = nullptr;
                     continue;
                 }
+
+                previousInstruction = &*instruction;
 
                 if (instruction->canChangeProgramFlow) {
                     const auto destinationAddress = Avr8InstructionService::resolveProgramDestinationAddress(
