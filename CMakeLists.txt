@@ -130,6 +130,7 @@ target_compile_options(
     PUBLIC -Wredundant-move
     PUBLIC -Wsuggest-override
     PUBLIC -Wreorder
+    PUBLIC -Wno-stringop-overflow
     PUBLIC -fno-sized-deallocation
     PUBLIC $<$<CONFIG:RELEASE>:-ffile-prefix-map=${CMAKE_SOURCE_DIR}/./src/=>
     PUBLIC $<$<CONFIG:RELEASE>:-ffile-prefix-map=${CMAKE_SOURCE_DIR}/src/=>

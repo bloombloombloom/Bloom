@@ -204,6 +204,10 @@ namespace Targets::Microchip::Avr8
             this->updateOcdenFuseBit(true);
         }
 
+        /*
+         * On some AVR8 targets, we must perform a reset before verifying the target signature. Otherwise, the
+         * signature read from the target will be garbage. See https://github.com/bloombloombloom/Bloom/issues/107
+         */
         this->stop();
         this->reset();
 
@@ -1138,8 +1142,6 @@ namespace Targets::Microchip::Avr8
         }
 
         Logger::info("OCDEN fuse bit updated");
-
-        this->disableProgrammingMode();
     }
 
     bool Avr8::updateEesaveFuseBit(bool enable) {
