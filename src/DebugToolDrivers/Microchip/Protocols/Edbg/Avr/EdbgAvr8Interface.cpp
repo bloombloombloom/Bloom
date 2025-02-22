@@ -722,7 +722,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         if (
             memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES
-            && this->programmingModeEnabled
             && this->session.configVariant != Avr8ConfigVariant::DEBUG_WIRE
         ) {
             if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
@@ -811,7 +810,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         if (
             memorySegmentDescriptor.type == TargetMemorySegmentType::FUSES
-            && this->programmingModeEnabled
             && this->session.configVariant != Avr8ConfigVariant::DEBUG_WIRE
         ) {
             if (this->session.configVariant == Avr8ConfigVariant::XMEGA) {
