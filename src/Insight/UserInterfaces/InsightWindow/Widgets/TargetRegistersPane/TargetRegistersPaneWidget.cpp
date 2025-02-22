@@ -88,13 +88,18 @@ namespace Widgets
         });
 
         for (const auto& [peripheralKey, peripheralDescriptor] : this->targetDescriptor.peripheralDescriptorsByKey) {
-            this->peripheralItems.emplace_back(
-                new PeripheralItem{
-                    peripheralDescriptor,
-                    this->flattenedRegisterItemsByRegisterId,
-                    this->flattenedRegisterDescriptors
-                }
-            );
+            auto* peripheralItem = new PeripheralItem{
+                peripheralDescriptor,
+                this->flattenedRegisterItemsByRegisterId,
+                this->flattenedRegisterDescriptors
+            };
+
+            if (peripheralItem->isEmpty()) {
+                delete peripheralItem;
+                continue;
+            }
+
+            this->peripheralItems.emplace_back(peripheralItem);
         }
 
         this->registerListView = new ListView{

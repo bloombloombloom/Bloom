@@ -37,6 +37,8 @@ namespace Widgets
             QGraphicsItem* parent
         );
 
+        [[nodiscard]] bool isEmpty() const;
+
         [[nodiscard]] bool isExpanded() const {
             return this->expanded;
         }

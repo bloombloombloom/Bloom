@@ -31,8 +31,13 @@ namespace Widgets
                 flattenedRegisterDescriptors,
                 this
             };
-            registerGroupItem->setVisible(this->expanded);
 
+            if (registerGroupItem->isEmpty()) {
+                delete registerGroupItem;
+                continue;
+            }
+
+            registerGroupItem->setVisible(this->expanded);
             this->registerGroupItems.push_back(registerGroupItem);
         }
 
@@ -47,6 +52,16 @@ namespace Widgets
         if (!PeripheralItem::peripheralIconPixmap.has_value()) {
             this->generatePixmaps();
         }
+    }
+
+    bool PeripheralItem::isEmpty() const {
+        for (const auto* groupItem : this->registerGroupItems) {
+            if (!groupItem->isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     void PeripheralItem::setExpanded(bool expanded) {

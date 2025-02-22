@@ -38,12 +38,21 @@ namespace Widgets
                 flattenedRegisterDescriptors,
                 this
             };
-            subgroupItem->setVisible(this->expanded);
 
+            if (subgroupItem->isEmpty()) {
+                delete subgroupItem;
+                continue;
+            }
+
+            subgroupItem->setVisible(this->expanded);
             this->childItems.emplace_back(subgroupItem);
         }
 
         for (const auto& [registerKey, registerDescriptor] : this->registerGroupDescriptor.registerDescriptorsByKey) {
+            if (!registerDescriptor.access.readable) {
+                continue;
+            }
+
             auto* registerItem = new RegisterItem{registerDescriptor, this->nestedLevel + 1, this};
             registerItem->setVisible(this->expanded);
 
@@ -73,6 +82,26 @@ namespace Widgets
         if (!RegisterGroupItem::registerGroupIconPixmap.has_value()) {
             this->generatePixmaps();
         }
+    }
+
+    bool RegisterGroupItem::isEmpty() const {
+        for (const auto* childItem : this->childItems) {
+            const auto* subgroupItem = dynamic_cast<const RegisterGroupItem*>(childItem);
+            if (subgroupItem != nullptr) {
+                if (!subgroupItem->isEmpty()) {
+                    return false;
+                }
+
+                continue;
+            }
+
+            const auto* registerItem = dynamic_cast<const RegisterItem*>(childItem);
+            if (registerItem != nullptr) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     void RegisterGroupItem::setExpanded(bool expanded) {

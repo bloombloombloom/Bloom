@@ -28,6 +28,8 @@ namespace Widgets
             Targets::TargetRegisterDescriptors& flattenedRegisterDescriptors
         );
 
+        [[nodiscard]] bool isEmpty() const;
+
         bool isExpanded() const {
             return this->expanded;
         }
