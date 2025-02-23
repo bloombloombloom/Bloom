@@ -8,7 +8,7 @@ else ()
     set(PACKAGING_TEMPLATE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/headless")
 endif()
 
-set(BLOOM_PACKAGE_DESCRIPTION "Debugger for AVR-based embedded systems")
+set(BLOOM_PACKAGE_DESCRIPTION "On-chip debugging for AVR and RISC-V microcontrollers")
 set(BLOOM_PACKAGE_CONTACT "Nav Mohammed <support@bloom.oscillate.io>")
 
 # All generated packages will install Bloom to BLOOM_INSTALLATION_PREFIX
