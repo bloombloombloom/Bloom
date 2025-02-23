@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(Bloom LANGUAGES CXX VERSION 1.0.0)
+project(Bloom LANGUAGES CXX VERSION 2.0.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://bloom.oscillate.io")
 set(CMAKE_CXX_STANDARD 20)
 
