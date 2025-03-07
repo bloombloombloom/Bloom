@@ -141,8 +141,7 @@ namespace DebugServer::Gdb::AvrGdb::CommandPackets
 
                         Logger::debug(
                             "Failed to decode AVR8 opcode at byte address 0x" + StringService::toHex(instructionAddress)
-                                + " - the instruction proceeds a BREAK instruction, so the decode failure was "
-                                "ignored."
+                                + " - the instruction proceeds a BREAK instruction, so the decode failure was ignored."
                         );
 
                         previousInstruction = nullptr;

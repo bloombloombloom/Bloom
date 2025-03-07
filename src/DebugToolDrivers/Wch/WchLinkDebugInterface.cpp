@@ -570,8 +570,6 @@ namespace DebugToolDrivers::Wch
                         + ") has resulted in a segment boundary breach"
                 );
 
-                alignedAddressRange.endAddress -= this->programmingBlockSize;
-
                 /*
                  * This function isn't designed to handle instances where the entire write operation needs to be
                  * delegated. In such instances, this function should not be called at all. The following assertion
@@ -580,8 +578,9 @@ namespace DebugToolDrivers::Wch
                  * The WchLinkDebugInterface::fullBlockWriteCompatible() function will determine if at least part of
                  * the operation can be performed using the full block write method.
                  */
-                assert(alignedAddressRange.intersectsWith(addressRange));
+                assert(alignedAddressRange.size() > this->programmingBlockSize);
 
+                alignedAddressRange.endAddress -= this->programmingBlockSize;
                 delegatedBytes = addressRange.endAddress - alignedAddressRange.endAddress;
 
                 Logger::debug(
