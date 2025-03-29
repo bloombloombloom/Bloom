@@ -34,20 +34,8 @@ namespace Targets
         TargetFamily family;
 
         /**
-         * The file path to to the target's TDF, relative to Bloom's TDF directory.
+         * The file path to the target's TDF, relative to Bloom's TDF directory.
          */
         std::string relativeTdfPath;
-
-        constexpr BriefTargetDescriptor(
-            const std::string& name,
-            const std::string& configValue,
-            TargetFamily family,
-            const std::string& relativeTdfPath
-        )
-            : name(name)
-            , configValue(configValue)
-            , family(family)
-            , relativeTdfPath(relativeTdfPath)
-        {}
     };
 }
