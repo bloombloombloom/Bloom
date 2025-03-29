@@ -46,7 +46,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         ) override;
 
         void writeFlashPartialBlock(Targets::TargetMemoryAddress startAddress, Targets::TargetMemoryBufferSpan buffer);
-        void writeFlashFullBlocks(
+        void writeFlashFullBlock(
             Targets::TargetMemoryAddress startAddress,
             Targets::TargetMemoryBufferSpan buffer,
             Targets::TargetMemorySize blockSize,

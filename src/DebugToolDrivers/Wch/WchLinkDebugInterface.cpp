@@ -658,7 +658,7 @@ namespace DebugToolDrivers::Wch
             return;
         }
 
-        this->wchLinkInterface.writeFlashFullBlocks(
+        this->wchLinkInterface.writeFlashFullBlock(
             startAddress,
             buffer,
             this->programmingBlockSize,

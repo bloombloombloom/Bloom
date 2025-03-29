@@ -185,7 +185,7 @@ namespace DebugToolDrivers::Wch::Protocols::WchLink
         }
     }
 
-    void WchLinkInterface::writeFlashFullBlocks(
+    void WchLinkInterface::writeFlashFullBlock(
         Targets::TargetMemoryAddress startAddress,
         Targets::TargetMemoryBufferSpan buffer,
         Targets::TargetMemorySize blockSize,
