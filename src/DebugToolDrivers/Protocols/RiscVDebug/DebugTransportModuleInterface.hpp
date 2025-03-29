@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
-
 #include "Common.hpp"
 #include "DebugModule/DebugModule.hpp"
 #include "DebugModule/Registers/RegisterAddresses.hpp"
@@ -45,10 +42,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
             DebugModule::Registers::RegisterAddress address,
             DebugModule::RegisterValue value
         ) {
-            return this->writeDebugModuleRegister(
-                static_cast<DebugModule::RegisterAddress>(address),
-                value
-            );
+            return this->writeDebugModuleRegister(static_cast<DebugModule::RegisterAddress>(address), value);
         };
     };
 }
