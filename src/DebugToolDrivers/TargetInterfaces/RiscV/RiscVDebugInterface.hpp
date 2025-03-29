@@ -19,6 +19,8 @@ namespace DebugToolDrivers::TargetInterfaces::RiscV
     class RiscVDebugInterface
     {
     public:
+        virtual ~RiscVDebugInterface() = default;
+
         virtual void activate() = 0;
         virtual void deactivate() = 0;
 

@@ -15,6 +15,8 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
     class DebugTransportModuleInterface
     {
     public:
+        virtual ~DebugTransportModuleInterface() = default;
+
         /**
          * Should read the value of a debug module register.
          *
