@@ -49,14 +49,6 @@ Insight::Insight(
         std::bind(&Insight::onTargetMemoryWrittenEvent, this, std::placeholders::_1)
     );
 
-    this->eventListener.registerCallbackForEventType<Events::ProgrammingModeEnabled>(
-        std::bind(&Insight::onProgrammingModeEnabledEvent, this, std::placeholders::_1)
-    );
-
-    this->eventListener.registerCallbackForEventType<Events::ProgrammingModeDisabled>(
-        std::bind(&Insight::onProgrammingModeDisabledEvent, this, std::placeholders::_1)
-    );
-
     QApplication::setQuitOnLastWindowClosed(false);
     QApplication::setStyle(new BloomProxyStyle{});
 
@@ -225,12 +217,4 @@ void Insight::onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& ev
         event.memorySegmentDescriptor,
         Targets::TargetMemoryAddressRange{event.startAddress, event.startAddress + (event.size - 1)}
     );
-}
-
-void Insight::onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event) {
-    emit this->insightSignals->programmingModeEnabled();
-}
-
-void Insight::onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event) {
-    emit this->insightSignals->programmingModeDisabled();
 }

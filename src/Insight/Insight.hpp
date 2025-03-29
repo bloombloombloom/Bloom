@@ -91,6 +91,4 @@ private:
     void onTargetResetEvent(const Events::TargetReset& event);
     void onTargetRegistersWrittenEvent(const Events::RegistersWrittenToTarget& event);
     void onTargetMemoryWrittenEvent(const Events::MemoryWrittenToTarget& event);
-    void onProgrammingModeEnabledEvent(const Events::ProgrammingModeEnabled& event);
-    void onProgrammingModeDisabledEvent(const Events::ProgrammingModeDisabled& event);
 };

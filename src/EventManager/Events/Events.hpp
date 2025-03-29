@@ -15,8 +15,6 @@
 #include "TargetStateChanged.hpp"
 #include "MemoryWrittenToTarget.hpp"
 #include "TargetReset.hpp"
-#include "ProgrammingModeEnabled.hpp"
-#include "ProgrammingModeDisabled.hpp"
 
 #ifndef EXCLUDE_INSIGHT
 #include "InsightActivationRequested.hpp"
