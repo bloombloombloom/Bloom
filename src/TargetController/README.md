@@ -217,23 +217,23 @@ It is the invoker's responsibility to ensure that all const references to descri
 TargetController, are still valid at the time the TargetController services the command. If the TargetController
 encounters a dangling reference, undefined behaviour will occur. See the "master target descriptor" for more.
 
-#### Thread-safe access of the target descriptor - the master target descriptor object
+#### Thread-safe access of the target descriptor - the "managed target descriptor object"
 
-The "master" target descriptor object is simply an instance of the top-level `TargetDescriptor` struct, owned and
-managed by the TargetController. The TargetController will return a const reference of the master target descriptor
+The "managed target descriptor object" is simply an instance of the top-level `TargetDescriptor` struct, owned and
+managed by the TargetController. The TargetController will return a const reference of the managed target descriptor
 when servicing the `GetTargetDescriptor` command.
 
-The TargetController will never modify the master target descriptor after creation. There are no mutable members in
+The TargetController will never modify the managed target descriptor after creation. There are no mutable members in
 any of the target descriptor structs. This means we can access a const reference of the descriptor, from any thread
 within Bloom, assuming the thread does not outlive the TargetController.
 
-Because the master target descriptor is owned by the TargetController, it, along with any of its contained objects,
+Because the managed target descriptor is owned by the TargetController, it, along with any of its contained objects,
 can be passed safely to the TargetController, in any TargetController command.
 
-Both the debug server and Insight GUI components hold a const reference of the master target descriptor, allowing them
+Both the debug server and Insight GUI components hold a const reference of the managed target descriptor, allowing them
 to access target information freely.
 
-Do **not** mutate the master target descriptor (via `const_cast` or by any other means). Ever.
+Do **not** mutate the managed target descriptor (via `const_cast` or by any other means). Ever.
 
 ### Target state observation
 
@@ -251,18 +251,18 @@ if (targetState.executionState == TargetExecutionState::STOPPED) {
 }
 ```
 
-#### Real-time, on-demand, thread-safe access to the target's current state - the master target state object
+#### Real-time, on-demand, thread-safe access to the target's current state - the "managed target state object"
 
 All members of the `TargetState` struct are accessible via atomic operations (that is, all members are of `std::atomic<...>`
 type). This means that we can access a single instance of the `TargetState` struct across multiple threads, in a
 thread-safe manner.
 
-The "master" target state object is simply an instance of the `TargetState` struct that is owned and managed by the
+The "managed target state object" is simply an instance of the `TargetState` struct that is owned and managed by the
 TargetController (`TargetControllerComponent::targetState`). It holds the current state of the target, at all times.
 
-When servicing the `GetTargetState` command, the TargetController returns a const reference to the master target state
+When servicing the `GetTargetState` command, the TargetController returns a const reference to the managed target state
 object. This means that, if the caller of `TargetControllerService::getTargetState()` needs real-time, on-demand access
-to the target's current state, it can gain this by simply accepting a const reference of the master target state
+to the target's current state, it can gain this by simply accepting a const reference of the managed target state
 object:
 
 ```c++
@@ -270,10 +270,10 @@ const auto& targetState = tcService.getTargetState();
 
 /*
  * In the previous example, we used `const auto targetState = tcService.getTargetState();`, which made a copy of the
- * master TargetState object. That copy would not be managed by the TargetController, and would only hold the state of
+ * managed TargetState object. That copy would not be managed by the TargetController, and would only hold the state of
  * the target at the point when `tcService.getTargetState()` returned a value.
  *
- * In this example, `targetState` is a const reference to the master TargetState object - it will always hold the
+ * In this example, `targetState` is a const reference to the managed target state object - it will always hold the
  * target's current state.
  *
  * We can now observe the target's current state, without having to make any more calls to `TargetControllerService::getTargetState()`.
@@ -283,7 +283,7 @@ if (targetState.executionState == TargetExecutionState::STOPPED) {
     tcService.resumeTargetExecution();
 
     /*
-     * At this point, targetState.executionState == TargetExecutionState::RUNNING, because the master target state
+     * At this point, targetState.executionState == TargetExecutionState::RUNNING, because the managed target state
      * object, which `targetState` references, will have been updated by the TargetController (as a result of the call
      * to `tcService.resumeTargetExecution()` above).
      *
@@ -293,10 +293,10 @@ if (targetState.executionState == TargetExecutionState::STOPPED) {
 }
 ```
 
-The master target state object can be accessed freely by any other component within Bloom, just as long as the
+The managed target state object can be accessed freely by any other component within Bloom, just as long as the
 component doesn't outlive the TargetController.
 
-Many Insight GUI widgets make use of the master target state object, as it allows for immediate access to the target's
+Many Insight GUI widgets make use of the managed target state object, as it allows for immediate access to the target's
 current state, without having to bother the TargetController via an InsightWorker task.
 
 #### Target state changed events
