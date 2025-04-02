@@ -1407,6 +1407,11 @@ namespace TargetController
 
     std::unique_ptr<Response> TargetControllerComponent::handleSetProgramCounter(SetTargetProgramCounter& command) {
         this->target->setProgramCounter(command.address);
+
+        auto newState = *(this->targetState);
+        newState.programCounter = this->target->getProgramCounter();
+        this->updateTargetState(newState);
+
         return std::make_unique<Response>();
     }
 

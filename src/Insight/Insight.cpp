@@ -186,10 +186,6 @@ void Insight::onTargetStateChangedEvent(const Events::TargetStateChanged& event)
         }
     }
 
-    if (event.previousState.executionState == event.newState.executionState) {
-        return;
-    }
-
     emit this->insightSignals->targetStateUpdated(event.newState, event.previousState);
 }
 
