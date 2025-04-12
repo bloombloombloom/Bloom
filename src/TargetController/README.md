@@ -215,7 +215,7 @@ objects.
 
 It is the invoker's responsibility to ensure that all const references to descriptor objects, passed to the
 TargetController, are still valid at the time the TargetController services the command. If the TargetController
-encounters a dangling reference, undefined behaviour will occur. See the "master target descriptor" for more.
+encounters a dangling reference, undefined behaviour will occur. See the "managed target descriptor" for more.
 
 #### Thread-safe access of the target descriptor - the "managed target descriptor object"
 
