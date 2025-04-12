@@ -435,16 +435,14 @@ namespace DebugToolDrivers::Wch
          * anything below 2.11.
          */
         static constexpr auto MIN_FW_VERSION = WchFirmwareVersion{.major = 2, .minor = 11};
-        const auto alignmentSize = static_cast<TargetMemorySize>(
+        const auto alignedAddressRange = AlignmentService::alignAddressRange(
+            addressRange,
             this->toolInfo.firmwareVersion < MIN_FW_VERSION ? 64 : 2
         );
-        const auto alignedAddressRange = AlignmentService::alignAddressRange(addressRange, alignmentSize);
 
         if (alignedAddressRange != addressRange) {
             const auto alignedBufferSize = alignedAddressRange.size();
-            const auto addressAlignmentBytes = static_cast<TargetMemorySize>(
-                addressRange.startAddress - alignedAddressRange.startAddress
-            );
+            const auto addressAlignmentBytes = addressRange.startAddress - alignedAddressRange.startAddress;
             const auto sizeAlignmentBytes = alignedBufferSize - bufferSize - addressAlignmentBytes;
 
             auto alignedBuffer = addressAlignmentBytes > 0
@@ -591,9 +589,7 @@ namespace DebugToolDrivers::Wch
             }
 
             const auto alignedBufferSize = alignedAddressRange.size();
-            const auto addressAlignmentBytes = static_cast<TargetMemorySize>(
-                startAddress - alignedAddressRange.startAddress
-            );
+            const auto addressAlignmentBytes = startAddress - alignedAddressRange.startAddress;
             const auto sizeAlignmentBytes = (alignedAddressRange.endAddress > addressRange.endAddress)
                 ? alignedAddressRange.endAddress - addressRange.endAddress
                 : 0;
@@ -696,14 +692,17 @@ namespace DebugToolDrivers::Wch
          *
          * See the WchLinkDebugInterface::writeProgramMemoryFullBlock() member function for more.
          */
-        const auto finalBlockEnd = (
+        const auto finalBlockEndAddress = (
             (memorySegmentDescriptor.addressRange.endAddress / this->programmingBlockSize) * this->programmingBlockSize
         );
         return addressSpaceDescriptor == this->sysAddressSpaceDescriptor
             && memorySegmentDescriptor.type == TargetMemorySegmentType::FLASH
             && memorySegmentDescriptor.size() >= this->programmingBlockSize
             && (memorySegmentDescriptor.addressRange.startAddress % this->programmingBlockSize) == 0
-            && (memorySegmentDescriptor.size() % this->programmingBlockSize == 0 || startAddress <= finalBlockEnd)
+            && (
+                memorySegmentDescriptor.size() % this->programmingBlockSize == 0
+                || startAddress <= finalBlockEndAddress
+            )
         ;
     }
 

@@ -123,7 +123,7 @@ namespace TargetController
         CommandIdType commandId,
         std::optional<std::chrono::milliseconds> timeout
     ) {
-        auto response = std::unique_ptr<Response>(nullptr);
+        auto response = std::unique_ptr<Response>{};
 
         const auto predicate = [commandId, &response] {
             // We will already hold the lock here, so we can use Synchronised::unsafeReference() here.
@@ -372,7 +372,7 @@ namespace TargetController
         using namespace DebugToolDrivers::Wch;
 
         // The debug tool names in this mapping should always be lower-case.
-        return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>> {
+        return std::map<std::string, std::function<std::unique_ptr<DebugTool>()>>{
             {
                 "atmel_ice",
                 [this] {
@@ -476,59 +476,57 @@ namespace TargetController
         );
 
         while (!commands.empty()) {
-            const auto command = std::move(commands.front());
-            commands.pop();
-
-            const auto commandId = command->id;
-            const auto commandType = command->getType();
+            const auto& command = commands.front();
 
             try {
-                const auto commandHandlerIt = this->commandHandlersByCommandType.find(commandType);
+                const auto commandHandlerIt = this->commandHandlersByCommandType.find(command->getType());
 
                 if (commandHandlerIt == this->commandHandlersByCommandType.end()) {
-                    throw Exception{"No handler registered for this command."};
+                    throw Exception{"No handler registered for this command"};
                 }
 
                 if (this->state != TargetControllerState::ACTIVE) {
-                    throw Exception{"Command rejected - TargetController not in active state."};
+                    throw Exception{"Command rejected - TargetController not in active state"};
                 }
 
                 if (
                     command->requiresStoppedTargetState()
                     && this->targetState->executionState != TargetExecutionState::STOPPED
                 ) {
-                    throw Exception{"Command rejected - command requires target execution to be stopped."};
+                    throw Exception{"Command rejected - command requires target execution to be stopped"};
                 }
 
                 if (this->target->programmingModeEnabled() && command->requiresDebugMode()) {
                     throw Exception{
-                        "Command rejected - command cannot be serviced whilst the target is in programming mode."
+                        "Command rejected - command cannot be serviced whilst the target is in programming mode"
                     };
                 }
 
-                this->registerCommandResponse(commandId, commandHandlerIt->second(*(command.get())));
+                this->registerCommandResponse(command->id, commandHandlerIt->second(*(command.get())));
 
             } catch (const FatalErrorException& exception) {
                 this->registerCommandResponse(
-                    commandId,
+                    command->id,
                     std::make_unique<Responses::Error>(exception.getMessage())
                 );
 
-                throw exception;
+                throw;
 
             } catch (const Exception& exception) {
                 try {
                     this->refreshExecutionState(true);
 
                 } catch (const Exception& refreshException) {
-                    Logger::error("Post exception target state refresh failed: " + refreshException.getMessage());
+                    Logger::error("Post-exception target state refresh failed: " + refreshException.getMessage());
                 }
 
                 this->registerCommandResponse(
-                    commandId,
+                    command->id,
                     std::make_unique<Responses::Error>(exception.getMessage())
                 );
             }
+
+            commands.pop();
         }
     }
 

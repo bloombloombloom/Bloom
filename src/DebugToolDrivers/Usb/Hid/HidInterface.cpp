@@ -100,10 +100,10 @@ namespace Usb
     }
 
     std::string HidInterface::getHidDevicePath() {
-        const auto hidDeviceInfoList = std::unique_ptr<::hid_device_info, decltype(&::hid_free_enumeration)>(
+        const auto hidDeviceInfoList = std::unique_ptr<::hid_device_info, decltype(&::hid_free_enumeration)>{
             ::hid_enumerate(this->vendorId, this->productId),
             ::hid_free_enumeration
-        );
+        };
 
         auto matchedDevice = std::optional<::hid_device_info*>{};
 

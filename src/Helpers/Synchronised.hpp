@@ -48,7 +48,7 @@ public:
     {}
 
     Accessor accessor() {
-        return Accessor(this->mutex, this->value);
+        return Accessor{this->mutex, this->value};
     }
 
     /**

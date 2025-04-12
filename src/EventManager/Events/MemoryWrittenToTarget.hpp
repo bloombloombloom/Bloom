@@ -31,7 +31,7 @@ namespace Events
             , memorySegmentDescriptor(memorySegmentDescriptor)
             , startAddress(startAddress)
             , size(size)
-        {};
+        {}
 
         [[nodiscard]] EventType getType() const override {
             return MemoryWrittenToTarget::type;
