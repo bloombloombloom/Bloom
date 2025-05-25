@@ -30,7 +30,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule::Registers
         [[nodiscard]] std::set<TriggerType> getSupportedTriggerTypes() const {
             auto output = std::set<TriggerType>{};
 
-            static constexpr auto types = std::to_array<TriggerType>({
+            static constexpr auto TYPES = std::to_array<TriggerType>({
                 TriggerType::LEGACY,
                 TriggerType::MATCH_CONTROL,
                 TriggerType::INSTRUCTION_COUNT,
@@ -40,7 +40,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug::TriggerModule::Registers
                 TriggerType::EXTERNAL,
             });
 
-            for (const auto& type : types) {
+            for (const auto& type : TYPES) {
                 if (this->info & (0x01 << static_cast<std::uint8_t>(type))) {
                     output.insert(type);
                 }

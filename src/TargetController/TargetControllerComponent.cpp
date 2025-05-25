@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <typeindex>
 #include <algorithm>
+#include <ranges>
 
 #include "src/Targets/Microchip/Avr8/TargetDescriptionFile.hpp"
 #include "src/Targets/RiscV/Wch/TargetDescriptionFile.hpp"
@@ -1046,7 +1047,7 @@ namespace TargetController
         };
         auto commitOperations = std::vector<CommitOperation>{};
 
-        for (const auto& [segmentId, writeOperation] : session.writeOperationsBySegmentId) {
+        for (const auto& writeOperation : session.writeOperationsBySegmentId | std::views::values) {
             auto& segmentCache = this->getProgramMemoryCache(writeOperation.memorySegmentDescriptor);
 
             // Can the program memory cache facilitate diffing with all regions in this write operation?
@@ -1101,8 +1102,8 @@ namespace TargetController
              * before constructing the delta segments.
              */
             auto cacheData = segmentCache.data;
-            for (const auto& [addressSpaceId, breakpointsByAddress] : this->softwareBreakpointRegistry) {
-                for (const auto& [address, breakpoint] : breakpointsByAddress) {
+            for (const auto& breakpointsByAddress : this->softwareBreakpointRegistry | std::views::values) {
+                for (const auto& breakpoint : breakpointsByAddress | std::views::values) {
                     if (breakpoint.memorySegmentDescriptor != writeOperation.memorySegmentDescriptor) {
                         continue;
                     }
@@ -1169,11 +1170,11 @@ namespace TargetController
     }
 
     void TargetControllerComponent::abandonDeltaProgrammingSession(const DeltaProgramming::Session& session) {
-        for (const auto& [segmentId, eraseOperation] : session.eraseOperationsBySegmentId) {
+        for (const auto& eraseOperation: session.eraseOperationsBySegmentId | std::views::values) {
             this->eraseTargetMemory(eraseOperation.addressSpaceDescriptor, eraseOperation.memorySegmentDescriptor);
         }
 
-        for (const auto& [segmentId, writeOperation] : session.writeOperationsBySegmentId) {
+        for (const auto& writeOperation : session.writeOperationsBySegmentId | std::views::values) {
             for (const auto& region : writeOperation.regions) {
                 this->writeTargetMemory(
                     writeOperation.addressSpaceDescriptor,

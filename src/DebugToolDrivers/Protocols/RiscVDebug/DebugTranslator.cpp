@@ -20,7 +20,6 @@
 #include "src/Targets/RiscV/Opcodes/Sw.hpp"
 #include "src/Targets/RiscV/Opcodes/Addi.hpp"
 
-#include "TriggerModule/Registers/TriggerSelect.hpp"
 #include "TriggerModule/Registers/TriggerInfo.hpp"
 #include "TriggerModule/Registers/TriggerData1.hpp"
 #include "TriggerModule/Registers/MatchControl.hpp"
@@ -88,9 +87,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         }
 
         if (this->debugModuleDescriptor.hartIndices.size() > 1) {
-            Logger::debug(
-                "Discovered RISC-V harts: " + std::to_string(this->debugModuleDescriptor.hartIndices.size())
-            );
+            Logger::debug("Discovered RISC-V harts: " + std::to_string(this->debugModuleDescriptor.hartIndices.size()));
             Logger::warning("Bloom only supports debugging a single RISC-V hart - selecting first available");
         }
 
@@ -353,11 +350,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
             using TriggerModule::Registers::MatchControl;
 
-            this->writeCpuRegister(
-                CpuRegisterNumber::TRIGGER_SELECT,
-                TriggerModule::Registers::TriggerSelect{triggerDescriptor.index}.value()
-            );
-
+            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, triggerDescriptor.index);
             this->writeCpuRegister(
                 CpuRegisterNumber::TRIGGER_DATA_1,
                 MatchControl{
@@ -650,9 +643,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
 
         static constexpr auto MAX_TRIGGER_INDEX = 10;
         for (auto triggerIndex = TriggerModule::TriggerIndex{0}; triggerIndex <= MAX_TRIGGER_INDEX; ++triggerIndex) {
-            const auto selectRegValue = TriggerModule::Registers::TriggerSelect{triggerIndex}.value();
-
-            const auto writeSelectError = this->tryWriteCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, selectRegValue);
+            const auto writeSelectError = this->tryWriteCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, triggerIndex);
             if (writeSelectError == AbstractCommandError::EXCEPTION) {
                 break;
             }
@@ -664,7 +655,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
                 };
             }
 
-            if (this->readCpuRegister(CpuRegisterNumber::TRIGGER_SELECT) != selectRegValue) {
+            if (this->readCpuRegister(CpuRegisterNumber::TRIGGER_SELECT) != triggerIndex) {
                 break;
             }
 
@@ -786,7 +777,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
                 .registerNumber = number,
                 .transfer = true,
                 .flags = flags,
-                .size= RegisterAccessControlField::RegisterSize::SIZE_32
+                .size = RegisterAccessControlField::RegisterSize::SIZE_32
             }.value(),
             .commandType = AbstractCommandRegister::CommandType::REGISTER_ACCESS
         });
@@ -1315,11 +1306,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
         if (triggerDescriptor.supportedTypes.contains(TriggerType::MATCH_CONTROL)) {
             using TriggerModule::Registers::MatchControl;
 
-            this->writeCpuRegister(
-                CpuRegisterNumber::TRIGGER_SELECT,
-                TriggerModule::Registers::TriggerSelect{triggerDescriptor.index}.value()
-            );
-
+            this->writeCpuRegister(CpuRegisterNumber::TRIGGER_SELECT, triggerDescriptor.index);
             this->writeCpuRegister(CpuRegisterNumber::TRIGGER_DATA_1, MatchControl{}.value());
             return;
         }

@@ -3,7 +3,6 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 
 #include "src/Services/StringService.hpp"
-#include "src/Helpers/BiMap.hpp"
 #include "src/Exceptions/Exception.hpp"
 
 namespace DebugServer::Gdb::RiscVGdb::CommandPackets
@@ -48,24 +47,34 @@ namespace DebugServer::Gdb::RiscVGdb::CommandPackets
 
         Logger::info("Handling ReadMemoryMap packet");
 
-        static const auto gdbMemoryTypesBySegmentType = BiMap<TargetMemorySegmentType, std::string>{
-            {TargetMemorySegmentType::FLASH, "flash"},
-            {TargetMemorySegmentType::RAM, "ram"},
-            {TargetMemorySegmentType::IO, "ram"},
-            {TargetMemorySegmentType::ALIASED, "flash"}, // TODO: Assumption made here. Will hold for now. Review later
+        static const auto gdbMemoryTypeFromSegment = [] (
+            const Targets::TargetMemorySegmentDescriptor& segmentDescriptor
+        ) -> std::optional<std::string> {
+            switch (segmentDescriptor.type) {
+                case TargetMemorySegmentType::FLASH:
+                case TargetMemorySegmentType::ALIASED: {
+                    return "flash";
+                }
+                case TargetMemorySegmentType::RAM:
+                case TargetMemorySegmentType::IO: {
+                    return "ram";
+                }
+                default: {
+                    return std::nullopt;
+                }
+            }
         };
 
         auto memoryMap = std::string{"<memory-map>\n"};
 
-        for (const auto& [segmentKey, segmentDescriptor] : gdbTargetDescriptor.systemAddressSpaceDescriptor.segmentDescriptorsByKey) {
-            const auto gdbMemType = gdbMemoryTypesBySegmentType.valueAt(segmentDescriptor.type);
+        for (const auto& segmentDescriptor : gdbTargetDescriptor.systemAddressSpaceDescriptor.segmentDescriptorsByKey | std::views::values) {
+            const auto gdbMemType = gdbMemoryTypeFromSegment(segmentDescriptor);
             if (!gdbMemType.has_value()) {
                 continue;
             }
 
             const auto segmentWritable = (
-                segmentDescriptor.debugModeAccess.writeable
-                || segmentDescriptor.programmingModeAccess.writeable
+                segmentDescriptor.debugModeAccess.writeable || segmentDescriptor.programmingModeAccess.writeable
             );
 
             memoryMap += "<memory type=\"" + (!segmentWritable ? "rom" : *gdbMemType) + "\" start=\"0x"
