@@ -643,8 +643,8 @@ namespace Widgets
         static constexpr auto asciiFontColor = QColor{0xA7, 0x77, 0x26};
         static constexpr auto changedMemoryAsciiFontColor = QColor{0xB7, 0x7F, 0x21};
 
-        const auto byteItemRect = QRect{0, 0, ByteItem::WIDTH, ByteItem::HEIGHT};
-        const auto byteItemSize = byteItemRect.size();
+        static constexpr auto byteItemRect = QRect{0, 0, ByteItem::WIDTH, ByteItem::HEIGHT};
+        static constexpr auto byteItemSize = byteItemRect.size();
 
         auto standardTemplatePixmap = QPixmap{byteItemSize};
         standardTemplatePixmap.fill(standardBackgroundColor);

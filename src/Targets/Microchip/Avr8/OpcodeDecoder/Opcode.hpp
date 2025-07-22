@@ -521,11 +521,11 @@ namespace Targets::Microchip::Avr8::OpcodeDecoder
             }
 
             auto output = Instruction{
-                SelfType::name,
-                opcode,
-                byteSize,
-                mnemonic,
-                canChangeProgramFlow
+                .name = SelfType::name,
+                .opcode = opcode,
+                .byteSize = byteSize,
+                .mnemonic = mnemonic,
+                .canChangeProgramFlow = canChangeProgramFlow,
             };
 
             if constexpr (decltype(sourceRegisterParameter)::hasValue()) {

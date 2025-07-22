@@ -1120,7 +1120,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug
              * data0 (from X9) and the program buffer being executed again (filling X9 with another word).
              *
              * To avoid reading an excess of words (which could result in an out-of-bounds exception), we only enable
-             * auto execution if we require more data that what has already been read.
+             * auto execution if we require more data than what has already been read.
              */
             const auto autoExecutionEnabled = bytes > (DebugTranslator::WORD_BYTE_SIZE * 2);
             this->dtmInterface.writeDebugModuleRegister(
