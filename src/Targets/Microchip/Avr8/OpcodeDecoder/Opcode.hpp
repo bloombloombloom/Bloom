@@ -455,24 +455,6 @@ namespace Targets::Microchip::Avr8::OpcodeDecoder
             && (!canSkipNextInstruction || canChangeProgramFlow)
     class Opcode
     {
-        using SelfType = Opcode<
-            instructionName,
-            expectedOpcode,
-            wordSize,
-            mnemonic,
-            canChangeProgramFlow,
-            sourceRegisterParameter,
-            destinationRegisterParameter,
-            dataParameter,
-            programAddressParameter,
-            programAddressOffsetParameter,
-            registerBitPositionParameter,
-            statusRegisterBitPositionParameter,
-            ioSpaceAddressParameter,
-            dataSpaceAddressParameter,
-            displacementParameter,
-            canSkipNextInstruction
-        >;
         using OpcodeDataType = std::conditional_t<(wordSize > 1), std::uint32_t, std::uint16_t>;
 
         /**
@@ -515,13 +497,13 @@ namespace Targets::Microchip::Avr8::OpcodeDecoder
                 opcode = (opcode << 16) | static_cast<OpcodeDataType>(*(dataBegin + 3) << 8 | *(dataBegin + 2));
             }
 
-            if ((opcode & SelfType::opcodeMask()) != static_cast<OpcodeDataType>(expectedOpcode)) {
+            if ((opcode & Opcode::opcodeMask()) != static_cast<OpcodeDataType>(expectedOpcode)) {
                 // Opcode mismatch
                 return std::nullopt;
             }
 
             auto output = Instruction{
-                .name = SelfType::name,
+                .name = Opcode::name,
                 .opcode = opcode,
                 .byteSize = byteSize,
                 .mnemonic = mnemonic,
