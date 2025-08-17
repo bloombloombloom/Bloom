@@ -18,7 +18,7 @@ namespace DebugToolDrivers::Microchip
     {
     public:
         static const inline std::uint16_t USB_VENDOR_ID = 0x03eb;
-        static const inline std::uint16_t USB_PRODUCT_ID = 0x2141;
+        static const inline std::uint16_t USB_PRODUCT_ID = 0x2144;
         static const inline std::uint8_t USB_CONFIGURATION_INDEX = 0;
         static const inline std::uint8_t CMSIS_HID_INTERFACE_NUMBER = 0;
 
