@@ -13,15 +13,15 @@
 namespace Widgets
 {
     /**
-     * This class maintains indices of hex viewer item positions and provides fast lookups for items within certain
+     * This class maintains an index of hex viewer item positions and provides fast lookups for items within certain
      * positions.
      */
     class HexViewerItemIndex
     {
     public:
-        using FlattenedItemType = std::vector<HexViewerItem*>;
-        using FlattenedItemItType = FlattenedItemType::const_iterator;
-        using ItemRangeType = std::ranges::subrange<FlattenedItemItType>;
+        using FlattenedItems = std::vector<HexViewerItem*>;
+        using FlattenedItemIt = FlattenedItems::const_iterator;
+        using ItemRange = std::ranges::subrange<FlattenedItemIt>;
 
         std::vector<const ByteItem*> byteItemLines;
         std::unordered_map<Targets::TargetMemoryAddress, int> byteItemYStartPositionsByAddress;
@@ -48,7 +48,7 @@ namespace Widgets
          *
          * @return
          */
-        ItemRangeType items(int yStart, int yEnd) const;
+        ItemRange items(int yStart, int yEnd) const;
 
         /**
          * Returns the byte item at the given position. Byte items do not overlap.
@@ -107,13 +107,13 @@ namespace Widgets
          *
          * Some of the lookup member functions return subranges from this container.
          */
-        FlattenedItemType flattenedItems;
+        FlattenedItems flattenedItems;
 
         /**
          * Byte item Y-axis grid (one-dimensional index)
          *
          * Each element in this std::vector represents a point on the Y-axis grid. The distance between each point is
-         * equal to HexViewerItemIndex::GRID_SIZE.
+         * equal to HexViewerItemIndex::GRID_SIZE (pixels).
          *
          * The value of each element is an iterator addressing the HexViewerItem* at that point on the grid.
          *
@@ -122,6 +122,6 @@ namespace Widgets
          *
          * We use an std::vector here because it provides constant-time access to any element.
          */
-        std::vector<FlattenedItemItType> byteItemGrid;
+        std::vector<FlattenedItemIt> byteItemGrid;
     };
 }

@@ -12,7 +12,7 @@
     <address-spaces>
         <address-space key="system" start="0x00000000" size="3759144960" endianness="little">
             <memory-segment key="mapped_program_memory" name="Mapped Program Memory" type="aliased" start="0x00000000" size="63488" page-size="256" access="R" executable="1"/>
-            <memory-segment key="main_program" name="Main Program Memory" type="flash" start="0x08000000" size="63488" access="RW" page-size="256" executable="1"/>
+            <memory-segment key="main_program" name="Main Program Memory" type="flash" start="0x08000000" size="63488" page-size="256" access="RW" executable="1"/>
             <memory-segment key="boot_program" name="Boot Program Memory" type="flash" start="0x1FFF0000" size="3328" page-size="256" access="R" executable="1"/>
             <memory-segment key="vendor_config" name="Vendor Configuration" type="flash" start="0x1FFFF700" size="256" page-size="256" access="R" executable="0"/>
             <memory-segment key="user_config" name="User Configuration" type="flash" start="0x1FFFF800" size="256" page-size="256" access="RW" executable="0"/>

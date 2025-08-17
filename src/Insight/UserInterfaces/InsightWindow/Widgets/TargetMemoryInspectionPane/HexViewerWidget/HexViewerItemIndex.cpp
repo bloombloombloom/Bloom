@@ -15,7 +15,7 @@ namespace Widgets
         this->refreshFlattenedItems();
     }
 
-    HexViewerItemIndex::ItemRangeType HexViewerItemIndex::items(int yStart, int yEnd) const {
+    HexViewerItemIndex::ItemRange HexViewerItemIndex::items(int yStart, int yEnd) const {
         assert(!this->byteItemGrid.empty());
 
         const auto gridPointCount = this->byteItemGrid.size();
@@ -32,7 +32,7 @@ namespace Widgets
         );
 
         if (startGridPointIndex >= gridPointCount) {
-            return HexViewerItemIndex::ItemRangeType{};
+            return HexViewerItemIndex::ItemRange{};
         }
 
         const auto endGridPointIndex = static_cast<decltype(this->byteItemGrid)::size_type>(std::min(
@@ -44,7 +44,7 @@ namespace Widgets
             gridPointCount - 1
         ));
 
-        return HexViewerItemIndex::ItemRangeType{
+        return HexViewerItemIndex::ItemRange{
             this->byteItemGrid[startGridPointIndex],
             endGridPointIndex == gridPointCount - 1
                 ? this->flattenedItems.end()
