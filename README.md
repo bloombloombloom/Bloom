@@ -32,7 +32,7 @@ The accompanying package names are from the Debian (APT) package repositories - 
 repositories.
 
 - CMake version 3.22 or later
-- G++10 or later
+- G++13 or later
 - libusb v1.0 (`libusb-1.0-0-dev`)
 - libhidapi (0.11.2 or later) (`libhidapi-dev`)
 - yaml-cpp (version 0.7.0 or later) (`libyaml-cpp-dev`)

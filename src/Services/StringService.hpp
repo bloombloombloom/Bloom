@@ -7,6 +7,7 @@
 #include <vector>
 #include <type_traits>
 #include <utility>
+#include <format>
 
 namespace Services
 {
@@ -23,10 +24,29 @@ namespace Services
         static bool isNumeric(std::string_view str);
         static bool isBinary(std::string_view str);
 
-        static std::string toHex(std::uint64_t value);
-        static std::string toHex(std::uint32_t value);
-        static std::string toHex(std::uint16_t value);
-        static std::string toHex(unsigned char value);
+        template <typename Type>
+            requires std::is_integral_v<Type>
+        static std::string toHex(Type value) {
+            if constexpr (sizeof(Type) == 1) {
+                return std::format("{:02X}", value);
+            }
+
+            if constexpr (sizeof(Type) == 2) {
+                return std::format("{:04X}", value);
+            }
+
+            if constexpr (sizeof(Type) == 4) {
+                return std::format("{:08X}", value);
+            }
+
+            if constexpr (sizeof(Type) == 8) {
+                return std::format("{:016X}", value);
+
+            } else {
+                return std::format("{:X}", value);
+            }
+        }
+
         static std::string toHex(std::span<const unsigned char> data);
         static std::string toHex(std::string_view data);
 
