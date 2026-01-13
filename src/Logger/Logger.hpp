@@ -27,6 +27,10 @@ public:
 
     static void silence();
 
+    static void setThreadName(const std::string& name) {
+        Logger::threadName = name;
+    }
+
     static void info(const std::string& message) {
         if (Logger::infoPrintingEnabled) {
             Logger::log(message, LogLevel::INFO, std::nullopt);
@@ -62,6 +66,7 @@ private:
 
     static inline std::mutex printMutex;
 
+    static thread_local inline std::string threadName = {};
+
     static void log(const std::string& message, LogLevel level, std::optional<std::source_location> sourceLocation);
-    static const std::string& threadName();
 };

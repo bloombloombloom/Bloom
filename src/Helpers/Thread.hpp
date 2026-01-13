@@ -42,11 +42,4 @@ protected:
         ::sigfillset(&set);
         ::sigprocmask(SIG_SETMASK, &set, NULL);
     }
-
-    void setName(const std::string& name) {
-        // POSIX thread names cannot exceed 16 characters, including the terminating null byte.
-        assert(name.size() <= 15);
-
-        ::pthread_setname_np(::pthread_self(), name.c_str());
-    }
 };

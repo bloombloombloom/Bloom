@@ -81,7 +81,7 @@ namespace DebugServer
     }
 
     void DebugServerComponent::startup() {
-        this->setName("DS");
+        Logger::setThreadName("DS");
         Logger::info("Starting DebugServer");
         this->blockAllSignals();
 

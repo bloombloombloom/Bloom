@@ -33,7 +33,7 @@ void SignalHandler::run() {
 }
 
 void SignalHandler::startup() {
-    this->setName("SH");
+    Logger::setThreadName("SH");
     this->threadState = ThreadState::STARTING;
     Logger::debug("Starting SignalHandler");
 

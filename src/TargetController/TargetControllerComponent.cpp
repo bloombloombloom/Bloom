@@ -162,7 +162,7 @@ namespace TargetController
     }
 
     void TargetControllerComponent::startup() {
-        this->setName("TC");
+        Logger::setThreadName("TC");
         Logger::info("Starting TargetController");
         this->threadState = ThreadState::STARTING;
         this->blockAllSignals();

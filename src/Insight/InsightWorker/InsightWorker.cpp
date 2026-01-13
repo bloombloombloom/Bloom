@@ -1,6 +1,7 @@
 #include "InsightWorker.hpp"
 
 #include <QObject>
+#include <string>
 
 #include "src/Insight/InsightSignals.hpp"
 #include "src/Logger/Logger.hpp"
@@ -10,6 +11,8 @@ using namespace Exceptions;
 using Targets::TargetState;
 
 void InsightWorker::startup() {
+    Logger::setThreadName("IW" + std::to_string(this->id));
+
     auto* insightSignals = InsightSignals::instance();
 
     QObject::connect(
