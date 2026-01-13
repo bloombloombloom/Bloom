@@ -21,7 +21,7 @@ public:
      * @param fileDescriptor
      * @param eventMask
      */
-    void addEntry(int fileDescriptor, std::uint16_t eventMask);
+    void addEntry(int fileDescriptor, std::uint32_t eventMask);
 
     /**
      * Removes an entry from the epoll instance.

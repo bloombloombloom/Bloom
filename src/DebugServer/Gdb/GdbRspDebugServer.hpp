@@ -129,7 +129,7 @@ namespace DebugServer::Gdb
             }
 
             const auto socketFileDescriptor = ::socket(AF_INET, SOCK_STREAM, 0);
-            if (socketFileDescriptor == 0) {
+            if (socketFileDescriptor == -1) {
                 throw ::Exceptions::Exception{"Failed to create socket file descriptor."};
             }
 
@@ -163,12 +163,12 @@ namespace DebugServer::Gdb
 
             this->epollInstance.addEntry(
                 this->serverSocketFileDescriptor.value(),
-                static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
+                ::EPOLL_EVENTS::EPOLLIN
             );
 
             this->epollInstance.addEntry(
                 this->interruptEventNotifier.getFileDescriptor(),
-                static_cast<std::uint16_t>(::EPOLL_EVENTS::EPOLLIN)
+                ::EPOLL_EVENTS::EPOLLIN
             );
 
             Logger::info("GDB RSP address: " + this->debugServerConfig.listeningAddress);

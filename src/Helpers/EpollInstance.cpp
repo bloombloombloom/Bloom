@@ -17,7 +17,7 @@ EpollInstance::EpollInstance() {
     }
 }
 
-void EpollInstance::addEntry(int fileDescriptor, std::uint16_t eventMask) {
+void EpollInstance::addEntry(int fileDescriptor, std::uint32_t eventMask) {
     auto event = ::epoll_event{
         .events = eventMask,
         .data = {
