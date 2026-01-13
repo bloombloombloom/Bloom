@@ -70,8 +70,4 @@ namespace DebugToolDrivers::Microchip
 
         EdbgDevice::init();
     }
-
-    void MplabPickit4::configureAvr8Interface() {
-        this->edbgAvr8Interface->setReactivateJtagTargetPostProgrammingMode(true);
-    }
 }

@@ -83,10 +83,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
             this->maximumMemoryAccessSizePerRequest = maximumSize;
         }
 
-        void setReactivateJtagTargetPostProgrammingMode(bool reactivateJtagTargetPostProgrammingMode) {
-            this->reactivateJtagTargetPostProgrammingMode = reactivateJtagTargetPostProgrammingMode;
-        }
-
         /*
          * The public methods below implement the interface defined by the Avr8Interface class.
          * See the comments in that class for more info on the expected behaviour of each method.
@@ -152,7 +148,6 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         bool avoidMaskedMemoryRead = true;
         std::optional<Targets::TargetMemorySize> maximumMemoryAccessSizePerRequest;
-        bool reactivateJtagTargetPostProgrammingMode = false;
         Targets::TargetExecutionState cachedExecutionState = Targets::TargetExecutionState::UNKNOWN;
         bool physicalInterfaceActivated = false;
         bool targetAttached = false;

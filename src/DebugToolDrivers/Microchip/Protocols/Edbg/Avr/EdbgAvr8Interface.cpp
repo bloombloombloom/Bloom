@@ -909,7 +909,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
 
         this->programmingModeEnabled = false;
 
-        if (this->session.configVariant == Avr8ConfigVariant::MEGAJTAG && this->reactivateJtagTargetPostProgrammingMode) {
+        if (this->session.configVariant == Avr8ConfigVariant::MEGAJTAG) {
             this->deactivatePhysical();
             this->targetAttached = false;
             this->activate();
