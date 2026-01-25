@@ -12,6 +12,7 @@
 namespace DebugServer::Gdb::CommandPackets
 {
     using Services::TargetControllerService;
+    using Services::StringService;
 
     using ResponsePackets::ResponsePacket;
     using ResponsePackets::EmptyResponsePacket;
@@ -23,7 +24,7 @@ namespace DebugServer::Gdb::CommandPackets
             return;
         }
 
-        const auto decodedCommand = Services::StringService::dataFromHex(
+        const auto decodedCommand = StringService::dataFromHex(
             std::string{this->data.begin() + 6, this->data.end()}
         );
 
@@ -47,9 +48,7 @@ namespace DebugServer::Gdb::CommandPackets
              * properly disconnected from the target and debug tool by this point. The rest of Bloom will follow.
              */
             debugSession.connection.writePacket(
-                ResponsePacket{
-                    Services::StringService::toHex("Bloom is shutting down - connection will be dropped shortly.\n")
-                }
+                ResponsePacket{StringService::toHex("Bloom is shutting down - connection will be dropped shortly.\n")}
             );
             return;
         }
@@ -59,7 +58,7 @@ namespace DebugServer::Gdb::CommandPackets
             EventManager::triggerEvent(std::make_shared<Events::InsightActivationRequested>());
 
             debugSession.connection.writePacket(
-                ResponsePacket{Services::StringService::toHex("The Insight GUI will be with you shortly.\n")}
+                ResponsePacket{StringService::toHex("The Insight GUI will be with you shortly.\n")}
             );
             return;
         }
@@ -70,9 +69,7 @@ namespace DebugServer::Gdb::CommandPackets
         );
 
         if (passthroughResponse.has_value()) {
-            debugSession.connection.writePacket(ResponsePacket{
-                Services::StringService::toHex(passthroughResponse->output)
-            });
+            debugSession.connection.writePacket(ResponsePacket{StringService::toHex(passthroughResponse->output)});
             return;
         }
 
