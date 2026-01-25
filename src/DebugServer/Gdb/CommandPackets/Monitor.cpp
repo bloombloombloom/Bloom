@@ -3,6 +3,9 @@
 #include "src/DebugServer/Gdb/ResponsePackets/ResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/EmptyResponsePacket.hpp"
 
+#include "src/EventManager/EventManager.hpp"
+#include "src/EventManager/Events/InsightActivationRequested.hpp"
+
 #include "src/Services/StringService.hpp"
 #include "src/Logger/Logger.hpp"
 
@@ -36,6 +39,17 @@ namespace DebugServer::Gdb::CommandPackets
         const Targets::TargetDescriptor&,
         TargetControllerService& targetControllerService
     ) {
+#ifndef EXCLUDE_INSIGHT
+        if (this->command == "insight") {
+            EventManager::triggerEvent(std::make_shared<Events::InsightActivationRequested>());
+
+            debugSession.connection.writePacket(
+                ResponsePacket{Services::StringService::toHex("The Insight GUI will be with you shortly.\n")}
+            );
+            return;
+        }
+#endif
+
         const auto passthroughResponse = targetControllerService.invokeTargetPassthroughCommand(
             Targets::PassthroughCommand{.arguments = this->commandArguments}
         );

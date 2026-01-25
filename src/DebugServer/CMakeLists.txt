@@ -61,11 +61,3 @@ target_sources(
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/FlashDone.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/RiscVGdb/CommandPackets/VContSupportedActionsQuery.cpp
 )
-
-if (NOT EXCLUDE_INSIGHT)
-    target_sources(
-        Bloom
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Gdb/CommandPackets/ActivateInsight.cpp
-    )
-endif ()

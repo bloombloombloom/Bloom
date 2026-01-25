@@ -42,10 +42,6 @@
 #include "CommandPackets/VContContinueExecution.hpp"
 #include "CommandPackets/VContStepExecution.hpp"
 
-#ifndef EXCLUDE_INSIGHT
-#include "CommandPackets/ActivateInsight.hpp"
-#endif
-
 // Response packets
 #include "ResponsePackets/TargetStopped.hpp"
 
@@ -480,11 +476,6 @@ namespace DebugServer::Gdb
                     return std::make_unique<CommandPackets::WriteRegisterMonitor>(std::move(*(monitorCommand.release())));
                 }
 
-#ifndef EXCLUDE_INSIGHT
-                if (monitorCommand->command.find("insight") == 0) {
-                    return std::make_unique<CommandPackets::ActivateInsight>(std::move(*(monitorCommand.release())));
-                }
-#endif
                 return monitorCommand;
             }
 
