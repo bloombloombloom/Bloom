@@ -39,6 +39,21 @@ namespace DebugServer::Gdb::CommandPackets
         const Targets::TargetDescriptor&,
         TargetControllerService& targetControllerService
     ) {
+        if (this->command == "exit") {
+            targetControllerService.shutdown();
+
+            /*
+             * TargetControllerService::shutdown() will return once the TC has gone down, meaning we will have
+             * properly disconnected from the target and debug tool by this point. The rest of Bloom will follow.
+             */
+            debugSession.connection.writePacket(
+                ResponsePacket{
+                    Services::StringService::toHex("Bloom is shutting down - connection will be dropped shortly.\n")
+                }
+            );
+            return;
+        }
+
 #ifndef EXCLUDE_INSIGHT
         if (this->command == "insight") {
             EventManager::triggerEvent(std::make_shared<Events::InsightActivationRequested>());

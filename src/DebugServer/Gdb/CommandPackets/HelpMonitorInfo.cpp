@@ -52,6 +52,9 @@ namespace DebugServer::Gdb::CommandPackets
         output += StringService::applyTerminalColor("reset", CMD_COLOR) + "\n\n";
         output += leftPadding + "Resets the target and holds it in a stopped state.\n\n";
 
+        output += StringService::applyTerminalColor("exit", CMD_COLOR) + "\n\n";
+        output += leftPadding + "Triggers an immediate shutdown - Bloom will immediately disconnect from the target and debug tool before dropping the GDB connection\n\n";
+
         output += StringService::applyTerminalColor("lr", CMD_COLOR) + " ["
             + StringService::applyTerminalColor("PERIPHERAL_KEY", PARAM_COLOR) + "] ["
             + StringService::applyTerminalColor("ABS_REG_GROUP_KEY", PARAM_COLOR) + "]\n\n";
