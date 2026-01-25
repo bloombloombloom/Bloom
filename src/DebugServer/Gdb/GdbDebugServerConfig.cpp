@@ -55,5 +55,17 @@ namespace DebugServer::Gdb
                 );
             }
         }
+
+        if (debugServerConfig.debugServerNode["shutdown_on_detach"]) {
+            if (YamlUtilities::isCastable<bool>(debugServerConfig.debugServerNode["shutdown_on_detach"])) {
+                this->shutdownOnDetach = debugServerConfig.debugServerNode["shutdown_on_detach"].as<bool>();
+
+            } else {
+                Logger::error(
+                    "Invalid GDB debug server config parameter ('shutdown_on_detach') provided - value must be"
+                        " castable to a boolean. The parameter will be ignored."
+                );
+            }
+        }
     }
 }

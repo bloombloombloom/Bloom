@@ -48,6 +48,16 @@ namespace DebugServer::Gdb
          */
         bool packetAcknowledgement = false;
 
+        /**
+         * Determines whether the debug server will force Bloom to shut down after receiving a detach packet from the
+         * GDB client.
+         *
+         * This can be used to prevent aggressive IDEs from terminating Bloom's process without giving it a chance to
+         * shut down gracefully, assuming the IDE sends a detach packet and waits for a response before killing Bloom's
+         * process.
+         */
+        bool shutdownOnDetach = false;
+
         explicit GdbDebugServerConfig(const DebugServerConfig& debugServerConfig);
     };
 }
