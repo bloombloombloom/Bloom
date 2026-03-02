@@ -3,8 +3,6 @@
 #include "src/DebugServer/Gdb/ResponsePackets/OkResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 
-#include "src/Services/ProcessService.hpp"
-
 #include "src/Logger/Logger.hpp"
 
 namespace DebugServer::Gdb::CommandPackets
@@ -30,10 +28,7 @@ namespace DebugServer::Gdb::CommandPackets
         Logger::info("Handling Detach packet");
 
         try {
-            if (
-                debugSession.serverConfig.shutdownOnDetach
-                || (this->environmentConfig.clionAdaptation && Services::ProcessService::isManagedByClion())
-            ) {
+            if (debugSession.serverConfig.shutdownOnDetach) {
                 targetControllerService.shutdown();
             }
 

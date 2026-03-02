@@ -95,25 +95,6 @@ struct EnvironmentConfig
     std::string name;
     bool shutdownPostDebugSession = false;
 
-    /**
-     * CLion expects the debug server (in this case, Bloom) to shut down immediately upon receiving the detach command
-     * via GDB. It does not allow for any time to shut down after that - it just kills the process with a SIGKILL.
-     *
-     * I raised this with JetBrains, a number of years ago: https://youtrack.jetbrains.com/issue/CPP-28843
-     *
-     * They didn't seem to have any interest in fixing the issue, so I had to include some CLion-specific behaviour
-     * in Bloom, to prevent CLion from killing Bloom's process before we got a chance to shut down cleanly. It was a
-     * hacky solution, but it worked.
-     *
-     * Recently (in version 2024.3), CLion introduced "debug servers", which allows Bloom to remain running in the
-     * background, between debug sessions, reducing the time it takes to stop and start new debug sessions.
-     *
-     * This doesn't fix the issue described above - CLion still behaves like an aggressive dickhead, sending SIGKILL
-     * signals whenever it likes. However, Bloom's CLion-specific functionality may conflict with this new "debug server"
-     * functionality, so it's necessary to allow the user to disable it in their project config.
-     */
-    bool clionAdaptation = true;
-
     DebugToolConfig debugToolConfig;
     TargetConfig targetConfig;
     std::optional<DebugServerConfig> debugServerConfig;

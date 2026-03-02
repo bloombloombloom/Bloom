@@ -643,10 +643,7 @@ void Application::onDebugServerThreadStateChanged(const Events::DebugServerThrea
 }
 
 void Application::onDebugSessionFinished(const Events::DebugSessionFinished& event) {
-    if (
-        this->environmentConfig->shutdownPostDebugSession
-        || (this->environmentConfig->clionAdaptation && Services::ProcessService::isManagedByClion())
-    ) {
+    if (this->environmentConfig->shutdownPostDebugSession) {
         this->triggerShutdown();
     }
 }

@@ -49,8 +49,6 @@
 #include "src/Helpers/EpollInstance.hpp"
 #include "src/Helpers/EventFdNotifier.hpp"
 #include "src/Services/TargetControllerService.hpp"
-#include "src/Services/ProcessService.hpp"
-#include "src/Services/StringService.hpp"
 #include "src/Targets/TargetDescriptor.hpp"
 #include "src/Targets/TargetState.hpp"
 #include "src/Logger/Logger.hpp"
@@ -173,13 +171,6 @@ namespace DebugServer::Gdb
             this->eventListener.template registerCallbackForEventType<Events::TargetStateChanged>(
                 std::bind(&GdbRspDebugServer::onTargetStateChanged, this, std::placeholders::_1)
             );
-
-            if (this->environmentConfig.clionAdaptation && Services::ProcessService::isManagedByClion()) {
-                Logger::warning(
-                    "Bloom's process is being managed by CLion - Bloom will automatically shut down upon"
-                        " detaching from GDB."
-                );
-            }
         }
 
         void close() override {
