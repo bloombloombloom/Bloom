@@ -13,6 +13,8 @@
 #include "src/TargetController/Exceptions/DeviceFailure.hpp"
 #include "src/TargetController/Exceptions/DeviceInitializationFailure.hpp"
 
+#include "src/Logger/Logger.hpp"
+
 namespace DebugToolDrivers::Microchip
 {
     using namespace Microchip::Protocols::Edbg::Avr;
@@ -111,7 +113,7 @@ namespace DebugToolDrivers::Microchip
     }
 
     void EdbgDevice::postInit() {
-        // TODO: Log firmware version of EDBG device
+        Logger::info("EDBG firmware version: " + this->getEdbgVersion().toString());
     }
 
     bool EdbgDevice::isInitialised() const {
@@ -198,6 +200,39 @@ namespace DebugToolDrivers::Microchip
         }
 
         this->sessionStarted = false;
+    }
+
+    Protocols::Edbg::EdbgFirmwareVersion EdbgDevice::getEdbgVersion() {
+        using CommandFrames::HouseKeeping::Parameters;
+        using ResponseFrames::HouseKeeping::ResponseId;
+
+        const auto responseFrame = this->edbgInterface->sendAvrCommandFrameAndWaitForResponseFrame(
+            CommandFrames::HouseKeeping::GetParameter{Parameters::CONFIG_FW_VERSION_FULL}
+        );
+
+        if (responseFrame.id != ResponseId::DATA) {
+            throw DeviceFailure{
+                "Failed to fetch firmware version from device - invalid Housekeeping Protocol response ID."
+            };
+        }
+
+        const auto data = responseFrame.getPayloadData();
+        if (data.size() < Parameters::CONFIG_FW_VERSION_FULL.size) {
+            throw DeviceFailure{"Failed to fetch firmware version from device - invalid response size"};
+        }
+
+        // Some response frames will include a trailing status code (excluding frames with version == 0)
+        if (responseFrame.version != 0 && data.size() > Parameters::CONFIG_FW_VERSION_FULL.size && data[4] != 0) {
+            throw DeviceFailure{
+                "Failed to fetch firmware version from device - parameter read operation failed (status code != 0)"
+            };
+        }
+
+        return Protocols::Edbg::EdbgFirmwareVersion{
+            .major = data[0],
+            .minor = data[1],
+            .build = static_cast<std::uint16_t>(data[2] | data[3] << 8),
+        };
     }
 
     void EdbgDevice::exitBootloaderMode(UsbDevice& device) const {

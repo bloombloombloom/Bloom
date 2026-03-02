@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "src/DebugToolDrivers/Microchip/Protocols/Edbg/Avr/ResponseFrames/AvrResponseFrame.hpp"
 
 namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::HouseKeeping
@@ -17,7 +19,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::ResponseFrames::Hou
     {
     public:
         ResponseId id;
+        std::uint8_t version;
 
         explicit HouseKeepingResponseFrame(const std::vector<AvrResponse>& avrResponses);
+
+        [[nodiscard]] std::vector<unsigned char> getPayloadData() const;
     };
 }

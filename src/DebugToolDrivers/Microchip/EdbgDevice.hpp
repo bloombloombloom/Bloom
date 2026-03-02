@@ -14,6 +14,7 @@
 #include "Protocols/Edbg/Avr/EdbgAvr8Interface.hpp"
 #include "Protocols/Edbg/Avr/EdbgAvrIspInterface.hpp"
 #include "Protocols/Edbg/EdbgTargetPowerManagementInterface.hpp"
+#include "Protocols/Edbg/EdbgFirmwareVersion.hpp"
 
 namespace DebugToolDrivers::Microchip
 {
@@ -155,9 +156,9 @@ namespace DebugToolDrivers::Microchip
 
         bool sessionStarted = false;
 
-        virtual void configureAvr8Interface() {
-            return;
-        }
+        virtual void configureAvr8Interface() {}
+
+        Protocols::Edbg::EdbgFirmwareVersion getEdbgVersion();
 
         void exitBootloaderMode(Usb::UsbDevice& device) const;
         void enableEdbgMode(Usb::UsbDevice& device) const;

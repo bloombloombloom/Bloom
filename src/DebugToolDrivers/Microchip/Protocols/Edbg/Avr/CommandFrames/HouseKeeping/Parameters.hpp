@@ -28,6 +28,10 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::Hous
 
     struct Parameters
     {
+        static constexpr Parameter CONFIG_FW_VERSION_MAJOR{ParameterContext::CONFIG, 0x01, 1};
+        static constexpr Parameter CONFIG_FW_VERSION_MINOR{ParameterContext::CONFIG, 0x02, 1};
+        static constexpr Parameter CONFIG_FW_VERSION_BUILD{ParameterContext::CONFIG, 0x03, 2};
+        static constexpr Parameter CONFIG_FW_VERSION_FULL{ParameterContext::CONFIG, 0x01, 4};
         static constexpr Parameter USB_MAX_READ{ParameterContext::USB, 0x00, 2};
         static constexpr Parameter USB_MAX_WRITE{ParameterContext::USB, 0x01, 2};
     };

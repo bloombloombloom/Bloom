@@ -10,7 +10,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::Hous
     class GetParameter: public HouseKeepingCommandFrame<std::array<unsigned char, 5>>
     {
     public:
-        GetParameter(const Parameter& parameter, std::uint8_t size)
+        explicit GetParameter(const Parameter& parameter)
             : HouseKeepingCommandFrame()
         {
             /*
@@ -26,7 +26,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr::CommandFrames::Hous
                 0x00,
                 static_cast<unsigned char>(parameter.context),
                 static_cast<unsigned char>(parameter.id),
-                static_cast<unsigned char>(size)
+                static_cast<unsigned char>(parameter.size)
             };
         }
     };
