@@ -47,7 +47,12 @@ int Application::run() {
         }
 
         if (Services::ProcessService::isRunningAsRoot()) {
-            Logger::warning("Please don't run Bloom as root - you're asking for trouble.");
+            Logger::warning(
+                "Bloom is running as root - this should never be necessary and is highly discouraged. If Bloom is "
+                    "unable to connect to the debug tool without root permissions, ensure that you've reconnected "
+                    "the debug tool since installing Bloom, to ensure the new udev rules are loaded. If the issue "
+                    "persists, please report it via " + Services::PathService::homeDomainName() + "/report-issue"
+            );
         }
 
 #ifdef BLOOM_DEBUG_BUILD
