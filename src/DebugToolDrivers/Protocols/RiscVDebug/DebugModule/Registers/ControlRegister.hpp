@@ -45,7 +45,7 @@ namespace DebugToolDrivers::Protocols::RiscVDebug::DebugModule::Registers
                 .clearKeepAlive = static_cast<bool>(value & (0x01 << 4)),
                 .setKeepAlive = static_cast<bool>(value & (0x01 << 5)),
                 .selectedHartIndex = (((value >> 6) & 0x3FF) << 10) | ((value >> 16) & 0x3FF),
-                .hartSelectionMode = static_cast<HartSelectionMode>(value & (0x01 << 26)),
+                .hartSelectionMode = static_cast<HartSelectionMode>((value >> 26) & 0x01),
                 .acknowledgeUnavailableHarts = static_cast<bool>(value & (0x01 << 27)),
                 .acknowledgeHaveReset = static_cast<bool>(value & (0x01 << 28)),
                 .hartReset = static_cast<bool>(value & (0x01 << 29)),
