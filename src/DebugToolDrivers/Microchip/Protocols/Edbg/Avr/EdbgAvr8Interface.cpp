@@ -244,7 +244,7 @@ namespace DebugToolDrivers::Microchip::Protocols::Edbg::Avr
                     };
                 }
 
-                throw activationException;
+                throw;
             }
         }
 

@@ -566,10 +566,10 @@ namespace TargetController
         this->debugTool->init();
         Logger::info("Debug tool connected");
 
-        this->debugTool->postInit();
-
         Logger::info("Debug tool name: " + this->debugTool->getName());
         Logger::info("Debug tool serial: " + this->debugTool->getSerialNumber());
+
+        this->debugTool->postInit();
 
         this->target = this->constructTarget(*briefTargetDescriptor);
 

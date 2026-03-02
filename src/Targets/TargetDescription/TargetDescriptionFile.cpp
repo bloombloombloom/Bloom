@@ -397,7 +397,10 @@ namespace Targets::TargetDescription
             throw InternalFatalErrorException{"Failed to load target description file - file not found"};
         }
 
-        file.open(QIODevice::ReadOnly);
+        if (!file.open(QIODevice::ReadOnly)) {
+            throw InternalFatalErrorException{"Failed to open target description file \"" + xmlFilePath + "\""};
+        }
+
         auto document = QDomDocument{};
         if (!document.setContent(file.readAll())) {
             throw TargetDescriptionParsingFailureException{};
