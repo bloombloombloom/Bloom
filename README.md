@@ -31,7 +31,7 @@ To compile Bloom, the following dependencies must be resolved:
 The accompanying package names are from the Debian (APT) package repositories - package names will vary across package 
 repositories.
 
-- CMake version 3.22 or later
+- CMake version 3.31 or later
 - G++13 or later
 - libusb v1.0 (`libusb-1.0-0-dev`)
 - libhidapi (0.11.2 or later) (`libhidapi-dev`)
