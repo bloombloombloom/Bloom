@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <algorithm>
+#include <ranges>
 
 #include "src/DebugServer/Gdb/ResponsePackets/ErrorResponsePacket.hpp"
 #include "src/DebugServer/Gdb/ResponsePackets/PartialResponsePacket.hpp"
@@ -40,7 +41,14 @@ namespace DebugServer::Gdb::CommandPackets
         try {
             const auto argCount = this->commandArguments.size();
             if (argCount < 2) {
-                throw Exception{"Peripheral key required"};
+                // No peripheral key was provided - read everything
+                for (const auto& peripheralDesc : targetDescriptor.peripheralDescriptorsByKey | std::views::values) {
+                    this->handlePeripheralOutput(peripheralDesc, debugSession, targetControllerService);
+                    debugSession.connection.writePacket(PartialResponsePacket{StringService::toHex("\n")});
+                }
+
+                debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
+                return;
             }
 
             const auto& peripheralKey = this->commandArguments[1];
@@ -55,6 +63,7 @@ namespace DebugServer::Gdb::CommandPackets
             if (argCount < 3) {
                 // Register details were not provided - read all registers in the peripheral
                 this->handlePeripheralOutput(peripheralDescriptor, debugSession, targetControllerService);
+                debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
                 return;
             }
 
@@ -165,8 +174,6 @@ namespace DebugServer::Gdb::CommandPackets
         for (const auto& [groupKey, groupDescriptor] : peripheralDescriptor.registerGroupDescriptorsByKey) {
             this->handleRegisterGroupOutput(groupDescriptor, debugSession, targetControllerService);
         }
-
-        debugSession.connection.writePacket(ResponsePacket{StringService::toHex("\n")});
     }
 
     void ReadRegistersMonitor::handleRegisterGroupOutput(
