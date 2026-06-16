@@ -76,10 +76,12 @@ namespace DebugServer::Gdb::CommandPackets
             + StringService::applyTerminalColor("ABS_REG_GROUP_KEY", PARAM_COLOR) + "] ["
             + StringService::applyTerminalColor("REG_KEY", PARAM_COLOR) + "]\n\n";
         output += leftPadding + "Reads the value of the given register.\n";
-        output += leftPadding + "If a register key is not provided, all registers in the given peripheral and register group will be read.\n";
+        output += leftPadding + "If a register key is not provided, all readable registers in the given peripheral and register group will be read.\n";
         output += leftPadding + "The register group key can be omitted if the peripheral contains a single register group,\n";
         output += leftPadding + "and the subject register resides directly within that group (not in any subgroup).\n";
-        output += leftPadding + "The peripheral key can be omitted to read all registers.\n\n";
+        output += leftPadding + "If a peripheral key is not provided, all readable registers in all peripherals will be read.\n\n";
+        output += leftPadding + StringService::applyTerminalColor("CAUTION:", StringService::TerminalColor::DARK_YELLOW)
+            + " Some registers may produce side effects upon access. Please keep this in mind when invoking register access commands.\n\n";
         output += leftPadding + "Examples:\n\n";
         output += leftPadding + "mon " + StringService::applyTerminalColor("rr", CMD_COLOR) + " "
             + StringService::applyTerminalColor("porta", PARAM_COLOR) + " "
